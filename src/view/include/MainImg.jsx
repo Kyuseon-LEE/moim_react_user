@@ -106,7 +106,7 @@ const MainImg = () => {
             {selectedSubLocation || selectedLocation}
             {showLocationMenu && (
               <div className="dropdown_menu1">
-                <ul class="main_location">
+                <ul className="main_location">
                   {Object.keys(locations)
                   .slice(0,9)
                   .map((location) => (
@@ -121,7 +121,7 @@ const MainImg = () => {
                     </li>
                   ))}
                 </ul>
-                <ul class="main_location">
+                <ul className="main_location">
                   {Object.keys(locations)
                   .slice(10,17)
                   .map((location) => (

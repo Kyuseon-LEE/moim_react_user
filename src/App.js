@@ -1,4 +1,5 @@
 import React from 'react';
+<<<<<<< HEAD
 import Header from './view/include/Header';
 import MainImg from './view/include/MainImg';
 import Article from './view/include/Article';
