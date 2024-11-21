@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import '../../css/include.css';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("jwt");
@@ -21,6 +23,7 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem("jwt"); 
     setIsLoggedIn(false);
+    navigate('/');
     alert("로그아웃 되었습니다.");
   };
 
@@ -50,13 +53,13 @@ const Header = () => {
           <ul>
             {!isLoggedIn ? (
               <>
-                <li><a href="#none">회원가입</a></li>
-                <li><a href="#none">로그인</a></li>
+                <li><Link to="/signUp">회원가입</Link></li>
+                <li><Link to="/login">로그인</Link></li>
               </>
             ) : (
               <>
-                <li><a href="#none">내정보</a></li>
-                <li><a href="#none" onClick={handleLogout}>로그아웃</a></li>
+                <li><Link to="#none">내정보</Link></li>
+                <li><Link to="#none" onClick={handleLogout}>로그아웃</Link></li>
               </>
             )}
           </ul>
