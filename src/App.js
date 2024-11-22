@@ -1,8 +1,8 @@
 import React from 'react';
-<<<<<<< HEAD
 import Header from './view/include/Header';
 import MainImg from './view/include/MainImg';
 import Article from './view/include/Article';
+import Article2 from './view/include/Article2';
 import SignUp from './view/member/SignUp.jsx';
 import LocalLogin from './view/member/LocalLogin.jsx'
 import KakaoLogin from './view/member/KakaoLogin.jsx'
@@ -19,6 +19,7 @@ function App() {
           <Header />
           <MainImg />
           <Article />
+          <Article2 />
         </>
       } />
       <Route path="/signup" element={
