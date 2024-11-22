@@ -1,0 +1,95 @@
+article {
+    width: 80%;
+    margin: 80px auto;
+    padding: 30px;
+}
+
+article .container {
+    display: flex;
+    margin:0 auto;
+}
+
+article .title {
+    font-size: 40px;
+    text-align: center;
+    margin-bottom: 100px;
+}
+.conetent {
+    border-right: 1px solid #8a8a8a;
+    margin-right: 50px;
+}
+
+.conetent form {
+    text-align: center; /* 텍스트 및 버튼을 가운데 정렬 */
+    margin-top: 30px; /* 위쪽 여백 */
+}
+
+.conetent form input {
+    width: 500px;
+    height: 30px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+.conetent form .find_account {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+.conetent form .find_account a:first-child {
+    margin-right: 10px;
+}
+.conetent form a{
+    color: #000;
+    margin-top: 20px;
+}
+
+
+.conetent input[type="button"] {
+    font-size: 16px;
+    font-weight: bold;
+    height: 56px;
+    padding: 0 15px;
+    width: 40%;
+    background: #fff;
+    color: #5f5f5f;
+    border: 1px solid #5f5f5f;
+    margin-top: 15px;
+}
+
+.conetent input[type="button"]:hover {
+    background-color: #5f5f5f;
+    color: #fff;
+    cursor: pointer;
+}
+
+.social_title {
+    width: 950px;
+    text-align: center;
+    margin: 0px auto;
+}
+
+.social_title h4 {
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+.social_title a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    width: 500px;
+    height: 50px;
+    text-decoration: none;
+    color: #1a1a1a;
+    font-size: 20px;
+    margin: 20px auto;
+    border-radius: 3px;
+}
+
+.google_logo img, 
+.kakao_logo img {
+    max-width: 25px;
+    height: 25px;
+    margin-right: 10px;
+}
