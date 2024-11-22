@@ -3,6 +3,7 @@ import Header from './view/include/Header';
 import MainImg from './view/include/MainImg';
 import Article from './view/include/Article';
 import Article2 from './view/include/Article2';
+import Article2 from './view/include/Article2.jsx';
 import SignUp from './view/member/SignUp.jsx';
 import LocalLogin from './view/member/LocalLogin.jsx'
 import KakaoLogin from './view/member/KakaoLogin.jsx'
