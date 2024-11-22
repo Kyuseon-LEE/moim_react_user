@@ -30,6 +30,10 @@ const Header = ({ jwt, setJwt }) => {
     alert("로그아웃 되었습니다.");
   };
 
+  const closeMenu = () => {
+    setMenuOpen(false); // 메뉴 닫기
+  };
+
   return (
     <header>
       <div className="header_wrap">
@@ -56,12 +60,13 @@ const Header = ({ jwt, setJwt }) => {
           <ul>
             {!isLoggedIn ? (
               <>
-                <li><Link to="/signup">회원가입</Link></li>
-                <li><Link to="/login">로그인</Link></li>
+
+                <li><Link to="/signUp" onClick={closeMenu}>회원가입</Link></li>
+                <li><Link to="/login" onClick={closeMenu}>로그인</Link></li>
               </>
             ) : (
               <>
-                <li><Link to="#none">내정보</Link></li>
+                <li><Link to="#none" onClick={closeMenu}>내정보</Link></li>
                 <li><Link to="#none" onClick={handleLogout}>로그아웃</Link></li>
               </>
             )}

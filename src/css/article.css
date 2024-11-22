@@ -6,7 +6,7 @@
     background-color: rgba(199, 198, 198, 0.2);
     font-family: "Pretendard Variable";
 }
-.article_wrap {
+.article_wrap_main {
     width:1000px;
     height:400px;
     margin: 0 auto;
@@ -22,6 +22,7 @@
     line-height: 50px;
     margin-bottom: 50px;
     box-sizing: border-box;
+    text-align: center;
 }
 .city{
     color:#1273e4;
@@ -61,7 +62,7 @@
     border-radius: 20px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.create p:first-child{
+.plus{
     background-color: #f5f6f8;
     width:70px;
     height: 70px;   
@@ -70,8 +71,9 @@
     border-radius: 50px;
     line-height: 60px;
     font-size:4em;
+    text-align: center;
 }
-.create p:nth-child(2){
+.create > p:nth-child(2){
     margin-top:20px;
     font-size:1.2em;
 }

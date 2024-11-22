@@ -91,7 +91,7 @@ const MainImg = () => {
         <p>
           모임을 위한 공간,
           <br />
-          밴드
+          MOIM?
         </p>
         <div className="search_form">
           <p>모임 검색</p>
@@ -180,7 +180,7 @@ const MainImg = () => {
               </div>
             )}
           </div>
-          <button>검색</button>
+          <button className="searching">검색</button>
         </div>
       </div>
     </section>
