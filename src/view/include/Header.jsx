@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import '../../css/include.css';
 import { Link, useNavigate } from 'react-router-dom';
 
-
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -24,8 +23,13 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem("jwt"); 
     setIsLoggedIn(false);
+    setMenuOpen(false); // 로그아웃 후 메뉴 닫기
     navigate('/');
     alert("로그아웃 되었습니다.");
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false); // 메뉴 닫기
   };
 
   return (
@@ -54,12 +58,12 @@ const Header = () => {
           <ul>
             {!isLoggedIn ? (
               <>
-                <li><Link to="/signUp">회원가입</Link></li>
-                <li><Link to="/login">로그인</Link></li>
+                <li><Link to="/signUp" onClick={closeMenu}>회원가입</Link></li>
+                <li><Link to="/login" onClick={closeMenu}>로그인</Link></li>
               </>
             ) : (
               <>
-                <li><Link to="#none">내정보</Link></li>
+                <li><Link to="#none" onClick={closeMenu}>내정보</Link></li>
                 <li><Link to="#none" onClick={handleLogout}>로그아웃</Link></li>
               </>
             )}

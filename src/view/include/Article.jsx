@@ -70,7 +70,7 @@ const Article = () => {
 
   return (
     <article className="article_1">
-      <div className="article_wrap">
+      <div className="article_wrap_main">
         <div className="together">
           <svg
             height="15px"
@@ -87,10 +87,12 @@ const Article = () => {
         </div>
         <div className="my_list">
             <ul>
-              <li className="create">
-                <p>+</p>
-                <p>만들기</p>
-              </li>
+              <a href="/create">
+                <li className="create">
+                  <p className="plus">+</p>
+                  <p>만들기</p>
+                </li>
+              </a>
               <li>
                 <img src={process.env.PUBLIC_URL + '/img/exam.png'} alt="exam" />
                 <div className="info">

@@ -5,8 +5,10 @@
 li{
     list-style: none;
 }
+
 a{
     text-decoration: none;
+    color:#333;
 }
 
 
@@ -50,6 +52,7 @@ header{
     pointer-events: none;
     z-index: 9999;
     font-family: "Pretendard Variable";
+    text-align: center;
   }
   
  
@@ -165,7 +168,7 @@ section{
 .location:hover{
     background-color: rgb(235 235 235 / var(--tw-bg-opacity));
 }
-button{
+.searching{
     width:12%;
     padding: 4px 14px;
     border:none;
