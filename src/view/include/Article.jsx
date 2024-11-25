@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
-
 import '../../css/article.css';
+import { useNavigate } from "react-router-dom";
 
 const Article = () => {
+  const navigate = useNavigate();
   const [city, setCity] = useState("");
   const [error, setError] = useState(null);
   const [randomPhrase, setRandomPhrase] = useState(""); 
-
+  const [groups, setGroups] = useState([]); // 로그인 유저의 그룹 정보
+  const userId = localStorage.getItem("m_id")
+  const handleGroupClick = (g_no) => {
+    navigate(`/group/${g_no}`); // 동적 경로로 이동
+  };
   // 문구 배열
   const phrases = [
     "소모임이 궁금하다면?",
@@ -28,12 +33,10 @@ const Article = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          console.log("Latitude:", latitude, "Longitude:", longitude);
           fetchCityName(latitude, longitude);
         },
         (err) => {
           setError("위치 정보를 가져올 수 없습니다.");
-          console.error(err);
         }
       );
     } else {
@@ -54,7 +57,6 @@ const Article = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Kakao API Response:", data);
         if (data.documents && data.documents[0] && data.documents[0].address) {
           const cityName = data.documents[0].address.region_2depth_name;
           setCity(cityName);
@@ -62,11 +64,36 @@ const Article = () => {
           setError("주소 정보를 가져올 수 없습니다.");
         }
       })
-      .catch((err) => {
+      .catch(() => {
         setError("주소 정보를 가져오는 중 오류가 발생했습니다.");
-        console.error(err);
       });
   };
+
+  // 그룹 정보 가져오기
+  useEffect(() => {
+    console.log("Fetching groups for user ID:", userId); // 사용자 ID 확인
+  
+    // Node.js 서버에 요청
+    fetch(`http://localhost:5000/group/user-groups/${userId}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }, // JSON 요청임을 명시
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Server responded with status ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Fetched group data from Node.js:", data); // Node.js에서 가져온 데이터 확인
+        setGroups(data); // 그룹 데이터 상태 업데이트
+      })
+      .catch((error) => {
+        console.error("Error occurred while fetching groups:", error.message);
+        setError("그룹 정보를 가져올 수 없습니다."); // 오류 메시지 설정
+      });
+  }, [userId]);
+  
 
   return (
     <article className="article_1">
@@ -93,13 +120,20 @@ const Article = () => {
                   <p>만들기</p>
                 </li>
               </a>
-              <li>
-                <img src={process.env.PUBLIC_URL + '/img/exam.png'} alt="exam" />
-                <div className="info">
-                  <p>이름</p>
-                  <p>멤버</p>
-                </div>
-              </li>
+              {groups.map((group) => (
+                <li key={group.g_no} onClick={() => handleGroupClick(group.g_no)}>
+                  <a>
+                  <img
+                      src={`http://localhost:5000/uploads/${group.g_img_name}`}
+                      alt={group.g_name}
+                    />
+                  <div className="info">
+                    <p>{group.g_name}</p>
+                    <p>{group.memberCount}명</p>
+                  </div>
+                  </a>
+                </li>
+              ))}
             </ul>
         </div>
       </div>

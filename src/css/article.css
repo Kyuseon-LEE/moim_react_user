@@ -87,7 +87,8 @@
     height:35%;
 }
 .info p{
-    text-align: left
+    text-align: left;
+    margin-bottom:5px;
 }
 /* 아티클 끝 */
 

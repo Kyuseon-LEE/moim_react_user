@@ -5,6 +5,7 @@ import Article from './view/include/Article';
 import Article2 from './view/include/Article2';
 import SignUp from './view/member/SignUp.jsx';
 import GroupCreate from './view/group/GroupCreate';
+import GroupHome from './view/group/GroupHome';
 import LocalLogin from './view/member/LocalLogin.jsx'
 import KakaoLogin from './view/member/KakaoLogin.jsx'
 import GoogleLogin from './view/member/GoogleLogin.jsx'
@@ -33,12 +34,26 @@ function App() {
           </>
         } />
 
+        <Route path="/create" element={
+          <>
+            <Header jwt={jwt} setJwt={setJwt} />
+            <GroupCreate jwt={jwt} setJwt={setJwt} />
+          </>
+        } />
+
+        <Route path="/group/:g_no" element={
+          <>
+            <Header jwt={jwt} setJwt={setJwt} />
+            <GroupHome jwt={jwt} setJwt={setJwt} />
+          </>
+        } />
+
         <Route path="/login" element={
           <>
             <Header jwt={jwt} setJwt={setJwt} />
             <LocalLogin jwt={jwt} setJwt={setJwt} />
           </>
-        } />
+        } />       
 
       </Routes>
 

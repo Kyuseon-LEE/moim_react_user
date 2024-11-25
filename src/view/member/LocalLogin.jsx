@@ -32,6 +32,7 @@ const LocalLogin = ({jwt, setJwt}) => {
             console.log("[로그인 성공]", response.data);
             let accessToken = response.data.accessToken;
             localStorage.setItem("accessToken", response.data.accessToken);
+            localStorage.setItem("m_id", m_id); // 로그인된 사용자 m_id 저장
             setJwt(accessToken);
             navigate("/");
         })
@@ -41,7 +42,7 @@ const LocalLogin = ({jwt, setJwt}) => {
     }
 
     return(
-        <article>
+        <article className="local_article">
             <div className="title">
                 로그인
             </div>
