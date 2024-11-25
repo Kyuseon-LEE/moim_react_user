@@ -1,8 +1,10 @@
 import '../../css/group/create.css';
 import React, { useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 const GroupCreate = () => {
   const [imagePreview, setImagePreview] = useState(null);
+  const [uploadedFileName, setUploadedFileName] = useState("");
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -61,14 +63,42 @@ const GroupCreate = () => {
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+    if (!file) {
+      alert("파일을 선택해주세요.");
+      return;
     }
+  
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("m_id", localStorage.getItem("m_id")); // 사용자 ID 추가
+  
+    fetch("http://localhost:5000/group/upload", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Server responded with status ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Uploaded File Info:", data); // 서버 응답 데이터 확인
+        if (data.success && data.fileName) {
+          const imageUrl = `http://localhost:5000/uploads/${data.fileName}`;
+          console.log("Setting imagePreview to:", imageUrl); // URL 확인
+          setImagePreview(imageUrl); // 상태 업데이트
+          setUploadedFileName(data.fileName);
+        } else {
+          alert("파일 업로드 실패: 서버 응답이 올바르지 않습니다.");
+        }
+      })
+      .catch((error) => {
+        console.error("Upload Error:", error.message);
+        alert(`이미지 업로드 실패: ${error.message}`);
+      });
   };
+  
 
   const handleBoxClick = () => {
     document.getElementById("imageInput").click();
@@ -102,39 +132,63 @@ const GroupCreate = () => {
   };
 
   const handleSubmit = () => {
+    console.log("Uploaded fileName in handleSubmit:", uploadedFileName); // 확인 로그
+    if (!groupName.trim()) {
+      alert("모임 제목을 입력해주세요.");
+      return;
+    }
+    if (!selectedCategory.trim()) {
+      alert("모임 주제를 선택해주세요.");
+      return;
+    }
+    if (!selectedSubLocation.trim()) {
+      alert("모임 지역을 선택해주세요.");
+      return;
+    }
+    if (!groupInfo.trim()) {
+      alert("모임 활동 내용을 입력해주세요.");
+      return;
+    }
+    if (!uploadedFileName) {
+      alert("모임 대표 이미지를 업로드해주세요.");
+      return;
+    }
+  
     const groupData = {
-        g_name: groupName,
-        g_info: groupInfo,
-        g_category: selectedCategory,
-        g_location: selectedSubLocation,
-        g_confirm: groupConfirm,
-        g_max_number: groupMaxNumber,
-        g_img_name: imagePreview,
+      g_name: groupName,
+      g_info: groupInfo,
+      g_category: selectedCategory,
+      g_location: selectedSubLocation,
+      g_confirm: groupConfirm,
+      g_max_number: groupMaxNumber,
+      g_img_name: uploadedFileName,
+      m_id: localStorage.getItem("m_id"),
     };
-
-    console.log("Data being sent to Node.js:", groupData); // 디버깅 추가
-
+  
+    console.log("Data being sent to Node.js:", groupData);
+  
     fetch("http://localhost:5000/group/create_group", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(groupData),
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(groupData),
     })
-    .then(response => {
+      .then((response) => {
         if (!response.ok) {
-            throw new Error(`Server responded with status ${response.status}`);
+          throw new Error(`Server responded with status ${response.status}`);
         }
         return response.json();
-    })
-    .then(data => {
+      })
+      .then((data) => {
         console.log("Response from Node.js:", data);
         alert("그룹 생성이 완료되었습니다.");
-    })
-    .catch(error => {
+        window.location.href = "/";
+      })
+      .catch((error) => {
         console.error("Error occurred:", error.message);
         alert(`그룹 생성 실패: ${error.message}`);
-    });
-}; 
-
+      });
+  };
+  
   return (
     <article className="create_article">
       <div className="create_info_wrap">

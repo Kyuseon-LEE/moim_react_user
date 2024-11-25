@@ -1,0 +1,36 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
+/* 아티클 시작 */
+.home_article{
+    width:100%;
+    font-family: "Pretendard Variable";
+}
+
+.home_nav {
+    width: 100%;
+    background-color: #fff;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height:50px;
+    border-bottom: 1px solid #ccc;
+}
+
+.home_nav ul {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+}
+
+.home_nav ul > li {
+    width: 100px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.home_wrap{
+    width:1000px;
+    height:500px;
+    background-color: #ccc;
+    margin:0 auto;
+}
