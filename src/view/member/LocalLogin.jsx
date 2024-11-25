@@ -3,7 +3,7 @@ import instance from '../../api/axios';
 import '../../css/member/LocalLogin.css';
 import { useNavigate } from "react-router-dom";
 
-const LocalLogin = ({jwt, setJwt}) => {
+const LocalLogin = ({jwt, setJwt, setIsLoggedIn}) => {
     const navigate = useNavigate();
     const [m_id, setM_id] = useState('');
     const [m_pw, setM_pw] = useState('');
@@ -31,8 +31,10 @@ const LocalLogin = ({jwt, setJwt}) => {
         .then(response => {
             console.log("[로그인 성공]", response.data);
             let accessToken = response.data.accessToken;
+            let memberInfo = response.data.memberInfo;
             localStorage.setItem("accessToken", response.data.accessToken);
             setJwt(accessToken);
+            setIsLoggedIn(true);
             navigate("/");
         })
         .catch(err => {
