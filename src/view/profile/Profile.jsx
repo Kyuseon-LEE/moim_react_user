@@ -6,53 +6,121 @@ import instance from '../../api/axios';
 const Profile = () => {
     const [activeIndex, setActiveIndex] = useState(null); 
     const [memberInfo, setMemberInfo] = useState(null);  // 사용자 정보 상태
-    const [isEdit, setIsEdit] = useState(false);   // 편집 모드 상태
+    const [nicknameEdit, setNicknameEdit] = useState(false);  // 닉네임 편집 모드 상태
+    const [genderEdit, setGenderEdit] = useState(false);  // 성별 편집 모드 상태
+    const [phoneEdit, setPhoneEdit] = useState(false);  // 휴대폰 번호 편집 모드 상태
+    const [addressEdit, setAddressEdit] = useState(false);  // 주소 편집 모드 상태
     const [newNickname, setNewNickname] = useState("");  // 새로운 닉네임 값
+    const [newGender, setNewGender] = useState(""); // 새로운 성별
+    const [newPhone, setNewPhone] = useState(""); // 새로운 휴대폰 번호
+    const [newAddress, setNewAddress] = useState(""); // 새로운 주소
+
 
     // 사용자 정보를 가져오는 함수
     useEffect(() => {
         instance.post('/member/getMemberInfo')
             .then(response => {
                 console.log("성공적으로 사용자의 정보를 가져왔습니다.");
-                setMemberInfo(response.data.memberDtos); // 사용자 정보를 상태에 저장
-                setNewNickname(response.data.memberDtos.m_nickname);  // 초기 닉네임 값 설정
+                setMemberInfo(response.data.memberDtos);
+                setNewNickname(response.data.memberDtos.m_nickname); 
+                setNewGender(response.data.memberDtos.m_gender);
+                setNewPhone(response.data.memberDtos.m_phone); 
+                setNewAddress(response.data.memberDtos.m_address);
             })
             .catch(err => {
                 console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
             });
-    }, []); // 빈 배열: 컴포넌트가 처음 마운트될 때 한 번 실행
+    }, []);
 
     // 닉네임 입력 값 변경 핸들러
     const handleNicknameChange = (e) => {
         setNewNickname(e.target.value);
     };
 
+    const handleGenderChange = (e) => {
+        setNewGender(e.target.value);
+    };
+    const handlePhoneChange = (e) => {
+        setNewPhone(e.target.value);
+    }
+
     // 수정 버튼 클릭 시 편집 모드 전환
-    const handleEditClick = () => {
-        setIsEdit(true);  // 편집 모드 활성화
+    const handleEditClick = (field) => {
+        if (field === 'nickname') {
+            setNicknameEdit(true);  // 닉네임 편집 모드 활성화
+        } else if (field === 'gender') {
+            setGenderEdit(true);  // 성별 편집 모드 활성화
+        } else if (field === 'phone') {
+            setPhoneEdit(true);  // 휴대폰 편집 모드 활성화
+        } else if (field === 'address') {
+            setAddressEdit(true);  // 주소 편집 모드 활성화
+        }
     };
 
-    // 취소 버튼 클릭 시 닉네임 원래대로 돌아가고 편집 모드 종료
-    const handleCancelClick = () => {
-        setIsEdit(false);  // 편집 모드 종료
-        setNewNickname(memberInfo.m_nickname);  // 닉네임을 원래 값으로 되돌리기
+    // 취소 버튼 클릭 시 값 원래대로 돌아가고 편집 모드 종료
+    const handleCancelClick = (field) => {
+        if (field === 'nickname') {
+            setNicknameEdit(false);
+            setNewNickname(memberInfo.m_nickname);  
+        } else if (field === 'gender') {
+            setGenderEdit(false);
+            setNewGender(memberInfo.m_gender);
+        } else if (field === 'phone') {
+            setPhoneEdit(false);
+            setNewPhone(memberInfo.m_phone);  
+        } else if (field === 'address') {
+            setAddressEdit(false);
+            setNewAddress(memberInfo.m_address);
+        }
     };
 
     const handleSaveClick = () => {
-        // 새로운 닉네임 서버에 저장하는 API 호출
-        instance.post('/member/updateNickname', { newNickname })
+        instance.post('/member/updateMemberInfo', { 
+            newNickname, newGender, newPhone, newAddress 
+        })
             .then(response => {
-                console.log("닉네임이 업데이트되었습니다.", response.data);
+                console.log("정보가 업데이트되었습니다.", response.data);
                 setMemberInfo({
                     ...memberInfo,
                     m_nickname: newNickname,  // 변경된 닉네임 반영
+                    m_gender: newGender,  // 변경된 성별 반영
+                    m_phone: newPhone,    // 변경된 휴대폰 번호 반영
+                    m_address: newAddress,  // 변경된 주소 반영
                 });
-                setIsEdit(false);  
+                setNicknameEdit(false);  
+                setGenderEdit(false);  
+                setPhoneEdit(false); 
+                setAddressEdit(false); 
             })
             .catch(err => {
-                console.error("닉네임 업데이트에 실패했습니다.", err);
+                console.error("정보 업데이트에 실패했습니다.", err);
             });
     };
+
+    //새로운 주소 Daum으로 받기
+    
+        //Daum address
+        const openPostcodePopup = () => {
+            new window.daum.Postcode({
+                oncomplete: (data) => {
+                const addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
+    
+                let extraAddr = ''; // 참고 항목
+                if (data.userSelectedType === 'R') {
+                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                    extraAddr += data.bname;
+                    }
+                    if (data.buildingName !== '' && data.apartment === 'Y') {
+                    extraAddr += (extraAddr !== '' ? `, ${data.buildingName}` : data.buildingName);
+                    }
+                }
+    
+                // setPostcode(data.zonecode);
+                // setAddress(addr);
+                },
+            }).open();
+        };
+
 
     return (
         <article className="article4">
@@ -90,7 +158,7 @@ const Profile = () => {
                                 <>
                                     <div className="nickname">
                                         <span>닉네임</span>
-                                        {isEdit ? (
+                                        {nicknameEdit ? (
                                             <>
                                                 <input
                                                     type="text"
@@ -107,7 +175,7 @@ const Profile = () => {
                                                 <input
                                                     type="button"
                                                     value="취소"
-                                                    onClick={handleCancelClick}
+                                                    onClick={() => handleCancelClick('nickname')}
                                                 />
                                             </>
                                         ) : (
@@ -116,17 +184,47 @@ const Profile = () => {
                                                 <input
                                                     type="button"
                                                     value="변경"
-                                                    onClick={handleEditClick}
+                                                    onClick={() => handleEditClick('nickname')}
                                                 />
                                             </>
                                         )}
                                     </div>
                                     <div className="gender">
                                         <span>성별</span>
-                                        <span id="gender">
-                                            {memberInfo.m_gender === "M" ? "남자" : memberInfo.m_gender === "W" ? "여자" : "기타"}
-                                        </span>
-                                        <input type="button" value="변경" />
+                                        {genderEdit ? (
+                                            <select
+                                                value={newGender}
+                                                onChange={handleGenderChange}
+                                            >
+                                                <option value="M">남자</option>
+                                                <option value="W">여자</option>
+                                            </select>
+                                        ) : (
+                                            <span id="gender">
+                                                {memberInfo.m_gender === "M" ? "남자" : "여자"}
+                                            </span>
+                                        )}
+                                        {genderEdit ? (
+                                            <>
+                                                <input
+                                                    type="button"
+                                                    value="확인"
+                                                    name="confirm"
+                                                    onClick={handleSaveClick}
+                                                />
+                                                <input
+                                                    type="button"
+                                                    value="취소"
+                                                    onClick={() => handleCancelClick('gender')}
+                                                />
+                                            </>
+                                        ) : (
+                                            <input
+                                                type="button"
+                                                value="변경"
+                                                onClick={() => handleEditClick('gender')}
+                                            />
+                                        )}
                                     </div>
                                     <div className="category_info">
                                         <span>카테고리</span>
@@ -152,8 +250,35 @@ const Profile = () => {
                                     </div>
                                     <div className="phone">
                                         <span>휴대폰 번호</span>
-                                        <span id="phone">{memberInfo.m_phone}</span>
-                                        <input type="button" value="변경" />
+                                        {phoneEdit ? (
+                                            <>
+                                                <input
+                                                    type="text"
+                                                    name="phone"
+                                                    value={newPhone}
+                                                    onChange={handlePhoneChange}
+                                                />
+                                                <input
+                                                    type="button"
+                                                    value="확인"
+                                                    onClick={handleSaveClick}
+                                                />
+                                                <input
+                                                    type="button"
+                                                    value="취소"
+                                                    onClick={() => handleCancelClick('phone')}
+                                                />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span id="phone">{memberInfo.m_phone}</span>
+                                                <input
+                                                    type="button"
+                                                    value="변경"
+                                                    onClick={() => handleEditClick('phone')}
+                                                />
+                                            </>
+                                        )}
                                     </div>
                                     <div className="address">
                                         <span>주소지</span>

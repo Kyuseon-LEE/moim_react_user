@@ -1,0 +1,97 @@
+#section {
+    background-color: #fff;
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+#section .success_section_wrap {
+    width: 50%;
+    margin: 0 auto;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    margin-top: 40px;
+}
+
+#section .success_section_wrap > h3 {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 32px;
+}
+
+/* logo */
+#section .success_section_wrap > .logo {
+    margin: 40px;
+    text-align: center;
+}
+#section .success_section_wrap > .logo > img {
+    width: 400px;
+}
+
+#section .success_section_wrap > .contents {
+    text-align: center;
+}
+#section .success_section_wrap > .contents > h3 {
+    font-size: 24px;
+}
+#section .success_section_wrap > .contents > .explain {
+    font-size: 18px;
+}
+
+/* category select */
+#section .success_section_wrap > .categorys {
+    padding: 20px 0;
+    width: 70%;
+    margin: 40px auto;
+}
+
+#section .success_section_wrap > .categorys > ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#section .success_section_wrap > .categorys > ul > li {
+    display: inline-block;
+    margin: 10px;
+}
+
+#section .success_section_wrap > .categorys > ul > li > .category-item {
+    border: 1px solid rgba(0, 0, 0, 0.65);
+    padding: 13px 15px;
+    width: 80px;
+    text-align: center;
+    border-radius: 50px;
+    background-color: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+#section .success_section_wrap > .categorys > ul > li > .category-item:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.85);
+}
+
+#section .success_section_wrap > .categorys > ul > li > .category-item.selected {
+    background-color: orange; /* 선택된 항목 */
+    border: 1px solid orange;
+    color: #000;
+}
+
+/* btns */
+#section .success_section_wrap > .categorys > .btns {
+    margin-top: 100px;
+    text-align: center;
+}
+
+#section .success_section_wrap > .categorys > .btns > input[type="button"] {
+    width: 140px;
+    padding: 10px 0;
+    color: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+    margin: 30px;
+    font-size: 18px;
+    background: none;
+    cursor: pointer;
+}

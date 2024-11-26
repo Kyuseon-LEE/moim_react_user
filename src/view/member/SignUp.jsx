@@ -23,7 +23,7 @@ const SignUp = () => {
 
     const signupForm = () => {
         let form = document.signup_form;
-        const idRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]{6,}$/; // 알파벳과 숫자가 포함된 6자 이상의 아이디
+        const idRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]{6,}$/;
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,}$/;
 
         if (form.m_id.value === '') {
@@ -82,7 +82,28 @@ const SignUp = () => {
         }
     }
 
-    // Save to state
+        //Daum address
+        const openPostcodePopup = () => {
+            new window.daum.Postcode({
+                oncomplete: (data) => {
+                const addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
+    
+                let extraAddr = ''; // 참고 항목
+                if (data.userSelectedType === 'R') {
+                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                    extraAddr += data.bname;
+                    }
+                    if (data.buildingName !== '' && data.apartment === 'Y') {
+                    extraAddr += (extraAddr !== '' ? `, ${data.buildingName}` : data.buildingName);
+                    }
+                }
+    
+                setPostcode(data.zonecode);
+                setAddress(addr);
+                },
+            }).open();
+        };
+
     const handleInputData = (event) => {
         const { name, value } = event.target;
         if (name === 'm_id') setM_id(value);
@@ -103,21 +124,6 @@ const SignUp = () => {
         setProfileImage(event.target.files[0]);
     }
 
-    //Check what already nickname
-    // const handleNicknameCheck = async () => {
-    //     try {
-    //         const response = await instance.get(`/member/checkNickname?nickname=${m_nickname}`);
-    //         if (response.data.isAvailable) {
-    //             setNicknameStatus('사용 가능한 닉네임입니다.');
-    //         } else {
-    //             setNicknameStatus('이미 사용 중인 닉네임입니다.');
-    //         }
-    //     } catch (error) {
-    //         console.error("닉네임 중복 확인 오류", error);
-    //         setNicknameStatus('닉네임 중복 확인에 실패했습니다.');
-    //     }
-    // }
-
     //Submit to Server
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -131,9 +137,6 @@ const SignUp = () => {
         //주소 합쳐서 보내기
         const fullAddress = `${postcode} ${address} ${detailAddress}`;
 
-        if (profileImage) {
-            formData.append('m_profile_img', profileImage);
-        }
         const formData = new FormData();
         formData.append('m_name', m_name);
         formData.append('m_id', m_id);
@@ -145,36 +148,22 @@ const SignUp = () => {
         formData.append('m_age', m_age);
         formData.append('m_address', fullAddress);
 
+        const imageTosend = profileImage ? profileImage : "/img/profile_default.png";
+        formData.append("m_profile_img", imageTosend);
+
         instance.post('/member/signup_confirm', formData)
         .then(response => {
             console.log("[회원가입 성공]", response.data);
+            // navigate('/signup_success');
         })
         .catch(err => {
-            console.log("[회원가입 문제발생]", err);
+            if (err.response && err.response.data) {
+                setFormError(err.response.data.message || "회원가입 중 오류가 발생했습니다.");
+            } else {
+                setFormError("서버와 통신할 수 없습니다. 잠시 후 다시 시도해주세요.");
+            }
         });
     }
-
-    //Daum address
-    const openPostcodePopup = () => {
-        new window.daum.Postcode({
-            oncomplete: (data) => {
-            const addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
-
-            let extraAddr = ''; // 참고 항목
-            if (data.userSelectedType === 'R') {
-                if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
-                extraAddr += data.bname;
-                }
-                if (data.buildingName !== '' && data.apartment === 'Y') {
-                extraAddr += (extraAddr !== '' ? `, ${data.buildingName}` : data.buildingName);
-                }
-            }
-
-            setPostcode(data.zonecode);
-            setAddress(addr);
-            },
-        }).open();
-    };
 
 
     return (
