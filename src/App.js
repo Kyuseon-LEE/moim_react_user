@@ -25,7 +25,14 @@ function App() {
           <>
             <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
             <MainImg jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
-            <Article jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            {isLoggedIn && (
+                <Article
+                  jwt={jwt}
+                  setJwt={setJwt}
+                  isLoggedIn={isLoggedIn}
+                  setIsLoggedIn={setIsLoggedIn}
+                />
+              )}
             <Article2 jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           </>
         } />
@@ -46,15 +53,15 @@ function App() {
 
         <Route path="/create" element={
           <>
-            <Header jwt={jwt} setJwt={setJwt} />
-            <GroupCreate jwt={jwt} setJwt={setJwt} />
+            <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <GroupCreate jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           </>
         } />
 
         <Route path="/group/:g_no" element={
           <>
-            <Header jwt={jwt} setJwt={setJwt} />
-            <GroupHome jwt={jwt} setJwt={setJwt} />
+            <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+            <GroupHome jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
           </>
         } />
 

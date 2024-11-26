@@ -22,6 +22,8 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
       if (decoded.exp < currentTime) {
         // 토큰이 만료됨
         localStorage.removeItem("accessToken");
+        localStorage.removeItem("m_id");
+        localStorage.removeItem("m_no");
         setJwt('');
         setIsLoggedIn(false);
         alert("세션이 만료되었습니다. 다시 로그인해주세요.");
@@ -38,6 +40,8 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");  // localStorage에서 jwt 삭제
+    localStorage.removeItem("m_id");
+    localStorage.removeItem("m_no");
     setJwt('');  // jwt 상태 초기화
     setIsLoggedIn(false);  // 로그인 상태 변경
     navigate('/');  // 홈으로 이동

@@ -1,8 +1,13 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
 /* 아티클 시작 */
+
 .home_article{
     width:100%;
     font-family: "Pretendard Variable";
+    background-color: #f3f3f3;
+    height: auto;
+    padding-bottom:10px;
+    min-height: 95vh;
 }
 
 .home_nav {
@@ -23,14 +28,314 @@
 }
 
 .home_nav ul > li {
-    width: 100px;
+    padding: 10px 25px;
     text-align: center;
     cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
 }
+.home_nav li.active {
+    border-bottom: 2px solid #414141; /* 활성화된 탭 강조 */
+    font-weight: bold;
+  }
 
 .home_wrap{
     width:1000px;
-    height:500px;
-    background-color: #ccc;
     margin:0 auto;
+    margin-top:20px;
 }
+.home_info{
+    width:210px;
+    height:400px;
+    float:left;
+}
+.home_info img{
+    width:210px;
+    height:210px;
+}
+.home_info h2{
+    margin-top:20px;
+    margin-bottom:10px;
+}
+.home_info > .info_member{
+    display: inline-block;
+    margin-right:10px;
+    color:#555;
+    font-size:0.9em;
+}
+.home_info > .info_member:last-child{
+    margin-right:0px;
+}
+.info_intro{
+    margin-top: 10px;
+    color:#555;
+    font-size:0.9em;
+    margin-bottom:10px;
+}
+.group_access{
+    width:210px;
+    height:40px;
+    background-color: #444a61;
+    color: #fff;
+    text-align: center;
+    line-height: 40px;
+    cursor:pointer;
+}
+.info_right{
+    margin-top: 10px;
+    color:#555;
+    font-size:0.9em;
+}
+.home_board{
+    width:550px;
+    margin-left:240px;    
+    position: relative;
+}
+.home_search{
+    margin-bottom: 15px;
+}
+.home_search input{
+    width:550px;
+    height:40px;
+    border: none;
+    outline: none;
+    padding:5px 10px;
+    font-family: "Pretendard Variable";
+    color:#555;
+    font-size:0.9em;
+    box-sizing: border-box;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); 
+}
+.home_search svg{
+    position: absolute;
+    right:15px;
+    top:12px;
+    color:#555;
+    cursor: pointer;
+}
+.board_write{
+    width:550px;
+    text-align: center;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    background-color: #444a61;
+    color: #fff;
+    margin-bottom:20px;
+}
+.board_list{
+    width:550px;
+    height:auto;
+    background-color: #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    margin-bottom:20px;
+}
+.author_info{
+   padding:20px;
+   position: relative;
+}
+.author_info img{
+    width:35px;
+    height:35px;
+    border-radius: 50%;
+    float:left;
+    margin-right:10px;
+}
+.author_nick{
+    font-size:0.9em;
+    margin-bottom: 5px;
+}
+.author_date{
+    font-size:0.8em;
+    color:#555;
+    float:left;
+}
+.author_info svg{
+    float:right;
+    position: absolute;
+    top:30px;
+    right:20px;
+    cursor: pointer;
+    color:#555;
+}
+.author_board{
+    padding: 0 20px 20px;
+    margin-top:10px;
+}
+.author_board img{
+    margin-top:10px;
+    width:510px;
+}
+.board_comment{
+    border-top: 1px solid #ccc;
+    padding: 15px 0;
+}
+.comment_view {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+  
+.comment_view img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-left:10px;
+}
+  
+.comment_view input {
+  flex: 1; 
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  font-family: "Pretendard Variable";
+  color:#555;
+  font-size:0.9em;
+}
+  
+.comment_button {
+  width:65px;
+  height: 35px;
+  line-height: 35px;
+  background-color: #444a61;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  margin-right:10px;
+  border-radius: 15px;
+  font-size:0.9em;
+}
+.moim_board{
+    width:550px;
+    margin-left:240px;
+    border-radius: 30px;
+}
+.moim_board h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.schedule_list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.schedule_card {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.schedule_card h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+}
+
+.schedule_card p {
+  margin: 5px 0;
+}
+
+.schedule_form {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.schedule_form h3 {
+  margin-bottom: 15px;
+}
+
+.schedule_form input,
+.schedule_form textarea,
+.schedule_form button {
+  display: block;
+  width: 95%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.schedule_form textarea {
+  resize: none;
+}
+
+.schedule_form button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.schedule_form button:hover {
+  background-color: #0056b3;
+}
+.member_board{
+    width:550px;
+    background-color: #fff;
+    margin-left:240px;
+    position:relative;
+    min-height:700px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.member_search{
+    padding:20px;
+}
+.member_search input{
+    width:510px;
+    padding:10px;
+    box-sizing: border-box;
+    outline: none;
+    color:#555;
+    font-size:0.9em;
+    border: 1px solid #ccc;
+    margin-top:20px;
+    font-family: "Pretendard Variable";
+}
+.member_search svg{
+    position: absolute;
+    top:75px;
+    right:30px;
+    cursor: pointer;
+    color:#555;
+}
+.member_list_wrap{
+    border-top:1px solid #ccc;
+    height:auto;
+}
+.member_list{
+    padding:20px;
+}
+.member_info{
+   margin-top:20px;
+   border-bottom: 1px solid #ccc;
+   padding-bottom:10px;
+ }
+ .member_info img{
+     width:50px;
+     height:50px;
+     border-radius: 50%;
+     float:left;     
+     margin-right:20px;
+ }
+ .member_nick{
+     margin-bottom: 5px;
+     line-height:50px;
+ }
+ .member_nick span{
+    padding:2px 10px;
+    background-color: #007bff;
+    font-size: 0.8em;
+    color:#fff;
+    border-radius: 12px;
+ }
