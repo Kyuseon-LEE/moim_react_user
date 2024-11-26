@@ -4,13 +4,13 @@
     background-color: rgba(0, 0, 0, 0.03);
     margin-top: 0;
 }
-input[type="button"] {
+.article4 input[type="button"] {
     padding: 3px 8px;
     background-color: #fff;
     border: 1px solid #ddd;
     cursor: pointer;
 }
-input[type="text"] {
+.article4 input[type="text"] {
     padding: 10px;
     border-radius: 4px;
     border: 1px solid #ddd;
