@@ -3,11 +3,43 @@ import { useParams } from "react-router-dom";
 import "../../css/group/group_home.css";
 
 const GroupHome = () => {
-  const { g_no } = useParams(); // URL에서 g_no 가져오기
-  const [groupData, setGroupData] = useState(null); // 모임 데이터를 상태로 관리
-  const [loading, setLoading] = useState(true); // 로딩 상태
-  const [activeTab, setActiveTab] = useState("게시글"); // 기본 탭은 '게시글'
-  const [error, setError] = useState(null); // 오류 상태
+  const { g_no } = useParams();
+  const [isMember, setIsMember] = useState(false);
+  const [groupData, setGroupData] = useState(null); 
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("게시글"); 
+  const [error, setError] = useState(null); 
+  const [isWritingPost, setIsWritingPost] = useState(false);
+  const [postContent, setPostContent] = useState(""); // 게시글 내용
+  const [imagePreview, setImagePreview] = useState(null); // 이미지 미리보기
+  const [uploadedFileName, setUploadedFileName] = useState(""); // 업로드된 이미지 파일 이름
+  const [posts, setPosts] = useState([]);
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [gMRole, setGmRole] = useState(null); // g_m_role 상태
+  const [members, setMembers] = useState([]); // 멤버 리스트 
+
+  // 게시글 날짜 포맷
+  function formatRelativeDate(dateString) {
+    const postDate = new Date(dateString);
+    const now = new Date();
+    const diffMilliseconds = now - postDate;
+    const diffMinutes = Math.floor(diffMilliseconds / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    
+    if (diffMinutes <= 0) {
+      return "방금";
+    } else if (diffMinutes < 60) {
+      return `${diffMinutes}분 전`; // 1분 ~ 59분 전
+    } else if (diffHours < 24) {
+      return `${diffHours}시간 전`; // 1시간 ~ 23시간 전
+    } else {
+      // 날짜 포맷: YYYY.MM.DD
+      const year = postDate.getFullYear();
+      const month = String(postDate.getMonth() + 1).padStart(2, "0");
+      const day = String(postDate.getDate()).padStart(2, "0");
+      return `${year}.${month}.${day}`;
+    }
+  }
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -16,7 +48,7 @@ const GroupHome = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}. ${month}. ${day}`;
   }
-
+  // (tbl_group) 그룹 정보 가져오기
   useEffect(() => {
     const fetchGroupData = async () => {
       try {
@@ -42,6 +74,210 @@ const GroupHome = () => {
     fetchGroupData();
   }, [g_no]);
 
+  // 그룹에 가입된 유저인지 확인하기
+  useEffect(() => {
+    const fetchMembershipStatus = async () => {
+      try {
+        const mNo = localStorage.getItem("m_no"); // 로컬스토리지에서 m_no 가져오기
+        if (!mNo) {
+          throw new Error("로그인이 필요합니다.");
+        }
+
+        // 멤버 여부 확인 API 호출
+        const response = await fetch(`http://localhost:5000/group/${g_no}/is-member/${mNo}`);
+        if (!response.ok) {
+          throw new Error("멤버 여부 확인에 실패했습니다.");
+        }
+
+        const { isMember } = await response.json();
+        setIsMember(isMember); // 멤버 여부 상태 업데이트
+      } catch (error) {
+        console.error("Error:", error.message);
+        setError(error.message); // 에러 메시지 저장
+      } finally {
+        setLoading(false); // 로딩 상태 종료
+      }
+    };
+
+    fetchMembershipStatus();
+  }, [g_no]);
+
+  // 그룹에 작성된 포스트 내용 목록 가져오기
+  useEffect(() => {
+    const fetchPosts = async () => {
+      
+      try {
+        const response = await fetch(`http://localhost:5000/group/${g_no}/posts`);
+        if (!response.ok) {
+          throw new Error("게시글 데이터를 가져오지 못했습니다.");
+        }
+        const data = await response.json();
+        setPosts(data); // 정렬된 데이터 사용
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, [g_no]);
+
+   // 유저 권한(g_m_role) 값 가져오기
+   useEffect(() => {
+    const fetchGroupRole = async () => {
+      const mNo = localStorage.getItem("m_no"); // 로컬스토리지에서 m_no 가져오기
+        if (!mNo) {
+          throw new Error("로그인이 필요합니다.");
+        }
+      try {
+        const response = await fetch(`http://localhost:5000/group/${g_no}/member/${mNo}/role`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch member role");
+        }
+        const data = await response.json();
+        if (data.success) {
+          setGmRole(data.g_m_role);
+        } else {
+          setError(data.message);
+        }
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGroupRole();
+  }, [g_no]);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/group/${g_no}/members`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch members");
+        }
+        const data = await response.json();
+        setMembers(data); // 멤버 데이터 상태 업데이트
+      } catch (error) {
+        console.error("Error fetching members:", error.message);
+      }
+    };
+
+    fetchMembers();
+  }, [g_no]);
+
+  const handleWritePost = () => {
+    setIsWritingPost(true); // 게시글 작성 창 열기
+  };
+
+  const closeWritePost = () => {
+    setIsWritingPost(false); // 게시글 작성 창 닫기
+    setImagePreview(null); // 이미지 미리보기 초기화
+    setUploadedFileName(""); // 업로드된 파일 초기화
+    setPostContent(""); // 게시글 내용 초기화
+  };
+
+  // 이미지 업로드
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+      alert("파일을 선택해주세요.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    fetch("http://localhost:5000/group/upload", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`서버 응답 오류: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.success && data.fileName) {
+          const imageUrl = `http://localhost:5000/uploads/${data.fileName}`;
+          setUploadedFileName(data.fileName); // 파일 이름 저장
+        } else {
+          alert("이미지 업로드 실패: 서버 응답이 올바르지 않습니다.");
+        }
+      })
+      .catch((error) => {
+        console.error("이미지 업로드 오류:", error.message);
+        alert(`이미지 업로드 실패: ${error.message}`);
+      });
+  };
+
+  // 게시글 작성
+  const handlePostSubmit = async () => {
+    if (!postContent.trim()) {
+      alert("게시글 내용을 입력해주세요."); // 경고창
+      return;
+    }
+    
+    const mNo = localStorage.getItem("m_no");
+    const postData = {
+      g_no,
+      m_no: mNo,
+      p_text: postContent,
+      p_img: uploadedFileName,
+    };
+  
+    try {
+      const response = await fetch("http://localhost:5000/group/post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }, // JSON 형식으로 명시
+        body: JSON.stringify(postData), // 데이터를 JSON 문자열로 변환
+      });
+  
+      if (!response.ok) throw new Error("게시글 작성 실패");
+      alert("게시글이 작성되었습니다.");
+      window.location.reload();
+    } catch (error) {
+      alert(`게시글 작성 실패: ${error.message}`);
+    }
+  };
+
+   // 모임 가입하기 버튼 클릭
+   const handleJoinClick = () => {
+    setIsJoinModalOpen(true);
+  };
+
+  // 모임 가입 신청 모달 닫기
+  const closeJoinModal = () => {
+    setIsJoinModalOpen(false);
+  };
+
+  // 가입 신청 완료
+  const handleJoinSubmit = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/group/${g_no}/join`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          m_no: localStorage.getItem("m_no"), // 사용자 번호
+          message: "가입 신청 메시지", // 메시지
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("가입 신청에 실패했습니다.");
+      }
+  
+      alert("가입 신청이 완료되었습니다.");
+      window.location.reload();
+    } catch (error) {
+      console.error("가입 신청 오류:", error.message);
+      alert("가입 신청 중 오류가 발생했습니다.");
+    }
+  };
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -53,6 +289,7 @@ const GroupHome = () => {
   if (!groupData) {
     return <p>그룹 정보를 찾을 수 없습니다.</p>;
   }
+  
 
   // 각 탭에 따라 표시할 내용을 정의
   const renderContent = () => {
@@ -68,10 +305,19 @@ const GroupHome = () => {
                 </svg>
             </div>
             <div className="board_list">
+            {posts.map((post) => (
+            <div key={post.p_no} className="post_item">
               <div className="author_info">
-                <img src={process.env.PUBLIC_URL + "/img/exam.png"} alt="Profile" />
-                <p className="author_nick">강아지</p>
-                <p className="author_date">2024년 11월 26일 오전 11:26</p>
+              <img
+                src={`http://localhost:5000/uploads/${post.m_no}.png`}
+                alt="Profile"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`; // 기본 이미지 경로
+                }}
+              />
+                <p className="author_nick">{post.m_nickname}</p>
+                <p className="author_date">{formatRelativeDate(post.p_reg_date)}</p>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <circle cx="12" cy="5" r="1.5"></circle>
                   <circle cx="12" cy="12" r="1.5"></circle>
@@ -79,16 +325,31 @@ const GroupHome = () => {
                 </svg>
               </div>
               <div className="author_board">
-                <p>강아지냐옹</p>
-                <img src={process.env.PUBLIC_URL + "/img/exam.png"} alt="Content" />
+                <p>{post.p_text}</p>
+                {post.p_img && (
+                  <img
+                    src={`http://localhost:5000/uploads/${post.p_img}`}
+                    alt="Content"
+                  />
+                )}
+                
               </div>
               <div className="board_comment">
                 <div className="comment_view">
-                  <img src={process.env.PUBLIC_URL + "/img/exam.png"} alt="User" />
+                <img
+                    src={`http://localhost:5000/uploads/${post.m_no}.png`}
+                    alt="Profile"
+                    onError={(e) => {
+                      e.target.onerror = null; // 무한 루프 방지
+                      e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`; // 기본 이미지 경로
+                    }}
+                  />
                   <input type="text" placeholder="댓글을 남겨주세요" />
                   <div className="comment_button">작성하기</div>
                 </div>
               </div>
+            </div>
+          ))}
             </div>
           </div>
         );
@@ -96,7 +357,7 @@ const GroupHome = () => {
         return (
           <div className="moim_board">
             <h2>정모 일정 관리</h2>
-
+          
             <div class="schedule_list">
               <div class="schedule_card">
                 <h3>정모 #1</h3>
@@ -124,33 +385,54 @@ const GroupHome = () => {
             <p>채팅방 내용이 여기에 표시됩니다.</p>
           </div>
         );
-      case "멤버":
-        return (
-          <div className="member_board">            
-            <div className="member_search">
-            <h3>멤버 {groupData.memberCount}</h3>
-              <input type="text" placeholder="멤버검색" />
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </div>
-            <div className="member_list_wrap">
-              <div className="member_list">
-                <h4>멤버</h4>
-                <div className="member_info">
-                  <img src={process.env.PUBLIC_URL + "/img/exam.png"} alt="Profile" />
-                  <p className="member_nick">강아지 <span>리더</span></p>
+        case "멤버":
+          return (
+            <div className="member_board">
+              <div className="member_search">
+                <h3>멤버 {groupData.memberCount}</h3>
+                <input type="text" placeholder="멤버검색" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </div>
+              <div className="member_list_wrap">
+                <div className="member_list">
+                  <h4>멤버</h4>
+                  {loading ? (
+                    <p>로딩 중...</p>
+                  ) : members.length > 0 ? (
+                    members.map((member) => (
+                      <div className="member_info" key={member.m_no || member.g_m_no}>
+                        <img
+                          src={`http://localhost:5000/uploads/${member.m_profile_img}`}
+                          alt="Profile"
+                          onError={(e) => {
+                            e.target.onerror = null; // 무한 루프 방지
+                            e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`; // 기본 이미지 경로
+                          }}
+                        />
+                        <p className="member_nick">{member.m_nickname}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p>멤버가 없습니다.</p>
+                  )}
                 </div>
-                <div className="member_info">
-                  <img src={process.env.PUBLIC_URL + "/img/exam.png"} alt="Profile" />
-                  <p className="member_nick">강아지 <span>간부</span></p>
-                </div>
-                
               </div>
             </div>
-          </div>
-        );
+          );
+        
       default:
         return null;
     }
@@ -179,8 +461,63 @@ const GroupHome = () => {
           <p className="info_member">리더 {groupData.g_master_nickname}</p>
           <p className="info_intro">개설일 {formatDate(groupData.g_reg_date)}</p>
           <p className="info_intro">{groupData.g_info}</p>
-          {/* <div className="group_access">모임 가입하기</div> */}
-          <div className="group_access">게시글 작성</div>
+          <div>
+          {isMember ? (
+          gMRole === 0 ? (
+            <div className="group_access">가입 대기중</div>
+          ) : (
+            <div>
+              <div className="group_access" onClick={handleWritePost}>
+                게시글 작성
+              </div>
+
+              {isWritingPost && (
+                <div className="post_modal">
+                  <div className="post_content">
+                    <h2>게시글 작성</h2>
+                    <input
+                      type="text"
+                      placeholder="게시글 내용을 입력하세요"
+                      value={postContent}
+                      onChange={(e) => setPostContent(e.target.value)}
+                    />
+                    <input type="file" onChange={handleImageUpload} />
+                    {imagePreview && <img src={imagePreview} alt="Preview" />}
+                    <div className="post_buttons">
+                      <button onClick={handlePostSubmit}>작성</button>
+                      <button onClick={closeWritePost}>취소</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        ) : (
+          // 회원이 아닌 경우
+          <div className="group_access" onClick={handleJoinClick}>
+            모임 가입하기
+          </div>
+        )}
+
+
+      {/* 가입 신청 모달 */}
+      {isJoinModalOpen && (
+        <div className="modal">
+          <div className="modal_content">
+            <h3>가입 신청</h3>
+            <textarea
+              placeholder="가입 신청 메시지를 입력하세요"
+              rows="4"
+              style={{ width: "100%" }}
+            ></textarea>
+            <div className="modal_buttons">
+              <button onClick={handleJoinSubmit}>신청</button>
+              <button onClick={closeJoinModal}>닫기</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
           <p className="info_right">
             {groupData.g_public === 1
               ? "모임이 공개 상태입니다. 누구나 모임을 검색하고 소개를 볼 수 있습니다."

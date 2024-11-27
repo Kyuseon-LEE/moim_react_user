@@ -120,20 +120,23 @@ const Article = () => {
                   <p>만들기</p>
                 </li>
               </a>
-              {groups.map((group) => (
-                <li key={group.g_no} onClick={() => handleGroupClick(group.g_no)}>
-                  <a>
-                  <img
-                      src={`http://localhost:5000/uploads/${group.g_img_name}`}
-                      alt={group.g_name}
-                    />
-                  <div className="info">
-                    <p>{group.g_name}</p>
-                    <p>{group.memberCount}명</p>
-                  </div>
-                  </a>
-                </li>
-              ))}
+              {groups
+                .filter((group) => group.g_m_role !== 0) // g_m_role이 0이 아닌 그룹만 포함
+                .map((group) => (
+                  <li key={group.g_no} onClick={() => handleGroupClick(group.g_no)}>
+                    <a>
+                      <img
+                        src={`http://localhost:5000/uploads/${group.g_img_name}`}
+                        alt={group.g_name}
+                      />
+                      <div className="info">
+                        <p>{group.g_name}</p>
+                        <p>{group.memberCount}명</p>
+                      </div>
+                    </a>
+                  </li>
+                ))}
+
             </ul>
         </div>
       </div>
