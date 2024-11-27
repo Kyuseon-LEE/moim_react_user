@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import instance from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
 import '../../css/member/signup.css';
+import SignupSuccess from "./SignupSuccess";
+import axios from "axios";
 
 const SignUp = () => {
     const navigate = useNavigate();
@@ -147,14 +149,17 @@ const SignUp = () => {
         formData.append('m_gender', m_gender);
         formData.append('m_age', m_age);
         formData.append('m_address', fullAddress);
-
-        const imageTosend = profileImage ? profileImage : "/img/profile_default.png";
-        formData.append("m_profile_img", imageTosend);
-
-        instance.post('/member/signup_confirm', formData)
+        if (profileImage) {
+            formData.append("m_profile_img", profileImage);
+        }
+        
+        axios.post('http://localhost:5000/member/signup_confirm', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            withCredentials: true,  
+        })
         .then(response => {
             console.log("[회원가입 성공]", response.data);
-            // navigate('/signup_success');
+            navigate("/signup_success"); // 성공 후 페이지 이동
         })
         .catch(err => {
             if (err.response && err.response.data) {
@@ -190,7 +195,7 @@ const SignUp = () => {
                                         <input
                                             type="file"
                                             className="upload"
-                                            name="upload"
+                                            name="m_profile_img"
                                             accept="image/*"
                                             id="fileInput"
                                             style={{ display: 'none' }}
@@ -361,7 +366,7 @@ const SignUp = () => {
                             </tbody>
                         </table>
                         <div>
-                            <button type="submit" onClick={signupForm}>회원가입</button>
+                            <button type="submit" onClick={handleSubmit}>회원가입</button>
                         </div>
                     </form>
                 </div>

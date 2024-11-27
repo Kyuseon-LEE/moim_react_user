@@ -43,7 +43,12 @@
                 navigate("/");
             })
             .catch(err => {
-                console.log("[로그인 실패]", err);
+                if(err.response && err.response.status === 401) {
+                    alert(err.response.data.message);
+                } else {
+                    console.error("[로그인 실패]", err);
+                    alert("아이디 또는 비밀번호가 일치하지 않습니다.");
+                }
             });
         }
 
