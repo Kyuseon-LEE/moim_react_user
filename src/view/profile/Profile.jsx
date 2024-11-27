@@ -14,6 +14,8 @@ const Profile = () => {
     const [newGender, setNewGender] = useState(""); // 새로운 성별
     const [newPhone, setNewPhone] = useState(""); // 새로운 휴대폰 번호
     const [newAddress, setNewAddress] = useState(""); // 새로운 주소
+    const [postcode, setPostcode] = useState(""); // 새로운 우편번호
+    const [detailAddress, setDetailAddress] = useState(""); // 상세 주소
 
 
     // 사용자 정보를 가져오는 함수
@@ -32,7 +34,7 @@ const Profile = () => {
             });
     }, []);
 
-    // 닉네임 입력 값 변경 핸들러
+    //입력 값 변경 핸들러
     const handleNicknameChange = (e) => {
         setNewNickname(e.target.value);
     };
@@ -43,6 +45,10 @@ const Profile = () => {
     const handlePhoneChange = (e) => {
         setNewPhone(e.target.value);
     }
+    const handleAddressChange = (e) => {
+        setDetailAddress(e.target.value);
+    };
+    
 
     // 수정 버튼 클릭 시 편집 모드 전환
     const handleEditClick = (field) => {
@@ -71,13 +77,19 @@ const Profile = () => {
         } else if (field === 'address') {
             setAddressEdit(false);
             setNewAddress(memberInfo.m_address);
+            setPostcode(""); // 우편번호 초기화
+            setDetailAddress(""); // 상세 주소 초기화
         }
     };
 
+    const formData = new FormData();
+    formData.append("m_nickname", newNickname);
+    formData.append("m_gender", newGender);
+    formData.append("m_phone", newPhone);
+    formData.append("m_address", `${postcode} ${newAddress} ${detailAddress}`);
+
     const handleSaveClick = () => {
-        instance.post('/member/updateMemberInfo', { 
-            newNickname, newGender, newPhone, newAddress 
-        })
+        instance.post('/member/updateMemberInfo', formData)
             .then(response => {
                 console.log("정보가 업데이트되었습니다.", response.data);
                 setMemberInfo({
@@ -85,7 +97,7 @@ const Profile = () => {
                     m_nickname: newNickname,  // 변경된 닉네임 반영
                     m_gender: newGender,  // 변경된 성별 반영
                     m_phone: newPhone,    // 변경된 휴대폰 번호 반영
-                    m_address: newAddress,  // 변경된 주소 반영
+                    m_address: `${postcode} ${newAddress} ${detailAddress}`,  // 변경된 주소 반영
                 });
                 setNicknameEdit(false);  
                 setGenderEdit(false);  
@@ -115,8 +127,8 @@ const Profile = () => {
                     }
                 }
     
-                // setPostcode(data.zonecode);
-                // setAddress(addr);
+                setNewAddress(data.zonecode);
+                setNewAddress(addr);
                 },
             }).open();
         };
@@ -281,18 +293,67 @@ const Profile = () => {
                                         )}
                                     </div>
                                     <div className="address">
-                                        <span>주소지</span>
-                                        <span id="address">{memberInfo.m_address}</span>
-                                        <input type="button" value="변경" />
-                                    </div>
-                                    <div className="status">
-                                        <span>멤버쉽</span>
-                                        <span id="status">{memberInfo.m_status === 1 ? "일반회원" : "프리미엄 회원"}</span>
-                                        <input type="button" value="구매" />
+                                        <span>주소</span>
+                                        {addressEdit ? (
+                                            <div className="edit">
+                                                <div>
+                                                    <input
+                                                        type="text"
+                                                        id="postcode"
+                                                        name="postcode"
+                                                        value={postcode}
+                                                        placeholder="우편번호"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <input
+                                                        type="text"
+                                                        name="address"
+                                                        value={newAddress}
+                                                        placeholder="주소"
+                                                        readOnly
+                                                    />
+                                                </div>
+                                                <button onClick={openPostcodePopup}>
+                                                        우편번호 찾기
+                                                </button>
+                                                <div>
+                                                    <input
+                                                        type="text"
+                                                        name="addressDetail"
+                                                        value={detailAddress}
+                                                        onChange={handleAddressChange}
+                                                        placeholder="상세 주소"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <input
+                                                        type="button"
+                                                        value="확인"
+                                                        onClick={handleSaveClick}
+                                                    />
+                                                    <input
+                                                        type="button"
+                                                        value="취소"
+                                                        onClick={() => handleCancelClick('address')}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <span className="address1">{newAddress}</span>
+                                                {/* <span className="address1">{detailAddress}</span> */}
+                                                <input
+                                                    type="button"
+                                                    value="변경"
+                                                    onClick={() => handleEditClick('address')}
+                                                />
+                                            </>
+                                        )}
                                     </div>
                                 </>
                             ) : (
-                                <div>로딩 중...</div>
+                                "로딩 중..."
                             )}
                         </div>
                     </div>
