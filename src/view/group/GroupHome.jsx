@@ -127,29 +127,38 @@ const GroupHome = () => {
    useEffect(() => {
     const fetchGroupRole = async () => {
       const mNo = localStorage.getItem("m_no"); // 로컬스토리지에서 m_no 가져오기
-        if (!mNo) {
-          throw new Error("로그인이 필요합니다.");
-        }
+      if (!mNo) {
+        console.warn("로그인이 필요합니다.");
+        setGmRole(null); // 로그인 정보가 없으면 기본값 설정
+        return;
+      }
+  
       try {
         const response = await fetch(`http://localhost:5000/group/${g_no}/member/${mNo}/role`);
         if (!response.ok) {
-          throw new Error("Failed to fetch member role");
+          console.warn("Member role 정보를 가져오지 못했습니다.");
+          setGmRole(null); // 실패 시 null로 설정
+          return;
         }
+  
         const data = await response.json();
         if (data.success) {
-          setGmRole(data.g_m_role);
+          setGmRole(data.g_m_role); // g_m_role 값 설정
         } else {
-          setError(data.message);
+          console.warn(data.message);
+          setGmRole(null); // 실패 시 null로 설정
         }
       } catch (error) {
-        setError(error.message);
+        console.error("Error fetching member role:", error.message);
+        setGmRole(null); // 오류 발생 시 null로 설정
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchGroupRole();
   }, [g_no]);
+  
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -159,7 +168,8 @@ const GroupHome = () => {
           throw new Error("Failed to fetch members");
         }
         const data = await response.json();
-        setMembers(data); // 멤버 데이터 상태 업데이트
+        setMembers(Array.isArray(data.members) ? data.members : []);
+    // 멤버 데이터 상태 업데이트
       } catch (error) {
         console.error("Error fetching members:", error.message);
       }
@@ -278,6 +288,19 @@ const GroupHome = () => {
     }
   };
 
+  const getMemberGrade = (role) => {
+    switch (role) {
+      case 1:
+        return "일반 회원"; // g_m_role === 1
+      case 2:
+        return "간부 회원"; // g_m_role === 2
+      case 3:
+        return "모임장"; // g_m_role === 3
+      default:
+        return "알 수 없음"; // 기타 예외 상황
+    }
+  };
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -309,11 +332,11 @@ const GroupHome = () => {
             <div key={post.p_no} className="post_item">
               <div className="author_info">
               <img
-                src={`http://localhost:5000/uploads/${post.m_no}.png`}
+                src={post.m_profile_img || `${process.env.PUBLIC_URL}/img/profile_default.png`} 
                 alt="Profile"
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`; // 기본 이미지 경로
+                  e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`;
                 }}
               />
                 <p className="author_nick">{post.m_nickname}</p>
@@ -334,6 +357,13 @@ const GroupHome = () => {
                 )}
                 
               </div>
+              <div className="comment_list">
+                <h4>댓글 1</h4>
+                <img src={process.env.PUBLIC_URL + '/img/profile_default.png'} alt="Logo" />                
+                <p className="list_author">망망이</p>
+                <p className="list_comment">멍멍멍멍멍멍멍멍이</p>
+                <p className="list_date">2024년 11월 28일</p>
+              </div>
               <div className="board_comment">
                 <div className="comment_view">
                 <img
@@ -347,9 +377,20 @@ const GroupHome = () => {
                   <input type="text" placeholder="댓글을 남겨주세요" />
                   <div className="comment_button">작성하기</div>
                 </div>
-              </div>
+              </div>  
             </div>
           ))}
+              <div className="post_item">
+                <div className="author_info">
+                <img src={process.env.PUBLIC_URL + '/img/logo_mini.png'} alt="Logo" />
+                  <p className="author_nick">moim?</p>
+                  <p className="author_date">{formatRelativeDate(groupData.g_reg_date)}</p>
+                </div>
+                <div className="author_board">
+                  <p>{groupData.g_name}이(가) 생성 되었습니다</p>
+                
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -408,23 +449,41 @@ const GroupHome = () => {
               </div>
               <div className="member_list_wrap">
                 <div className="member_list">
-                  <h4>멤버</h4>
+                  <h4>멤버 목록</h4>
                   {loading ? (
                     <p>로딩 중...</p>
                   ) : members.length > 0 ? (
-                    members.map((member) => (
-                      <div className="member_info" key={member.m_no || member.g_m_no}>
-                        <img
-                          src={`http://localhost:5000/uploads/${member.m_profile_img}`}
-                          alt="Profile"
-                          onError={(e) => {
-                            e.target.onerror = null; // 무한 루프 방지
-                            e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`; // 기본 이미지 경로
-                          }}
-                        />
-                        <p className="member_nick">{member.m_nickname}</p>
-                      </div>
-                    ))
+                    members
+                      .filter((member) => member.g_m_role !== 0)
+                      .map((member) => (
+                        <div className="member_info" key={member.m_no || member.g_m_no}>
+                          <img
+                            src={member.m_profile_img || `${process.env.PUBLIC_URL}/img/profile_default.png`} 
+                            alt="Profile"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`;
+                            }}
+                          />
+                          <p className="member_nick">{member.m_nickname}
+                          <span
+                          className={`member_grade ${
+                            member.g_m_role === 1
+                              ? "role-normal"
+                              : member.g_m_role === 2
+                              ? "role-manager"
+                              : member.g_m_role === 3
+                              ? "role-leader"
+                              : "role-unknown"
+                          }`}
+                        >
+                          {getMemberGrade(member.g_m_role)}
+                        </span>
+
+                          </p>
+                          
+                        </div>
+                      ))
                   ) : (
                     <p>멤버가 없습니다.</p>
                   )}
@@ -432,6 +491,7 @@ const GroupHome = () => {
               </div>
             </div>
           );
+
         
       default:
         return null;
@@ -503,13 +563,11 @@ const GroupHome = () => {
       {/* 가입 신청 모달 */}
       {isJoinModalOpen && (
         <div className="modal">
-          <div className="modal_content">
+          <div className="modal_contents">
             <h3>가입 신청</h3>
-            <textarea
+            <input type="text"
               placeholder="가입 신청 메시지를 입력하세요"
-              rows="4"
-              style={{ width: "100%" }}
-            ></textarea>
+            />
             <div className="modal_buttons">
               <button onClick={handleJoinSubmit}>신청</button>
               <button onClick={closeJoinModal}>닫기</button>
