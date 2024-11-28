@@ -34,15 +34,15 @@ const SignupSuccess = () => {
     const handleSubmit = () => {
         console.log("넘겨주는 카테고리", selectedCategories);
 
-        instance.post("/member/insertCategories")
+        instance.post("/member/insertCategories", { m_category: selectedCategories })
         .then(response => {
             console.log("성공적으로 axios 요청이 응답했습니다.",response.data);
+            navigate("/");
         })
         .catch(err => {
             console.log("axios 요청에 실패 했습니다.", err);
         })
     } 
-
 
 
     return(

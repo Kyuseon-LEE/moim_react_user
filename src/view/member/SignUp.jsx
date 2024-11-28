@@ -151,15 +151,14 @@ const SignUp = () => {
         formData.append('m_address', fullAddress);
         if (profileImage) {
             formData.append("m_profile_img", profileImage);
-        }
-        
+        } 
         axios.post('http://localhost:5000/member/signup_confirm', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
             withCredentials: true,  
         })
         .then(response => {
             console.log("[회원가입 성공]", response.data);
-            navigate("/signup_success"); // 성공 후 페이지 이동
+            navigate("/login"); 
         })
         .catch(err => {
             if (err.response && err.response.data) {

@@ -41,6 +41,9 @@
                 setJwt(accessToken);
                 setIsLoggedIn(true);
                 navigate("/");
+                if(memberInfo.m_category === null) {
+                    navigate("/signup_success")
+                }
             })
             .catch(err => {
                 if(err.response && err.response.status === 401) {

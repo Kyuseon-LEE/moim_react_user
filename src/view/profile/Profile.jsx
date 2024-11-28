@@ -10,12 +10,14 @@ const Profile = () => {
     const [genderEdit, setGenderEdit] = useState(false);  // 성별 편집 모드 상태
     const [phoneEdit, setPhoneEdit] = useState(false);  // 휴대폰 번호 편집 모드 상태
     const [addressEdit, setAddressEdit] = useState(false);  // 주소 편집 모드 상태
+    const [profileImgEdit, setProfileImgEdit] = useState(false); //프로필 이미지 상태값
     const [newNickname, setNewNickname] = useState("");  // 새로운 닉네임 값
     const [newGender, setNewGender] = useState(""); // 새로운 성별
     const [newPhone, setNewPhone] = useState(""); // 새로운 휴대폰 번호
     const [newAddress, setNewAddress] = useState(""); // 새로운 주소
     const [postcode, setPostcode] = useState(""); // 새로운 우편번호
     const [detailAddress, setDetailAddress] = useState(""); // 상세 주소
+    const [newProfileImg, setNewProfileImg] = useState(""); //프로필 이미지
 
 
     // 사용자 정보를 가져오는 함수
@@ -28,6 +30,7 @@ const Profile = () => {
                 setNewGender(response.data.memberDtos.m_gender);
                 setNewPhone(response.data.memberDtos.m_phone); 
                 setNewAddress(response.data.memberDtos.m_address);
+                setNewProfileImg(response.data.m_profile_img);
             })
             .catch(err => {
                 console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
@@ -48,6 +51,9 @@ const Profile = () => {
     const handleAddressChange = (e) => {
         setDetailAddress(e.target.value);
     };
+    const handleProfileImgChange =(e) => {
+        setNewProfileImg(e.target.value);
+    };
     
 
     // 수정 버튼 클릭 시 편집 모드 전환
@@ -60,6 +66,8 @@ const Profile = () => {
             setPhoneEdit(true);  // 휴대폰 편집 모드 활성화
         } else if (field === 'address') {
             setAddressEdit(true);  // 주소 편집 모드 활성화
+        } else if(field === 'm_profile_img') {
+            setProfileImgEdit(true);
         }
     };
 
@@ -110,7 +118,6 @@ const Profile = () => {
     };
 
     //새로운 주소 Daum으로 받기
-    
         //Daum address
         const openPostcodePopup = () => {
             new window.daum.Postcode({
