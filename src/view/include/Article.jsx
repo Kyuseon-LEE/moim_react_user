@@ -126,7 +126,7 @@ const Article = () => {
                   <li key={group.g_no} onClick={() => handleGroupClick(group.g_no)}>
                     <a>
                       <img
-                        src={`http://localhost:5000/uploads/${group.g_img_name}`}
+                        src={group.g_img_name}
                         alt={group.g_name}
                       />
                       <div className="info">

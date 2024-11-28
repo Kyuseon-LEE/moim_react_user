@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import '../../css/include.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 
 const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation(); 
 
   // 페이지 로드 시 localStorage에서 jwt 가져오기
   useEffect(() => {
@@ -27,6 +28,7 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
         setJwt('');
         setIsLoggedIn(false);
         alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+        window.location.href = "/";
       } else {
         setJwt(storedJwt);
         setIsLoggedIn(true);
@@ -34,6 +36,10 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
     }
   }, [setJwt, setIsLoggedIn, isLoggedIn, navigate]);
 
+  useEffect(() => {
+    setMenuOpen(false); // 경로가 변경되면 메뉴 닫기
+  }, [location]);
+  
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -44,7 +50,7 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
     localStorage.removeItem("m_no");
     setJwt('');  // jwt 상태 초기화
     setIsLoggedIn(false);  // 로그인 상태 변경
-    navigate('/');  // 홈으로 이동
+    window.location.href = "/";
     alert("로그아웃 되었습니다.");
   };
 

@@ -68,9 +68,17 @@ const GroupCreate = () => {
       return;
     }
   
+    // 이전 이미지 URL 해제
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+  
+    // Blob URL 생성 및 미리보기 상태 업데이트
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+  
     const formData = new FormData();
     formData.append("image", file);
-    formData.append("m_id", localStorage.getItem("m_id")); // 사용자 ID 추가
   
     fetch("http://localhost:5000/group/upload", {
       method: "POST",
@@ -78,27 +86,34 @@ const GroupCreate = () => {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error(`Server responded with status ${response.status}`);
+          throw new Error(`서버 응답 오류: ${response.status}`);
         }
         return response.json();
       })
       .then((data) => {
-        console.log("Uploaded File Info:", data); // 서버 응답 데이터 확인
-        if (data.success && data.fileName) {
-          const imageUrl = `http://localhost:5000/uploads/${data.fileName}`;
-          console.log("Setting imagePreview to:", imageUrl); // URL 확인
-          setImagePreview(imageUrl); // 상태 업데이트
-          setUploadedFileName(data.fileName);
+        if (data.success && data.filePath) {
+          console.log("SFTP 저장 경로:", data.filePath);
+          setUploadedFileName(data.filePath); // SFTP 경로 저장
         } else {
-          alert("파일 업로드 실패: 서버 응답이 올바르지 않습니다.");
+          alert("이미지 업로드 실패: 서버 응답이 올바르지 않습니다.");
         }
       })
       .catch((error) => {
-        console.error("Upload Error:", error.message);
+        console.error("이미지 업로드 오류:", error.message);
         alert(`이미지 업로드 실패: ${error.message}`);
       });
   };
   
+  // 컴포넌트 언마운트 시 Blob URL 해제
+  React.useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+  
+
 
   const handleBoxClick = () => {
     document.getElementById("imageInput").click();
