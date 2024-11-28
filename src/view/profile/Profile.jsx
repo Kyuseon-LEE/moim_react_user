@@ -18,6 +18,8 @@ const Profile = () => {
     const [postcode, setPostcode] = useState(""); // 새로운 우편번호
     const [detailAddress, setDetailAddress] = useState(""); // 상세 주소
     const [newProfileImg, setNewProfileImg] = useState(""); //프로필 이미지
+    const [profileImgFile, setProfileImgFile] = useState(null); //기존 프로파일 이미지
+    const [memberId, setMemberId] = useState(""); //사용자 ID값
 
 
     // 사용자 정보를 가져오는 함수
@@ -31,6 +33,7 @@ const Profile = () => {
                 setNewPhone(response.data.memberDtos.m_phone); 
                 setNewAddress(response.data.memberDtos.m_address);
                 setNewProfileImg(response.data.m_profile_img);
+                setMemberId(response.data.memberDtos.m_id);
             })
             .catch(err => {
                 console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
@@ -51,8 +54,13 @@ const Profile = () => {
     const handleAddressChange = (e) => {
         setDetailAddress(e.target.value);
     };
-    const handleProfileImgChange =(e) => {
-        setNewProfileImg(e.target.value);
+    const handleProfileImgChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProfileImgFile(file);
+            console.log("setProfileImgFile", file);
+            setNewProfileImg(URL.createObjectURL(file));  
+        }
     };
     
 
@@ -66,8 +74,9 @@ const Profile = () => {
             setPhoneEdit(true);  // 휴대폰 편집 모드 활성화
         } else if (field === 'address') {
             setAddressEdit(true);  // 주소 편집 모드 활성화
-        } else if(field === 'm_profile_img') {
-            setProfileImgEdit(true);
+        } else if (field === 'm_profile_img') {
+            setProfileImgEdit(true)
+            document.getElementById("profileImgInput").click();
         }
     };
 
@@ -87,34 +96,52 @@ const Profile = () => {
             setNewAddress(memberInfo.m_address);
             setPostcode(""); // 우편번호 초기화
             setDetailAddress(""); // 상세 주소 초기화
+        } else if(field === 'm_profile_img') {
+            setProfileImgEdit(false);
+            setNewProfileImg(memberInfo.m_profile_img)
         }
     };
 
-    const formData = new FormData();
-    formData.append("m_nickname", newNickname);
-    formData.append("m_gender", newGender);
-    formData.append("m_phone", newPhone);
-    formData.append("m_address", `${postcode} ${newAddress} ${detailAddress}`);
-
     const handleSaveClick = () => {
-        instance.post('/member/updateMemberInfo', formData)
-            .then(response => {
-                console.log("정보가 업데이트되었습니다.", response.data);
-                setMemberInfo({
-                    ...memberInfo,
-                    m_nickname: newNickname,  // 변경된 닉네임 반영
-                    m_gender: newGender,  // 변경된 성별 반영
-                    m_phone: newPhone,    // 변경된 휴대폰 번호 반영
-                    m_address: `${postcode} ${newAddress} ${detailAddress}`,  // 변경된 주소 반영
-                });
-                setNicknameEdit(false);  
-                setGenderEdit(false);  
-                setPhoneEdit(false); 
-                setAddressEdit(false); 
-            })
-            .catch(err => {
-                console.error("정보 업데이트에 실패했습니다.", err);
+        const formData = new FormData();
+        formData.append("m_nickname", newNickname);
+        formData.append("m_gender", newGender);
+        formData.append("m_phone", newPhone);
+        formData.append("m_address", `${postcode} ${newAddress} ${detailAddress}`);
+        formData.append("m_id", memberId); // m_id 추가
+    
+        if (profileImgFile) {
+            formData.append("file", profileImgFile);
+        } else {
+            formData.append("m_profile_img", memberInfo.m_profile_img);
+        }
+        console.log("memberInfo.m_profile_img", memberInfo.m_profile_img);
+        console.log("newProfileImg", newProfileImg);
+    
+        instance.post('/member/updateMemberInfo', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        })
+        .then(response => {
+            console.log("정보가 업데이트되었습니다.", response.data);
+            setMemberInfo({
+                ...memberInfo,
+                m_nickname: newNickname,  // 변경된 닉네임 반영
+                m_gender: newGender,  // 변경된 성별 반영
+                m_phone: newPhone,    // 변경된 휴대폰 번호 반영
+                m_address: `${postcode} ${newAddress} ${detailAddress}`,  // 변경된 주소 반영
+                m_profile_img : newProfileImg || memberInfo.m_profile_img,  // 변경된 이미지 반영 (새 이미지가 없으면 기존 이미지 유지)
             });
+            setNicknameEdit(false);  
+            setGenderEdit(false);  
+            setPhoneEdit(false); 
+            setAddressEdit(false);
+            setProfileImgEdit(false); 
+        })
+        .catch(err => {
+            console.error("정보 업데이트에 실패했습니다.", err);
+        });
     };
 
     //새로운 주소 Daum으로 받기
@@ -161,15 +188,48 @@ const Profile = () => {
                 <div className="my_info">
                     <div className="info_title">내 정보</div>
                     <div className="use_profile">
-                        <div className="text">사용 중인 프로필</div>
-                        <div className="profile_img">
-                            {memberInfo?.m_profile_img ? (
+                    <div className="text">사용 중인 프로필</div>
+                    <div className="profile_img">
+                            {/* 프로필 이미지가 있으면 새로운 이미지, 없으면 기존 이미지 */}
+                            {newProfileImg ? (
+                                <img src={newProfileImg} alt="프로필 이미지" />
+                            ) : memberInfo?.m_profile_img ? (
                                 <img src={memberInfo.m_profile_img} alt="프로필 이미지" />
                             ) : (
                                 "이미지없음"
                             )}
                         </div>
-                    </div>
+                        {/* 프로필 이미지 파일 입력 */}
+                        <input
+                            type="file"
+                            id="profileImgInput"
+                            style={{ display: "none" }}
+                            onChange={handleProfileImgChange}
+                            accept="image/*"
+                        />
+                        {/* 편집 모드에서 확인/취소 버튼 */}
+                        {profileImgEdit ? (
+                            <>
+                                <input
+                                    type="button"
+                                    value="확인"
+                                    name="confirm"
+                                    onClick={handleSaveClick}
+                                />
+                                <input
+                                    type="button"
+                                    value="취소"
+                                    onClick={() => handleCancelClick('m_profile_img')}
+                                />
+                            </>
+                        ) : (
+                            <input
+                                type="button"
+                                value="변경"
+                                onClick={() => handleEditClick('m_profile_img')}
+                            />
+                        )}
+                </div>
                     <div className="private_info">
                         <div className="text">개인정보</div>
                         <div>

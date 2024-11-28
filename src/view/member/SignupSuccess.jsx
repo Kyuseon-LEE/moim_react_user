@@ -28,7 +28,7 @@ const SignupSuccess = () => {
 // handler
     const handleSkip = () => {
         console.log("click!!");
-        navigate("/login");
+        navigate("/");
     }
 
     const handleSubmit = () => {

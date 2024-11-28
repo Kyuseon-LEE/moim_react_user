@@ -90,7 +90,7 @@ const SignUp = () => {
                 oncomplete: (data) => {
                 const addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
     
-                let extraAddr = ''; // 참고 항목
+                let extraAddr = '';
                 if (data.userSelectedType === 'R') {
                     if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
                     extraAddr += data.bname;
@@ -150,7 +150,7 @@ const SignUp = () => {
         formData.append('m_age', m_age);
         formData.append('m_address', fullAddress);
         if (profileImage) {
-            formData.append("m_profile_img", profileImage);
+            formData.append("file", profileImage);
         } 
         axios.post('http://localhost:5000/member/signup_confirm', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
