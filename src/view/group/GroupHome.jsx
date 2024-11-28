@@ -17,6 +17,8 @@ const GroupHome = () => {
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [gMRole, setGmRole] = useState(null); // g_m_role 상태
   const [members, setMembers] = useState([]); // 멤버 리스트 
+  const [commentText, setCommentText] = useState(""); // 댓글 작성
+  const [commentsByPost, setCommentsByPost] = useState({});
 
   // 게시글 날짜 포맷
   function formatRelativeDate(dateString) {
@@ -105,16 +107,16 @@ const GroupHome = () => {
   // 그룹에 작성된 포스트 내용 목록 가져오기
   useEffect(() => {
     const fetchPosts = async () => {
-      
       try {
         const response = await fetch(`http://localhost:5000/group/${g_no}/posts`);
-        if (!response.ok) {
-          throw new Error("게시글 데이터를 가져오지 못했습니다.");
-        }
+        if (!response.ok) throw new Error("게시글 데이터를 가져오지 못했습니다.");
         const data = await response.json();
-        setPosts(data); // 정렬된 데이터 사용
+        setPosts(data);
+
+        // 게시글별 댓글 데이터 가져오기
+        data.forEach((post) => fetchComments(post.p_no));
       } catch (error) {
-        setError(error.message);
+        console.error("게시글 데이터 오류:", error.message);
       } finally {
         setLoading(false);
       }
@@ -122,6 +124,17 @@ const GroupHome = () => {
 
     fetchPosts();
   }, [g_no]);
+
+  const fetchComments = async (p_no) => {
+    try {
+      const response = await fetch(`http://localhost:5000/group/${p_no}/comments`);
+      if (!response.ok) throw new Error("댓글 데이터를 가져오지 못했습니다.");
+      const data = await response.json();
+      setCommentsByPost((prev) => ({ ...prev, [p_no]: data })); // 게시글별 댓글 업데이트
+    } catch (error) {
+      console.error(`댓글 데이터 오류 (p_no: ${p_no}):`, error.message);
+    }
+  };
 
    // 유저 권한(g_m_role) 값 가져오기
    useEffect(() => {
@@ -159,7 +172,7 @@ const GroupHome = () => {
     fetchGroupRole();
   }, [g_no]);
   
-
+  // 그룹 멤버 리스트
   useEffect(() => {
     const fetchMembers = async () => {
       try {
@@ -177,6 +190,7 @@ const GroupHome = () => {
 
     fetchMembers();
   }, [g_no]);
+
 
   const handleWritePost = () => {
     setIsWritingPost(true); // 게시글 작성 창 열기
@@ -211,9 +225,9 @@ const GroupHome = () => {
         return response.json();
       })
       .then((data) => {
-        if (data.success && data.fileName) {
-          const imageUrl = `http://localhost:5000/uploads/${data.fileName}`;
-          setUploadedFileName(data.fileName); // 파일 이름 저장
+        if (data.success && data.filePath) {
+          console.log("SFTP 저장 경로:", data.filePath);
+          setUploadedFileName(data.filePath); // SFTP 경로 저장
         } else {
           alert("이미지 업로드 실패: 서버 응답이 올바르지 않습니다.");
         }
@@ -222,7 +236,8 @@ const GroupHome = () => {
         console.error("이미지 업로드 오류:", error.message);
         alert(`이미지 업로드 실패: ${error.message}`);
       });
-  };
+};
+
 
   // 게시글 작성
   const handlePostSubmit = async () => {
@@ -301,6 +316,36 @@ const GroupHome = () => {
     }
   };
 
+  const handleCommentSubmit = async (p_no) => {
+    if (!commentText.trim()) {
+      alert("댓글 내용을 입력해주세요.");
+      return;
+    }
+
+    const commentData = {
+      g_no, // 그룹 번호
+      p_no, // 게시글 번호
+      m_no: localStorage.getItem("m_no"), // 작성자 번호
+      co_text: commentText, // 댓글 내용
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/group/comment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(commentData),
+      });
+
+      if (!response.ok) throw new Error("댓글 작성 실패");
+      alert("댓글이 작성되었습니다.");
+      setCommentText(""); // 입력 필드 초기화
+      fetchComments(p_no); // 댓글 목록 새로고침
+    } catch (error) {
+      console.error("댓글 작성 오류:", error.message);
+    }
+  };
+  
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -351,22 +396,35 @@ const GroupHome = () => {
                 <p>{post.p_text}</p>
                 {post.p_img && (
                   <img
-                    src={`http://localhost:5000/uploads/${post.p_img}`}
+                    src={post.p_img}
                     alt="Content"
                   />
                 )}
                 
               </div>
               <div className="comment_list">
-                <h4>댓글 1</h4>
-                <img src={process.env.PUBLIC_URL + '/img/profile_default.png'} alt="Logo" />                
-                <p className="list_author">망망이</p>
-                <p className="list_comment">멍멍멍멍멍멍멍멍이</p>
-                <p className="list_date">2024년 11월 28일</p>
-              </div>
+              {commentsByPost[post.p_no] && commentsByPost[post.p_no].length > 0 ? (
+              commentsByPost[post.p_no].map((comment) => (
+                  <div key={comment.co_no} className="comment_item">
+                    <img
+                      src={process.env.PUBLIC_URL + '/img/profile_default.png'}
+                      alt="Profile"
+                      className="comment_profile"
+                    />
+                    <div className="comment_content">
+                      <p className="list_author">{`${comment.m_nickname}`}</p>
+                      <p className="list_comment">{comment.co_text}</p>
+                      <p className="list_date">{new Date(comment.co_reg_date).toLocaleString()}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p>댓글이 없습니다.</p>
+              )}
+            </div>
               <div className="board_comment">
                 <div className="comment_view">
-                <img
+                  <img
                     src={`http://localhost:5000/uploads/${post.m_no}.png`}
                     alt="Profile"
                     onError={(e) => {
@@ -374,10 +432,17 @@ const GroupHome = () => {
                       e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`; // 기본 이미지 경로
                     }}
                   />
-                  <input type="text" placeholder="댓글을 남겨주세요" />
-                  <div className="comment_button">작성하기</div>
+                  <input
+                    type="text"
+                    placeholder="댓글을 남겨주세요"
+                    value={commentText} // 상태 연결
+                    onChange={(e) => setCommentText(e.target.value)} // 상태 업데이트
+                  />
+                  <div className="comment_button" onClick={() => handleCommentSubmit(post.p_no)}>
+                    작성하기
+                  </div>
                 </div>
-              </div>  
+              </div> 
             </div>
           ))}
               <div className="post_item">
@@ -515,7 +580,7 @@ const GroupHome = () => {
       </div>
       <div className="home_wrap">
         <div className="home_info">
-          <img src={`http://localhost:5000/uploads/${groupData.g_img_name}`} alt="Group" />
+          <img src={groupData.g_img_name} alt="Group" />
           <h2>{groupData.g_name}</h2>
           <p className="info_member">멤버 {groupData.memberCount}</p>
           <p className="info_member">리더 {groupData.g_master_nickname}</p>
