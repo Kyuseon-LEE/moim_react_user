@@ -17,8 +17,14 @@ const GroupHome = () => {
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [gMRole, setGmRole] = useState(null); // g_m_role 상태
   const [members, setMembers] = useState([]); // 멤버 리스트 
-  const [commentText, setCommentText] = useState(""); // 댓글 작성
+  const [commentTexts, setCommentTexts] = useState({}); // 게시글별 댓글 입력 상태
   const [commentsByPost, setCommentsByPost] = useState({});
+  const [menuVisibility, setMenuVisibility] = useState({}); // 게시글별 메뉴 상태
+  const [editingPostId, setEditingPostId] = useState(null);
+  const [currentPostText, setCurrentPostText] = useState("");
+  const [isUploading, setIsUploading] = useState(false); // 업로드 상태
+  const [currentPostImage, setCurrentPostImage] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // 게시글 날짜 포맷
   function formatRelativeDate(dateString) {
@@ -191,7 +197,22 @@ const GroupHome = () => {
     fetchMembers();
   }, [g_no]);
 
-
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".post_menu") && !event.target.closest("svg")) {
+        // 메뉴나 SVG 외부 클릭 시 메뉴 닫기
+        setMenuVisibility({});
+      }
+    };
+  
+    document.addEventListener("click", handleClickOutside);
+    
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+  
+  
   const handleWritePost = () => {
     setIsWritingPost(true); // 게시글 작성 창 열기
   };
@@ -210,10 +231,13 @@ const GroupHome = () => {
       alert("파일을 선택해주세요.");
       return;
     }
-
+  
     const formData = new FormData();
     formData.append("image", file);
-
+  
+    setUploadedFileName(""); // 초기화
+    setIsUploading(true); // 업로드 중 상태 설정
+  
     fetch("http://localhost:5000/group/upload", {
       method: "POST",
       body: formData,
@@ -227,7 +251,8 @@ const GroupHome = () => {
       .then((data) => {
         if (data.success && data.filePath) {
           console.log("SFTP 저장 경로:", data.filePath);
-          setUploadedFileName(data.filePath); // SFTP 경로 저장
+          setUploadedFileName(data.filePath); // 업로드된 이미지 경로 저장
+          alert("이미지 업로드 성공");
         } else {
           alert("이미지 업로드 실패: 서버 응답이 올바르지 않습니다.");
         }
@@ -235,39 +260,42 @@ const GroupHome = () => {
       .catch((error) => {
         console.error("이미지 업로드 오류:", error.message);
         alert(`이미지 업로드 실패: ${error.message}`);
+      })
+      .finally(() => {
+        setIsUploading(false); // 업로드 완료 상태로 전환
       });
-};
-
+  };
+  
 
   // 게시글 작성
   const handlePostSubmit = async () => {
     if (!postContent.trim()) {
-      alert("게시글 내용을 입력해주세요."); // 경고창
-      return;
+        alert("게시글 내용을 입력해주세요.");
+        return;
     }
-    
+
     const mNo = localStorage.getItem("m_no");
     const postData = {
-      g_no,
-      m_no: mNo,
-      p_text: postContent,
-      p_img: uploadedFileName,
+        g_no,
+        m_no: mNo,
+        p_text: postContent,
+        p_img: uploadedFileName,
     };
-  
+
     try {
-      const response = await fetch("http://localhost:5000/group/post", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" }, // JSON 형식으로 명시
-        body: JSON.stringify(postData), // 데이터를 JSON 문자열로 변환
-      });
-  
-      if (!response.ok) throw new Error("게시글 작성 실패");
-      alert("게시글이 작성되었습니다.");
-      window.location.reload();
+        const response = await fetch("http://localhost:5000/group/post", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(postData),
+        });
+
+        if (!response.ok) throw new Error("게시글 작성 실패");
+        alert("게시글이 작성되었습니다.");
+        window.location.reload();
     } catch (error) {
-      alert(`게시글 작성 실패: ${error.message}`);
+        alert(`게시글 작성 실패: ${error.message}`);
     }
-  };
+};
 
    // 모임 가입하기 버튼 클릭
    const handleJoinClick = () => {
@@ -316,36 +344,184 @@ const GroupHome = () => {
     }
   };
 
+  const handleCommentChange = (p_no, value) => {
+    setCommentTexts((prev) => ({
+      ...prev,
+      [p_no]: value, // 특정 게시글의 댓글 입력 상태 업데이트
+    }));
+  };
+  
+
   const handleCommentSubmit = async (p_no) => {
+    const commentText = commentTexts[p_no] || ""; // 해당 게시글의 댓글 내용
+  
     if (!commentText.trim()) {
       alert("댓글 내용을 입력해주세요.");
       return;
     }
-
+  
     const commentData = {
       g_no, // 그룹 번호
       p_no, // 게시글 번호
       m_no: localStorage.getItem("m_no"), // 작성자 번호
       co_text: commentText, // 댓글 내용
     };
-
+  
     try {
       const response = await fetch("http://localhost:5000/group/comment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(commentData),
       });
-
+  
       if (!response.ok) throw new Error("댓글 작성 실패");
       alert("댓글이 작성되었습니다.");
-      setCommentText(""); // 입력 필드 초기화
+      setCommentTexts((prev) => ({
+        ...prev,
+        [p_no]: "", // 댓글 작성 후 해당 게시글의 입력 상태 초기화
+      }));
       fetchComments(p_no); // 댓글 목록 새로고침
     } catch (error) {
       console.error("댓글 작성 오류:", error.message);
     }
   };
-  
 
+  const toggleMenuVisibility = (p_no) => {
+    setMenuVisibility((prev) => ({
+      ...prev,
+      [p_no]: !prev[p_no], // 현재 게시글의 메뉴 상태 토글
+    }));
+  };
+
+  const handleEdit = (p_no, p_text) => {
+    setEditingPostId(p_no); // 수정할 게시글 ID 설정
+    setCurrentPostText(p_text); // 수정할 게시글 내용 설정
+  };
+  
+  
+  const handleDeletePost = async (p_no) => {
+    const m_no = localStorage.getItem("m_no"); // 현재 로그인 사용자 ID
+
+    try {
+        const response = await fetch(`http://localhost:5000/group/${g_no}/posts/${p_no}/delete`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ m_no }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert("게시글이 삭제되었습니다.");
+            setPosts((prevPosts) => prevPosts.filter((post) => post.p_no !== p_no)); // UI에서 삭제
+        } else {
+            alert(result.message || "게시글 삭제 실패");
+        }
+    } catch (error) {
+        console.error("게시글 삭제 오류:", error.message);
+        alert("게시글 삭제 중 오류가 발생했습니다.");
+    }
+};
+
+const handleEditClose = () => {
+  setEditingPostId(null); // 수정 상태 종료
+  setCurrentPostText(""); // 내용 초기화
+};
+
+const handleSaveEdit = async () => {
+  const m_no = localStorage.getItem("m_no");
+
+  if (!currentPostText.trim()) {
+    alert("내용을 입력해주세요.");
+    return;
+  }
+
+  const p_img = uploadedFileName || null; // 업로드된 이미지 경로 또는 null
+  const body = { m_no, p_text: currentPostText, p_img };
+
+  console.log("수정 요청 데이터:", body); // 디버깅용 데이터 출력
+
+  try {
+    const response = await fetch(`http://localhost:5000/group/posts/${editingPostId}/edit`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) throw new Error("수정 실패");
+
+    alert("수정이 완료되었습니다.");
+    setEditingPostId(null);
+    setCurrentPostText("");
+    setUploadedFileName(""); // 수정 완료 후 초기화
+    window.location.reload(); // 게시글 새로고침
+  } catch (error) {
+    console.error("수정 오류:", error.message);
+    alert("수정 중 오류가 발생했습니다.");
+  }
+};
+
+
+const handleEditImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (!file) {
+    alert("파일을 선택해주세요.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  setUploadedFileName(""); // 초기화
+  setIsUploading(true); // 업로드 중 상태 설정
+
+  fetch("http://localhost:5000/group/upload", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`서버 응답 오류: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.success && data.filePath) {
+        console.log("업로드된 이미지 경로:", data.filePath);
+        setUploadedFileName(data.filePath); // 업로드된 이미지 경로 설정
+        alert("이미지 업로드 성공");
+      } else {
+        alert("이미지 업로드 실패: 서버 응답이 올바르지 않습니다.");
+      }
+    })
+    .catch((error) => {
+      console.error("이미지 업로드 오류:", error.message);
+      alert(`이미지 업로드 실패: ${error.message}`);
+    })
+    .finally(() => {
+      setIsUploading(false); // 업로드 완료 상태로 전환
+    });
+  };
+
+  const handleDeleteComment = async (co_no, p_no) => {
+    const m_no = localStorage.getItem("m_no");
+  
+    try {
+      const response = await fetch(`http://localhost:5000/group/comment/${co_no}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ m_no }),
+      });
+  
+      if (!response.ok) throw new Error("댓글 삭제 실패");
+      alert("댓글이 삭제되었습니다.");
+      fetchComments(p_no); // 댓글 삭제 후 댓글 목록 갱신
+    } catch (error) {
+      console.error("댓글 삭제 오류:", error.message);
+      alert("댓글 삭제 중 오류가 발생했습니다.");
+    }
+  };
+  
+  
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -384,13 +560,72 @@ const GroupHome = () => {
                   e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`;
                 }}
               />
-                <p className="author_nick">{post.m_nickname}</p>
+                <p className="author_nick">{post.m_nickname} 
+                  <span className={`member_grade ${
+                            post.g_m_role === 1
+                              ? "role-normal"
+                              : post.g_m_role === 2
+                              ? "role-manager"
+                              : post.g_m_role === 3
+                              ? "role-leader"
+                              : "role-unknown"
+                          }`}>
+                    {getMemberGrade(post.g_m_role)}
+                  </span>
+                </p>
                 <p className="author_date">{formatRelativeDate(post.p_reg_date)}</p>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  onClick={() => toggleMenuVisibility(post.p_no)} // 클릭 이벤트
+                  style={{ cursor: "pointer" }}
+                >
                   <circle cx="12" cy="5" r="1.5"></circle>
                   <circle cx="12" cy="12" r="1.5"></circle>
                   <circle cx="12" cy="19" r="1.5"></circle>
                 </svg>
+                {menuVisibility[post.p_no] && ( // 메뉴가 열려 있는 경우 표시
+                <div className="post_menu">
+                {post.m_no === parseInt(localStorage.getItem("m_no")) && (
+                  <button onClick={() => handleEdit(post.p_no, post.p_text)}>수정</button>
+                )}
+                {(gMRole === 3 || post.m_no === parseInt(localStorage.getItem("m_no"))) && (
+                  <button onClick={() => handleDeletePost(post.p_no)}>삭제</button>
+                )}
+                <button>신고하기</button>
+
+            {editingPostId && (
+              <div className="edit_modal">
+                <div className="edit_content">
+                  <h2>게시글 수정</h2>
+                  <textarea
+                    value={currentPostText}
+                    onChange={(e) => setCurrentPostText(e.target.value)}
+                  />
+                  <div className="image_upload">
+                    <input type="file" onChange={handleEditImageUpload} />
+                  </div>
+                  {isUploading && (
+                    <div className="loading-bar">
+                      <div className="loading-spinner"></div>
+                      <p>이미지 업로드 중입니다...</p>
+                    </div>
+                  )}
+                  <div className="edit_buttons">
+                    <button onClick={handleSaveEdit} disabled={isUploading}>
+                      저장
+                    </button>
+                    <button onClick={handleEditClose}>취소</button>
+                  </div>
+                </div>
+              </div>
+            )}
+              </div>
+              
+                )}
               </div>
               <div className="author_board">
                 <p>{post.p_text}</p>
@@ -402,41 +637,79 @@ const GroupHome = () => {
                 )}
                 
               </div>
+              {commentsByPost[post.p_no] && commentsByPost[post.p_no].length > 0 && (
               <div className="comment_list">
-              {commentsByPost[post.p_no] && commentsByPost[post.p_no].length > 0 ? (
-              commentsByPost[post.p_no].map((comment) => (
+                <h4>
+                  댓글 {commentsByPost[post.p_no] && commentsByPost[post.p_no].length > 0
+                    ? `${commentsByPost[post.p_no].length}개`
+                    : ""}
+                </h4>
+                {commentsByPost[post.p_no].map((comment) => (
                   <div key={comment.co_no} className="comment_item">
                     <img
-                      src={process.env.PUBLIC_URL + '/img/profile_default.png'}
+                      src={
+                        comment.m_profile_img
+                          ? `${comment.m_profile_img}` // 작성자 프로필 이미지
+                          : `${process.env.PUBLIC_URL}/img/profile_default.png` // 기본 이미지
+                      }
                       alt="Profile"
                       className="comment_profile"
+                      onError={(e) => {
+                        e.target.onerror = null; // 기본 이미지로 대체
+                        e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`;
+                      }}
                     />
                     <div className="comment_content">
-                      <p className="list_author">{`${comment.m_nickname}`}</p>
+                      <p className="list_author">{`${comment.m_nickname}`}
+                        <span className={`member_grade ${
+                            comment.g_m_role === 1
+                              ? "role-normal"
+                              : comment.g_m_role === 2
+                              ? "role-manager"
+                              : comment.g_m_role === 3
+                              ? "role-leader"
+                              : "role-unknown"
+                          }`}
+                        >
+                          {getMemberGrade(comment.g_m_role)}
+
+                        </span>
+                        {comment.m_no === parseInt(localStorage.getItem("m_no")) && (
+                        <span
+                          className="comment_delete"
+                          onClick={() => handleDeleteComment(comment.co_no, post.p_no)}
+                        >
+                          삭제
+                        </span>
+                      )}
+                      </p>
                       <p className="list_comment">{comment.co_text}</p>
                       <p className="list_date">{new Date(comment.co_reg_date).toLocaleString()}</p>
                     </div>
                   </div>
-                ))
-              ) : (
-                <p>댓글이 없습니다.</p>
-              )}
-            </div>
+                ))}
+              </div>
+            )}
+
               <div className="board_comment">
                 <div className="comment_view">
-                  <img
-                    src={`http://localhost:5000/uploads/${post.m_no}.png`}
-                    alt="Profile"
-                    onError={(e) => {
-                      e.target.onerror = null; // 무한 루프 방지
-                      e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`; // 기본 이미지 경로
-                    }}
-                  />
+                <img
+                  src={
+                    localStorage.getItem("m_profile_img")
+                      ? `${localStorage.getItem("m_profile_img")}` // 현재 로그인한 사용자 프로필 이미지
+                      : `${process.env.PUBLIC_URL}/img/profile_default.png` // 기본 이미지
+                  }
+                  alt="Profile"
+                  onError={(e) => {
+                    e.target.onerror = null; // 무한 루프 방지
+                    e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`; // 기본 이미지 경로
+                  }}
+                />
                   <input
                     type="text"
                     placeholder="댓글을 남겨주세요"
-                    value={commentText} // 상태 연결
-                    onChange={(e) => setCommentText(e.target.value)} // 상태 업데이트
+                    value={commentTexts[post.p_no] || ""} // 특정 게시글의 댓글 입력 상태
+                    onChange={(e) => handleCommentChange(post.p_no, e.target.value)} // 상태 업데이트
                   />
                   <div className="comment_button" onClick={() => handleCommentSubmit(post.p_no)}>
                     작성하기
@@ -464,8 +737,8 @@ const GroupHome = () => {
           <div className="moim_board">
             <h2>정모 일정 관리</h2>
           
-            <div class="schedule_list">
-              <div class="schedule_card">
+            <div className="schedule_list">
+              <div className="schedule_card">
                 <h3>정모 #1</h3>
                 <p>날짜: 2024-12-01</p>
                 <p>시간: 18:00</p>
@@ -474,7 +747,7 @@ const GroupHome = () => {
               </div>
             </div>
 
-            <div class="schedule_form">
+            <div className="schedule_form">
               <h3>새 일정 추가</h3>
               <input type="text" placeholder="제목" />
               <input type="date" />
@@ -607,9 +880,15 @@ const GroupHome = () => {
                       onChange={(e) => setPostContent(e.target.value)}
                     />
                     <input type="file" onChange={handleImageUpload} />
+                    {isUploading && (
+                      <div className="loading-bar">
+                        <div className="loading-spinner"></div>
+                        <p>이미지 업로드 중입니다...</p>
+                      </div>
+                    )}
                     {imagePreview && <img src={imagePreview} alt="Preview" />}
                     <div className="post_buttons">
-                      <button onClick={handlePostSubmit}>작성</button>
+                      <button onClick={handlePostSubmit} >작성</button>
                       <button onClick={closeWritePost}>취소</button>
                     </div>
                   </div>

@@ -34,10 +34,12 @@
                 const accessToken = response.data.accessToken;
                 const memberInfo = response.data.memberInfo;
                 const m_no = memberInfo.m_no;
+                const m_profile_img = memberInfo.m_profile_img
 
                 localStorage.setItem("accessToken", response.data.accessToken);
                 localStorage.setItem("m_id", m_id); // 로그인된 사용자 m_id 저장
                 localStorage.setItem("m_no", m_no);
+                localStorage.setItem("m_profile_img", m_profile_img);
                 setJwt(accessToken);
                 setIsLoggedIn(true);
                 navigate("/");

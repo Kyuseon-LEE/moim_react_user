@@ -171,19 +171,37 @@
 .comment_list{
   border-top: 1px solid #ccc;
   padding:10px 20px;
+  box-sizing: border-box;
 }
 .comment_list h4{
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 .comment_list img{
   width:30px;
   height:30px;
   margin-top:3px;
   float:left;
+  border-radius: 15px;
 }
 .comment_list p {
   margin-bottom:2px;
   padding-left:40px;
+}
+.comment_item {
+  margin-bottom: 5px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+  box-sizing: border-box;
+  padding-top:5px;
+}
+.comment_item:first-child{
+  padding-top:0;
+}
+
+.comment_item:last-child{
+  margin-bottom: 0;
+  border:none;
+  padding-bottom:0;
 }
 .list_author{
   font-weight: 600;
@@ -430,6 +448,7 @@
   .post_item{
     margin-bottom:20px;
     background-color: #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); 
   }
 
   .post_modal, .modal {
@@ -482,13 +501,149 @@
     margin-left:10px;
   }
   .role-leader {
-    padding:2px 10px;
-    background-color: #47e427;
+    padding:2px 7px;
+    background-color: #33cf13;
     color: #fff;
     font-size: 0.8em;
     border-radius: 12px;
-    margin-left:10px;
+    margin-left:6px;
   }
+
+  .post_menu {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 10;
+    top: 55px; 
+    right: 25px; 
+  }
+  
+  .post_menu button {
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+    padding: 5px 10px;
+    background-color: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+  }
+  
+  .post_menu button:hover {
+    background-color: #f5f5f5;
+  }
+  
+  /* Modal Overlay */
+.edit_modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 높은 우선순위 */
+}
+
+/* Modal Content */
+.edit_content {
+  background-color: #fff; /* 흰색 배경 */
+  width: 90%;
+  max-width: 500px; /* 최대 너비 */
+  border-radius: 8px; /* 모서리 둥글게 */
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 */
+  text-align: center;
+}
+
+/* Title */
+.edit_content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Textarea for editing */
+.edit_content textarea {
+  width: 100%;
+  height: 150px;
+  resize: none; /* 크기 조정 비활성화 */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  outline: none;
+  font-family: "Pretendard Variable";
+}
+
+/* Button Container */
+.edit_buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.edit_buttons button {
+  padding: 10px 20px;
+  width:70px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.edit_buttons button:first-child {
+  background-color: #f0f0f0;
+}
+
+.edit_buttons button:last-child {
+  background-color: #CAC8C8;
+  color: #FFF;
+}
+.image_upload input{
+  width:500px;
+  margin-bottom:20px;
+}
+
+.loading-bar {
+  width: 100%;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 4px solid #3498db;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.comment_delete{
+  float:right;
+  color:#6b6b6b;
+  font-size:0.8em;
+  margin-top:5px;
+  cursor:pointer;
+}
   
   
   
