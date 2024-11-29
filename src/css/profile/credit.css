@@ -6,7 +6,7 @@
     align-items: center;
 }
 
-h3 {
+#section5_wrap h3 {
     text-align: center;
     margin: 10px;
 }
@@ -51,7 +51,7 @@ h3 {
 .creditDataForm > div {
     margin-bottom: 15px;
 }
-h2 {
+#section5_wrap h2 {
     margin-top: 20px;
     margin-bottom: 20px;
     text-align: center;
