@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useCallback } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import '../../css/profile/profile.css';
+// import  '../../css/profile/categorySelector.css';
 import instance from '../../api/axios';
+import Modal from "./Modal";
+import Nav from './Nav';
 
 const Profile = () => {
     const [activeIndex, setActiveIndex] = useState(null); 
@@ -11,16 +14,21 @@ const Profile = () => {
     const [phoneEdit, setPhoneEdit] = useState(false);  // 휴대폰 번호 편집 모드 상태
     const [addressEdit, setAddressEdit] = useState(false);  // 주소 편집 모드 상태
     const [profileImgEdit, setProfileImgEdit] = useState(false); //프로필 이미지 상태값
+    const [categoriesEdit, setCategoriesEdit]   = useState(false)       
     const [newNickname, setNewNickname] = useState("");  // 새로운 닉네임 값
     const [newGender, setNewGender] = useState(""); // 새로운 성별
     const [newPhone, setNewPhone] = useState(""); // 새로운 휴대폰 번호
     const [newAddress, setNewAddress] = useState(""); // 새로운 주소
+    const [newCategories, setNewCategories] = useState("");
     const [postcode, setPostcode] = useState(""); // 새로운 우편번호
     const [detailAddress, setDetailAddress] = useState(""); // 상세 주소
-    const [newProfileImg, setNewProfileImg] = useState(""); //프로필 이미지
-    const [profileImgFile, setProfileImgFile] = useState(null); //기존 프로파일 이미지
+    const [newProfileImg, setNewProfileImg] = useState(null); //프로필 이미지
+    const [profileImgFile, setProfileImgFile] = useState(null); // 새로운 이미지 파일 객체
+    const [categories, setCategories] = useState("");
     const [memberId, setMemberId] = useState(""); //사용자 ID값
+    const [mGrade, setMGrade] = useState('');
 
+    const navigate = useNavigate();
 
     // 사용자 정보를 가져오는 함수
     useEffect(() => {
@@ -32,19 +40,26 @@ const Profile = () => {
                 setNewGender(response.data.memberDtos.m_gender);
                 setNewPhone(response.data.memberDtos.m_phone); 
                 setNewAddress(response.data.memberDtos.m_address);
-                setNewProfileImg(response.data.m_profile_img);
+                setProfileImgFile(response.data.memberDtos.m_profile_img);
                 setMemberId(response.data.memberDtos.m_id);
+                setCategories(response.data.memberDtos.m_category);
+                setMGrade(response.data.memberDtos.m_grade);
+
             })
             .catch(err => {
                 console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
             });
     }, []);
 
+    useEffect(() => {
+
+    }, []);
+
+
     //입력 값 변경 핸들러
     const handleNicknameChange = (e) => {
         setNewNickname(e.target.value);
     };
-
     const handleGenderChange = (e) => {
         setNewGender(e.target.value);
     };
@@ -54,15 +69,17 @@ const Profile = () => {
     const handleAddressChange = (e) => {
         setDetailAddress(e.target.value);
     };
+    const handleCategoryChange = useCallback((categories, callback) => {
+        setNewCategories(categories); // 상태 업데이트
+        if (callback) callback(); // 상태 변경 후 콜백 실행
+    }, []);
     const handleProfileImgChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setProfileImgFile(file);
-            console.log("setProfileImgFile", file);
             setNewProfileImg(URL.createObjectURL(file));  
         }
     };
-    
 
     // 수정 버튼 클릭 시 편집 모드 전환
     const handleEditClick = (field) => {
@@ -74,6 +91,9 @@ const Profile = () => {
             setPhoneEdit(true);  // 휴대폰 편집 모드 활성화
         } else if (field === 'address') {
             setAddressEdit(true);  // 주소 편집 모드 활성화
+        } else if (field === "category") {
+            setCategoriesEdit(true)
+            console.log("###")
         } else if (field === 'm_profile_img') {
             setProfileImgEdit(true)
             document.getElementById("profileImgInput").click();
@@ -98,26 +118,29 @@ const Profile = () => {
             setDetailAddress(""); // 상세 주소 초기화
         } else if(field === 'm_profile_img') {
             setProfileImgEdit(false);
-            setNewProfileImg(memberInfo.m_profile_img)
-        }
+            setProfileImgFile(memberInfo.m_profile_img)
+        } 
     };
 
-    const handleSaveClick = () => {
+    const modalCancel = () => {
+        setCategoriesEdit(false);  // 모달 닫기 상태
+        setCategories(memberInfo.m_category);  // 초기값으로 되돌리기
+    }
+    const handleSaveClick = useCallback(() => {
         const formData = new FormData();
         formData.append("m_nickname", newNickname);
         formData.append("m_gender", newGender);
         formData.append("m_phone", newPhone);
         formData.append("m_address", `${postcode} ${newAddress} ${detailAddress}`);
-        formData.append("m_id", memberId); // m_id 추가
-    
-        if (profileImgFile) {
-            formData.append("file", profileImgFile);
+        formData.append("m_id", memberId);
+        if(newCategories==="") {
+            formData.append("m_category", categories)
         } else {
-            formData.append("m_profile_img", memberInfo.m_profile_img);
+            formData.append("m_category", newCategories);
         }
-        console.log("memberInfo.m_profile_img", memberInfo.m_profile_img);
-        console.log("newProfileImg", newProfileImg);
-    
+        if(profileImgFile) {
+            formData.append("file", profileImgFile);
+        }
         instance.post('/member/updateMemberInfo', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -132,17 +155,19 @@ const Profile = () => {
                 m_phone: newPhone,    // 변경된 휴대폰 번호 반영
                 m_address: `${postcode} ${newAddress} ${detailAddress}`,  // 변경된 주소 반영
                 m_profile_img : newProfileImg || memberInfo.m_profile_img,  // 변경된 이미지 반영 (새 이미지가 없으면 기존 이미지 유지)
+                m_category : newCategories
             });
             setNicknameEdit(false);  
             setGenderEdit(false);  
             setPhoneEdit(false); 
             setAddressEdit(false);
             setProfileImgEdit(false); 
+            setCategoriesEdit(false);
         })
         .catch(err => {
             console.error("정보 업데이트에 실패했습니다.", err);
         });
-    };
+    })
 
     //새로운 주소 Daum으로 받기
         //Daum address
@@ -161,43 +186,22 @@ const Profile = () => {
                     }
                 }
     
-                setNewAddress(data.zonecode);
+                setPostcode(data.zonecode);
                 setNewAddress(addr);
                 },
             }).open();
         };
-
-
     return (
         <article className="article4">
             <div className="profile_article_wrap">
-                <div className="side_bar">
-                    <ul>
-                        {['내 정보', '###', '###', '###'].map((text, index) => (
-                            <li
-                                key={index}
-                                className={activeIndex === index ? "active" : ""}
-                                onClick={() => setActiveIndex(index)}
-                            >
-                                <div><Link to={index === 0 ? "/profile" : "#none"}>{text}</Link></div>
-                                <img src="/img/arrow-left.png" alt="arrow-left" />
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                <Nav setActiveIndex={setActiveIndex}/>
                 <div className="my_info">
                     <div className="info_title">내 정보</div>
                     <div className="use_profile">
                     <div className="text">사용 중인 프로필</div>
                     <div className="profile_img">
                             {/* 프로필 이미지가 있으면 새로운 이미지, 없으면 기존 이미지 */}
-                            {newProfileImg ? (
-                                <img src={newProfileImg} alt="프로필 이미지" />
-                            ) : memberInfo?.m_profile_img ? (
-                                <img src={memberInfo.m_profile_img} alt="프로필 이미지" />
-                            ) : (
-                                "이미지없음"
-                            )}
+                            {newProfileImg ? (<img src={newProfileImg} alt="프로필 이미지" />) : memberInfo?.m_profile_img ? (<img src={memberInfo.m_profile_img} alt="프로필 이미지" />) : (<></>)}
                         </div>
                         {/* 프로필 이미지 파일 입력 */}
                         <input
@@ -307,10 +311,25 @@ const Profile = () => {
                                     </div>
                                     <div className="category_info">
                                         <span>카테고리</span>
-                                        <span id="category">
-                                            {memberInfo.m_category === null ? "없음" : "있음"}
-                                        </span>
-                                        <input type="button" value="변경" />
+                                        {categoriesEdit ? (
+                                            <div>
+                                                <Modal 
+                                                    isOpen={categoriesEdit} 
+                                                    onCategoryChange={handleCategoryChange} 
+                                                    closeModal={modalCancel} 
+                                                    handleSaveClick={handleSaveClick} 
+                                                    initialCategories={categories}
+                                                />
+                                            {/* 다른 UI 요소들 */}
+                                        </div>
+                                        ) : (
+                                            <>
+                                            <span id="category">
+                                                {categories !== null ? categories : "없음"}
+                                            </span>
+                                            <input type="button" value="변경" onClick={() => handleEditClick('category')}/>
+                                            </>
+                                        )}
                                     </div>
                                 </>
                             ) : (
@@ -326,6 +345,10 @@ const Profile = () => {
                                     <div className="id">
                                         <span>아이디</span>
                                         <span id="id">{memberInfo.m_id}</span>
+                                    </div>
+                                    <div className="grade">
+                                        <span>멤버쉽</span>
+                                        <span id="grade">{memberInfo.m_grade === 0 ? "일반회원" : "프리미엄 회원"}</span>
                                     </div>
                                     <div className="phone">
                                         <span>휴대폰 번호</span>

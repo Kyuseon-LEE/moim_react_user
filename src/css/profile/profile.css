@@ -236,6 +236,21 @@
     flex: 2;
     margin-right: 50px;
 }
+/* 등급 */
+.article4 .profile_article_wrap .my_info .login_account > div > .grade {
+    margin-bottom: 15px;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.article4 .profile_article_wrap .my_info .login_account > div.content > .grade span:first-child {
+    flex: 1;
+}
+.article4 .profile_article_wrap .my_info .login_account > div.content > .grade span#grade {
+    flex: 2;
+    margin-right: 50px;
+}
 /* 비밀번호  */
 .article4 .profile_article_wrap .my_info .login_account > div > .password {
     margin-bottom: 15px;

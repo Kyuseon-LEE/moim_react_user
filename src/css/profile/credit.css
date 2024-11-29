@@ -1,0 +1,68 @@
+#section5_wrap {
+    width: 85%;
+    margin: 40px auto;
+    height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+h3 {
+    text-align: center;
+    margin: 10px;
+}
+
+.period {
+    margin-left: 20px;
+}
+
+.month, .year {
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    margin-bottom: 40px;
+    width: 800px;
+    display: flex;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    cursor: pointer; 
+}
+
+.month:hover, .year:hover {
+    background-color: #ddd;
+}
+
+.month-content, .year-content {
+    margin-left: 100px;
+    font-size: 24px;
+    font-weight: 500;
+    margin-top: 40px;
+}
+
+.month.active, .year.active {
+    background-color: rgba(0, 150, 250, .4);
+}
+.creditDataForm {
+    border: 1px solid #010101;
+    margin-left: 10%;
+    width: 800px;
+    height: 600px;
+    text-align: center;
+    border-radius: 7px;
+}
+.creditDataForm > div {
+    margin-bottom: 15px;
+}
+h2 {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+label {
+    font-size: 18px;
+    margin-right: 10px;
+}
+input[type="text"]{
+    width: 400px;
+    height: 40px;
+    font-size: 16px;
+}
+

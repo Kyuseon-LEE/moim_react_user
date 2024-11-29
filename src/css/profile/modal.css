@@ -1,0 +1,86 @@
+/* Modal background overlay */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);  /* 화면의 배경을 어둡게 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;  /* 모달이 다른 콘텐츠 위에 표시되도록 */
+}
+
+/* Modal content */
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+}
+
+/* Modal header */
+.modal-content h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Category list */
+.modal-content ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.modal-content ul li {
+    display: inline-block;
+    margin: 10px;
+}
+
+.modal-content .category-item {
+    border: 1px solid rgba(0, 0, 0, 0.65);
+    padding: 10px 15px;
+    width: 100px;
+    text-align: center;
+    border-radius: 50px;
+    background-color: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-content .category-item:hover {
+    background-color: rgba(0, 0, 0, 0.85);
+}
+
+.modal-content .category-item.selected {
+    background-color: orange;  /* 선택된 항목 */
+    border: 1px solid orange;
+    color: #000;
+}
+
+/* Button styles */
+.modal-content .btns {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.modal-content .btns input[type="button"] {
+    width: 140px;
+    padding: 10px 0;
+    color: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+    margin: 10px;
+    font-size: 18px;
+    background: none;
+    cursor: pointer;
+}
+
+.modal-content .btns input[type="button"]:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}

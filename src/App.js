@@ -11,6 +11,7 @@ import KakaoLogin from './view/member/KakaoLogin.jsx'
 import GoogleLogin from './view/member/GoogleLogin.jsx'
 import Profile from './view/profile/Profile.jsx'
 import SignupSuccess from './view/member/SignupSuccess.jsx';
+import Credit from './view/profile/Credit.jsx';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 function App() {
@@ -76,6 +77,12 @@ function App() {
           <>
             <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
             <Profile jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          </>
+        } />
+        <Route path="/credit" element={
+          <>
+            <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <Credit jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           </>
         } />
 
