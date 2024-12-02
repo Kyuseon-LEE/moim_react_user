@@ -1,9 +1,26 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 import '../../css/article.css';
+import {Link} from "react-router-dom";
 
 const Article2 = () => {
-  
+
+    const [ad, setAd] = useState({});
+
+    useEffect(() => {
+        fetchCurrentAd();
+    }, [])
+    const fetchCurrentAd = () => {
+        axios.get('http://localhost:5000/ad/fetchCurrentAd')
+            .then(res => {
+                setAd(res.data.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+    console.log(ad);
   return (
     <article className="article_2">
       <div className="article_wrap2">
@@ -19,7 +36,7 @@ const Article2 = () => {
         </div>
       </div>
       <div className="banner">
-        광고 이미지 노출
+          <Link to={ad.ad_link}><img src={ad.ad_img} alt={ad.ad_name} /></Link>
       </div>
       <div className="article_wrap2">
           <h2>최근 활동이 활발한 모임</h2>

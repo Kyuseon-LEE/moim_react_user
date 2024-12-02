@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../../css/group/group_home.css";
+import ChatRoom from "./ChatRoom";
 
 const GroupHome = () => {
   const { g_no } = useParams();
@@ -761,7 +762,7 @@ const handleEditImageUpload = (event) => {
       case "채팅방":
         return (
           <div className="home_board">
-            <p>채팅방 내용이 여기에 표시됩니다.</p>
+            <ChatRoom g_no={groupData.g_no} />
           </div>
         );
         case "멤버":
