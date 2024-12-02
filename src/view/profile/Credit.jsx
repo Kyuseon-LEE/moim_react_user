@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
 import '../../css/profile/credit.css';
 import instance from '../../api/axios';
+import { loadPaymentWidget, PaymentWidgetInstance } from "@tosspayments/payment-widget-sdk"
+import Paysuccess from './Paysuccess'; 
 
 const Credit = () => {
     const [activeIndex, setActiveIndex] = useState(null);
-    const [creditPrice, setCreditPrice] = useState(''); // 월/년 결제 금액을 저장
     const [memberInfo, setMemberInfo] = useState('');
+    const [mNo, setMNo] = useState('');
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [mail, setMail] = useState('');
+    const [prodName, setProdName] = useState('');
     const [amount, setAmount] = useState(7900); // 기본 결제 금액 (월 결제 금액)
     const [paymentMethod, setPaymentMethod] = useState("card"); // 결제 방법 (카드 / 계좌이체)
+    const [paymentUrl, setPaymentUrl] = useState('');
+    const [formData, setFormData] = useState('');
 
     // 사용자 정보 가져오기
     useEffect(() => {
@@ -21,28 +26,52 @@ const Credit = () => {
                 setName(response.data.memberDtos.m_name);
                 setPhone(response.data.memberDtos.m_phone);
                 setMail(response.data.memberDtos.m_mail);
+                setMNo(response.data.memberDtos.m_no);
+                console.log("setMemberInfo", memberInfo);
             })
             .catch(err => {
                 console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
             });
     }, []);
 
+    let m_no = mNo;
+
     // 결제 옵션 선택에 따른 금액 변경
     const handleActiveClick = (index) => {
         setActiveIndex(index);
         if (index === 0) {
             setAmount(7900); // 월 결제 금액
+            setProdName("월 결제")
         } else if (index === 1) {
             setAmount(80000); // 년 결제 금액
+            setProdName("년 결제")
         }
     }
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // 결제 처리 로직
-        console.log({ name, phone, mail, amount, paymentMethod });
-        // 실제 결제 API 호출 로직 추가
-    };
+        console.log({prodName, m_no, name, phone, mail, amount, paymentMethod });
+        let m_period;
+        const formData =new FormData();
+        formData.append("prodName", prodName);
+        formData.append("m_no", m_no);
+        formData.append("name", name);
+        formData.append("phone", phone);
+        formData.append("mail", mail);
+        formData.append("amount", amount);
+        formData.append("paymentMethod", paymentMethod);
+        console.log("#######", amount);
+        
+        instance.post('/credit/toss-pay', formData)
+        .then(response => {
+            window.location.href = response.data.paymentUrl;
+
+        })
+        .catch(err => {
+            console.log("axios TossAip connection failed!")
+        });
+    }
+    
 
     return (
         <div id="section5_wrap">
@@ -92,6 +121,7 @@ const Credit = () => {
                     <input
                         type="text"
                         id="phone"
+                        name="phone"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="전화번호를 입력하세요"
@@ -133,7 +163,7 @@ const Credit = () => {
                     </select>
                 </div>
                 <div>
-                    <input type="submit" value="결제하기" />
+                    <input type="submit" value="결제하기" onClick={handleSubmit}/>
                 </div>
             </div>
         </div>

@@ -12,6 +12,8 @@ import GoogleLogin from './view/member/GoogleLogin.jsx'
 import Profile from './view/profile/Profile.jsx'
 import SignupSuccess from './view/member/SignupSuccess.jsx';
 import Credit from './view/profile/Credit.jsx';
+import Paysuccess from './view/profile/Paysuccess.jsx'
+import Payfail from './view/profile/Payfail.jsx'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 function App() {
@@ -83,6 +85,18 @@ function App() {
           <>
             <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
             <Credit jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          </>
+        } />
+          <Route path="/pay_success" element={
+          <>
+            <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <Paysuccess jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          </>
+        } />
+          <Route path="/pay_fail" element={
+          <>
+            <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <Payfail jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           </>
         } />
 
