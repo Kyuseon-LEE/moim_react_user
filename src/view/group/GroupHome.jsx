@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../../css/group/group_home.css";
+import GroupSettingsModal from "./GroupSettingsModal";
 import ChatRoom from "./ChatRoom";
+import MemberList from "./MemberList";
 
 const GroupHome = () => {
   const { g_no } = useParams();
@@ -24,8 +26,7 @@ const GroupHome = () => {
   const [editingPostId, setEditingPostId] = useState(null);
   const [currentPostText, setCurrentPostText] = useState("");
   const [isUploading, setIsUploading] = useState(false); // 업로드 상태
-  const [currentPostImage, setCurrentPostImage] = useState("");
-  const [uploadingImage, setUploadingImage] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   // 게시글 날짜 포맷
   function formatRelativeDate(dateString) {
@@ -521,6 +522,13 @@ const handleEditImageUpload = (event) => {
       alert("댓글 삭제 중 오류가 발생했습니다.");
     }
   };
+  const handleOpenSettingsModal = () => {
+    setIsSettingsModalOpen(true); // 모달 열기
+  };
+
+  const handleCloseSettingsModal = () => {
+    setIsSettingsModalOpen(false); // 모달 닫기
+  };
   
   
   if (loading) {
@@ -769,7 +777,7 @@ const handleEditImageUpload = (event) => {
           return (
             <div className="member_board">
               <div className="member_search">
-                <h3>멤버 {groupData.memberCount}</h3>
+                <h3>멤버 {members.length}</h3>
                 <input type="text" placeholder="멤버검색" />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -786,48 +794,13 @@ const handleEditImageUpload = (event) => {
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
               </div>
-              <div className="member_list_wrap">
-                <div className="member_list">
-                  <h4>멤버 목록</h4>
-                  {loading ? (
-                    <p>로딩 중...</p>
-                  ) : members.length > 0 ? (
-                    members
-                      .filter((member) => member.g_m_role !== 0)
-                      .map((member) => (
-                        <div className="member_info" key={member.m_no || member.g_m_no}>
-                          <img
-                            src={member.m_profile_img || `${process.env.PUBLIC_URL}/img/profile_default.png`} 
-                            alt="Profile"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`;
-                            }}
-                          />
-                          <p className="member_nick">{member.m_nickname}
-                          <span
-                          className={`member_grade ${
-                            member.g_m_role === 1
-                              ? "role-normal"
-                              : member.g_m_role === 2
-                              ? "role-manager"
-                              : member.g_m_role === 3
-                              ? "role-leader"
-                              : "role-unknown"
-                          }`}
-                        >
-                          {getMemberGrade(member.g_m_role)}
-                        </span>
-
-                          </p>
-                          
-                        </div>
-                      ))
-                  ) : (
-                    <p>멤버가 없습니다.</p>
-                  )}
-                </div>
-              </div>
+        
+              {/* 분리된 MemberList 컴포넌트 */}
+              <MemberList
+                loading={loading}
+                members={members}
+                getMemberGrade={getMemberGrade}
+              />
             </div>
           );
 
@@ -926,7 +899,21 @@ const handleEditImageUpload = (event) => {
               ? "모임이 공개 상태입니다. 누구나 모임을 검색하고 소개를 볼 수 있습니다."
               : "모임이 비공개 상태입니다. 멤버만 게시글과 소개를 볼 수 있습니다."}
           </p>
+          {gMRole === 3 && ( // g_m_role이 3일 때만 버튼 표시
+            <div className="group_modi" onClick={handleOpenSettingsModal}>
+              <img src={process.env.PUBLIC_URL + "/img/modi.png"} alt="modi" />
+              <p>그룹 설정</p>
+            </div>
+          )}
+
+          {/* 그룹 설정 모달 */}
+          <GroupSettingsModal
+            isOpen={isSettingsModalOpen} // 모달 상태 전달
+            onClose={handleCloseSettingsModal} // 닫기 핸들러 전달
+            groupData={groupData} // 그룹 데이터 전달
+          />
         </div>
+        
 
         {renderContent()}
       </div>
