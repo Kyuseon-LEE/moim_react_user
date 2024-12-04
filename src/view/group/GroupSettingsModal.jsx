@@ -6,7 +6,6 @@ const GroupSettingsModal = ({ isOpen, onClose, groupData, onSettingsUpdated }) =
 
   const categories = ["여행", "운동", "문화/공연", "음악", "게임", "사진", "요리"]; // 주제 목록
 
-  // 모달이 열리거나 `groupData`가 변경될 때 데이터 동기화
   useEffect(() => {
     if (isOpen) {
       setUpdatedGroupData(groupData);
@@ -71,7 +70,7 @@ const GroupSettingsModal = ({ isOpen, onClose, groupData, onSettingsUpdated }) =
       }
 
       alert("그룹 정보가 성공적으로 업데이트되었습니다.");
-      onSettingsUpdated(updatedGroupData); // 상위 컴포넌트에 업데이트 데이터 전달
+      onSettingsUpdated(updatedGroupData);
       onClose(); // 모달 닫기
     } catch (error) {
       console.error("그룹 정보 업데이트 오류:", error.message);

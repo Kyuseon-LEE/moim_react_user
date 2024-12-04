@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import "../../css/group/chat_room.css";
+import ProfileModal from "./ProfileModal";
 
 const ChatRoom = () => {
   const { g_no } = useParams(); // 그룹 ID
@@ -19,6 +20,9 @@ const ChatRoom = () => {
   const chatImages = messages.filter((msg) => msg.c_img_url); // 이미지 목록 추출
   const navigate = useNavigate(); // 라우터 내비게이션
   const [isMember, setIsMember] = useState(false); // 그룹 멤버 여부
+  const [gMRole, setGmRole] = useState(null); // g_m_role 상태  
+  const [selectedMember, setSelectedMember] = useState(null); // 선택된 멤버 정보
+  const [isModalOpens, setIsModalOpens] = useState(false); // 모달 상태
 
   useEffect(() => {
     const checkMembership = async () => {
@@ -28,7 +32,6 @@ const ChatRoom = () => {
         if (data.isMember) {
           setIsMember(true);
         } else {
-          alert("이 그룹의 멤버가 아니므로 접근할 수 없습니다.");
         }
       } catch (error) {
         console.error("그룹 멤버 여부 확인 실패:", error.message);
@@ -39,6 +42,41 @@ const ChatRoom = () => {
 
     checkMembership();
   }, [g_no, m_no, navigate]);
+
+  useEffect(() => {
+    const fetchGroupRole = async () => {
+      const mNo = localStorage.getItem("m_no"); // 로컬스토리지에서 m_no 가져오기
+      if (!mNo) {
+        console.warn("로그인이 필요합니다.");
+        setGmRole(null); // 로그인 정보가 없으면 기본값 설정
+        return;
+      }
+  
+      try {
+        const response = await fetch(`http://localhost:5000/group/${g_no}/member/${mNo}/role`);
+        if (!response.ok) {
+          console.warn("Member role 정보를 가져오지 못했습니다.");
+          setGmRole(null); // 실패 시 null로 설정
+          return;
+        }
+  
+        const data = await response.json();
+        if (data.success) {
+          setGmRole(data.g_m_role); // g_m_role 값 설정
+        } else {
+          console.warn(data.message);
+          setGmRole(null); // 실패 시 null로 설정
+        }
+      } catch (error) {
+        console.error("Error fetching member role:", error.message);
+        setGmRole(null); // 오류 발생 시 null로 설정
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchGroupRole();
+  }, [g_no]);
 
   // 메시지 컨테이너 끝으로 스크롤
   const scrollToBottom = () => {
@@ -217,8 +255,18 @@ const ChatRoom = () => {
     );
   };
 
-   if (!isMember) {
-    return <p>접근 권한이 없습니다.</p>; // 멤버가 아니면 다른 내용을 렌더링
+  const handleMemberClick = (member) => {
+    setSelectedMember(member); // 클릭된 멤버 정보 저장
+    setIsModalOpens(true); // 모달 열기
+  };
+
+  const closeModal = () => {
+    setSelectedMember(null); // 선택된 멤버 초기화
+    setIsModalOpens(false); // 모달 닫기
+  };
+
+   if (!isMember || gMRole === 0) {
+    return <p className="no_member">접근 권한이 없습니다.</p>; // 멤버가 아니면 다른 내용을 렌더링
   }
 
   return (
@@ -264,6 +312,7 @@ const ChatRoom = () => {
                       <img
                         src={msg.m_profile_img || "/default-profile.png"}
                         alt="프로필이미지"
+                        onClick={() => handleMemberClick(msg)}
                       />
                     </div>
                   )}
@@ -312,6 +361,7 @@ const ChatRoom = () => {
           })
         )}
         <div ref={messagesEndRef}></div>
+        <ProfileModal member={selectedMember} isOpen={isModalOpens} onClose={closeModal} />
       </div>
       {imagePreview && (
         <div className="image_preview">

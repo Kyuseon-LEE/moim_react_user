@@ -4,6 +4,8 @@ import "../../css/group/group_home.css";
 import GroupSettingsModal from "./GroupSettingsModal";
 import ChatRoom from "./ChatRoom";
 import MemberList from "./MemberList";
+import PostList from "./PostList";
+import ProfileModal from "./ProfileModal";
 
 const GroupHome = () => {
   const { g_no } = useParams();
@@ -27,6 +29,8 @@ const GroupHome = () => {
   const [currentPostText, setCurrentPostText] = useState("");
   const [isUploading, setIsUploading] = useState(false); // 업로드 상태
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null); // 선택된 멤버 정보
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
 
   // 게시글 날짜 포맷
   function formatRelativeDate(dateString) {
@@ -58,7 +62,7 @@ const GroupHome = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}. ${month}. ${day}`;
   }
-  // (tbl_group) 그룹 정보 가져오기
+  
   useEffect(() => {
     const fetchGroupData = async () => {
       try {
@@ -529,6 +533,16 @@ const handleEditImageUpload = (event) => {
   const handleCloseSettingsModal = () => {
     setIsSettingsModalOpen(false); // 모달 닫기
   };
+
+  const handleProfileClick = (member) => {
+    setSelectedMember(member); // 선택된 멤버 저장
+    setIsModalOpen(true); // 모달 열기
+  };
+
+  const closeModal = () => {
+    setSelectedMember(null); // 선택된 멤버 초기화
+    setIsModalOpen(false); // 모달 닫기
+  };
   
   
   if (loading) {
@@ -548,199 +562,36 @@ const handleEditImageUpload = (event) => {
   const renderContent = () => {
     switch (activeTab) {
       case "게시글":
-        return (
-          <div className="home_board">
-            <div className="home_search">
-              <input type="text" placeholder='글 내용을 입력하세요'/>
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-            </div>
-            <div className="board_list">
-            {posts.map((post) => (
-            <div key={post.p_no} className="post_item">
-              <div className="author_info">
-              <img
-                src={post.m_profile_img || `${process.env.PUBLIC_URL}/img/profile_default.png`} 
-                alt="Profile"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`;
-                }}
-              />
-                <p className="author_nick">{post.m_nickname} 
-                  <span className={`member_grade ${
-                            post.g_m_role === 1
-                              ? "role-normal"
-                              : post.g_m_role === 2
-                              ? "role-manager"
-                              : post.g_m_role === 3
-                              ? "role-leader"
-                              : "role-unknown"
-                          }`}>
-                    {getMemberGrade(post.g_m_role)}
-                  </span>
-                </p>
-                <p className="author_date">{formatRelativeDate(post.p_reg_date)}</p>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  onClick={() => toggleMenuVisibility(post.p_no)} // 클릭 이벤트
-                  style={{ cursor: "pointer" }}
-                >
-                  <circle cx="12" cy="5" r="1.5"></circle>
-                  <circle cx="12" cy="12" r="1.5"></circle>
-                  <circle cx="12" cy="19" r="1.5"></circle>
-                </svg>
-                {menuVisibility[post.p_no] && ( // 메뉴가 열려 있는 경우 표시
-                <div className="post_menu">
-                {post.m_no === parseInt(localStorage.getItem("m_no")) && (
-                  <button onClick={() => handleEdit(post.p_no, post.p_text)}>수정</button>
-                )}
-                {(gMRole === 3 || post.m_no === parseInt(localStorage.getItem("m_no"))) && (
-                  <button onClick={() => handleDeletePost(post.p_no)}>삭제</button>
-                )}
-                <button>신고하기</button>
-
-            {editingPostId && (
-              <div className="edit_modal">
-                <div className="edit_content">
-                  <h2>게시글 수정</h2>
-                  <textarea
-                    value={currentPostText}
-                    onChange={(e) => setCurrentPostText(e.target.value)}
-                  />
-                  <div className="image_upload">
-                    <input type="file" onChange={handleEditImageUpload} />
-                  </div>
-                  {isUploading && (
-                    <div className="loading-bar">
-                      <div className="loading-spinner"></div>
-                      <p>이미지 업로드 중입니다...</p>
-                    </div>
-                  )}
-                  <div className="edit_buttons">
-                    <button onClick={handleSaveEdit} disabled={isUploading}>
-                      저장
-                    </button>
-                    <button onClick={handleEditClose}>취소</button>
-                  </div>
-                </div>
-              </div>
-            )}
-              </div>
-              
-                )}
-              </div>
-              <div className="author_board">
-                <p>{post.p_text}</p>
-                {post.p_img && (
-                  <img
-                    src={post.p_img}
-                    alt="Content"
-                  />
-                )}
-                
-              </div>
-              {commentsByPost[post.p_no] && commentsByPost[post.p_no].length > 0 && (
-              <div className="comment_list">
-                <h4>
-                  댓글 {commentsByPost[post.p_no] && commentsByPost[post.p_no].length > 0
-                    ? `${commentsByPost[post.p_no].length}개`
-                    : ""}
-                </h4>
-                {commentsByPost[post.p_no].map((comment) => (
-                  <div key={comment.co_no} className="comment_item">
-                    <img
-                      src={
-                        comment.m_profile_img
-                          ? `${comment.m_profile_img}` // 작성자 프로필 이미지
-                          : `${process.env.PUBLIC_URL}/img/profile_default.png` // 기본 이미지
-                      }
-                      alt="Profile"
-                      className="comment_profile"
-                      onError={(e) => {
-                        e.target.onerror = null; // 기본 이미지로 대체
-                        e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`;
-                      }}
-                    />
-                    <div className="comment_content">
-                      <p className="list_author">{`${comment.m_nickname}`}
-                        <span className={`member_grade ${
-                            comment.g_m_role === 1
-                              ? "role-normal"
-                              : comment.g_m_role === 2
-                              ? "role-manager"
-                              : comment.g_m_role === 3
-                              ? "role-leader"
-                              : "role-unknown"
-                          }`}
-                        >
-                          {getMemberGrade(comment.g_m_role)}
-
-                        </span>
-                        {comment.m_no === parseInt(localStorage.getItem("m_no")) && (
-                        <span
-                          className="comment_delete"
-                          onClick={() => handleDeleteComment(comment.co_no, post.p_no)}
-                        >
-                          삭제
-                        </span>
-                      )}
-                      </p>
-                      <p className="list_comment">{comment.co_text}</p>
-                      <p className="list_date">{new Date(comment.co_reg_date).toLocaleString()}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-              <div className="board_comment">
-                <div className="comment_view">
-                <img
-                  src={
-                    localStorage.getItem("m_profile_img")
-                      ? `${localStorage.getItem("m_profile_img")}` // 현재 로그인한 사용자 프로필 이미지
-                      : `${process.env.PUBLIC_URL}/img/profile_default.png` // 기본 이미지
-                  }
-                  alt="Profile"
-                  onError={(e) => {
-                    e.target.onerror = null; // 무한 루프 방지
-                    e.target.src = `${process.env.PUBLIC_URL}/img/profile_default.png`; // 기본 이미지 경로
-                  }}
-                />
-                  <input
-                    type="text"
-                    placeholder="댓글을 남겨주세요"
-                    value={commentTexts[post.p_no] || ""} // 특정 게시글의 댓글 입력 상태
-                    onChange={(e) => handleCommentChange(post.p_no, e.target.value)} // 상태 업데이트
-                  />
-                  <div className="comment_button" onClick={() => handleCommentSubmit(post.p_no)}>
-                    작성하기
-                  </div>
-                </div>
-              </div> 
-            </div>
-          ))}
-              <div className="post_item">
-                <div className="author_info">
-                <img src={process.env.PUBLIC_URL + '/img/logo_mini.png'} alt="Logo" />
-                  <p className="author_nick">moim?</p>
-                  <p className="author_date">{formatRelativeDate(groupData.g_reg_date)}</p>
-                </div>
-                <div className="author_board">
-                  <p>{groupData.g_name}이(가) 생성 되었습니다</p>
-                
-                </div>
-              </div>
-            </div>
-          </div>
-        );
+  return (
+    <PostList
+      groupData={groupData}
+      isMember={isMember}
+      gMRole={gMRole}
+      posts={posts}
+      commentsByPost={commentsByPost}
+      commentTexts={commentTexts}
+      selectedMember={selectedMember}
+      isModalOpen={isModalOpen}
+      closeModal={closeModal}
+      handleProfileClick={handleProfileClick}
+      handleEdit={handleEdit}
+      toggleMenuVisibility={toggleMenuVisibility}
+      handleEditImageUpload={handleEditImageUpload}
+      handleSaveEdit={handleSaveEdit}
+      handleEditClose={handleEditClose}
+      handleDeletePost={handleDeletePost}
+      handleDeleteComment={handleDeleteComment}
+      handleCommentChange={handleCommentChange}
+      handleCommentSubmit={handleCommentSubmit}
+      getMemberGrade={getMemberGrade}
+      menuVisibility={menuVisibility}
+      editingPostId={editingPostId}
+      currentPostText={currentPostText}
+      isUploading={isUploading}
+      formatRelativeDate={formatRelativeDate}
+      setCurrentPostText={setCurrentPostText}
+    />
+  );
       case "일정":
         return (
           <div className="moim_board">
@@ -777,7 +628,7 @@ const handleEditImageUpload = (event) => {
           return (
             <div className="member_board">
               <div className="member_search">
-                <h3>멤버 {members.length}</h3>
+              <h3>멤버 {members.filter((member) => member.g_m_role !== 0).length}</h3>
                 <input type="text" placeholder="멤버검색" />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -870,8 +721,11 @@ const handleEditImageUpload = (event) => {
               )}
             </div>
           )
+        ) : groupData.g_regist === 0 ? (
+          // 회원이 아니고 가입이 마감된 경우
+          <div className="group_access">가입이 불가능한 모임입니다.</div>
         ) : (
-          // 회원이 아닌 경우
+          // 회원이 아니고 가입 가능 상태
           <div className="group_access" onClick={handleJoinClick}>
             모임 가입하기
           </div>
@@ -911,6 +765,10 @@ const handleEditImageUpload = (event) => {
             isOpen={isSettingsModalOpen} // 모달 상태 전달
             onClose={handleCloseSettingsModal} // 닫기 핸들러 전달
             groupData={groupData} // 그룹 데이터 전달
+            onSettingsUpdated={(updatedData) => {
+              console.log("업데이트된 데이터:", updatedData); // 디버깅용 로그
+              setGroupData(updatedData); // 업데이트된 데이터 반영
+            }}
           />
         </div>
         
