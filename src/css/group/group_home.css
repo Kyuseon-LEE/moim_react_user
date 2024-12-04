@@ -53,7 +53,7 @@
     top:20px;
     z-index: 1
 }
-.home_info img{
+.home_info > img{
     width:210px;
     height:210px;
 }
@@ -370,7 +370,7 @@
    border-bottom: 1px solid #ccc;
    padding-bottom:10px;
  }
- .member_info img{
+ .member_info > img{
      width:50px;
      height:50px;
      border-radius: 50%;
@@ -643,6 +643,22 @@
   font-size:0.8em;
   margin-top:5px;
   cursor:pointer;
+}
+.group_modi{
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.group_modi img{
+  width:18px;
+  height:18px;
+  float:left;
+  margin-right:5px;
+}
+.group_modi > p{
+  display: block;
+  font-size: 1em;
+  line-height: 20px;
 }
   
   

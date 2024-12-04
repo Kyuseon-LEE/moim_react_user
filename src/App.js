@@ -6,6 +6,7 @@ import Article2 from './view/include/Article2';
 import SignUp from './view/member/SignUp.jsx';
 import GroupCreate from './view/group/GroupCreate';
 import GroupHome from './view/group/GroupHome';
+import GroupPost from './view/group/GroupPost';
 import LocalLogin from './view/member/LocalLogin.jsx'
 import Profile from './view/profile/Profile.jsx'
 import SignupSuccess from './view/member/SignupSuccess.jsx';
@@ -70,6 +71,12 @@ function App() {
           <>
             <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
             <GroupHome jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+          </>
+        } />
+        <Route path="/group/:g_no/posts/:m_no" element={
+          <>
+            <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+            <GroupPost jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
           </>
         } />
 
