@@ -7,20 +7,25 @@ import SignUp from './view/member/SignUp.jsx';
 import GroupCreate from './view/group/GroupCreate';
 import GroupHome from './view/group/GroupHome';
 import LocalLogin from './view/member/LocalLogin.jsx'
-import KakaoLogin from './view/member/KakaoLogin.jsx'
-import GoogleLogin from './view/member/GoogleLogin.jsx'
 import Profile from './view/profile/Profile.jsx'
 import SignupSuccess from './view/member/SignupSuccess.jsx';
 import Credit from './view/profile/Credit.jsx';
-import Paysuccess from './view/profile/Paysuccess.jsx'
-import Payfail from './view/profile/Payfail.jsx'
+import Paysuccess from './view/profile/Paysuccess.jsx';
+import Payfail from './view/profile/Payfail.jsx';
+import SocialLogin from './view/member/SocialLogin.jsx';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
+
+  const CLIENT_ID = '378518007722-pt147i1dec56ncndfmlvi9q6hppqnkaf.apps.googleusercontent.com'
+
   const [jwt, setJwt] = useState('');  // jwt 상태 관리
   const [isLoggedIn, setIsLoggedIn] = useState(!!jwt);
+  const [userInfo, setUserInfo] = useState(null); //social
 
   return (
+    <GoogleOAuthProvider clientId={CLIENT_ID}>
     <BrowserRouter>
       {/* Routes 설정: / 경로에서 Home 컴포넌트를 렌더링 */}
       <Routes>
@@ -70,8 +75,8 @@ function App() {
 
         <Route path="/login" element={
           <>
-            <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
-            <LocalLogin jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUserInfo={setUserInfo} userInfo={userInfo}/>
+            <LocalLogin jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUserInfo={setUserInfo} userInfo={userInfo}/>
           </>
         } />       
 
@@ -99,12 +104,18 @@ function App() {
             <Payfail jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           </>
         } />
-
+          <Route path="/social_login" element={
+          <>
+            <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <SocialLogin jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} userInfo={userInfo}/>
+          </>
+        } />
         
 
       </Routes>
 
     </BrowserRouter>
+    </GoogleOAuthProvider>
   );
 }
 

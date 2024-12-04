@@ -41,7 +41,7 @@ const Profile = () => {
                 setNewPhone(response.data.memberDtos.m_phone); 
                 setNewAddress(response.data.memberDtos.m_address);
                 setProfileImgFile(response.data.memberDtos.m_profile_img);
-                setMemberId(response.data.memberDtos.m_id);
+                setMemberId(response.data.memberDtos.m_id || response.data.memberDtos.m_social_id);
                 setCategories(response.data.memberDtos.m_category);
                 setMGrade(response.data.memberDtos.m_grade);
 

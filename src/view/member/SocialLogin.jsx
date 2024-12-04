@@ -1,58 +1,56 @@
-import React, { useState } from 'react';
-import instance from '../../api/axios';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../../css/member/signup.css';
-import SignupSuccess from "./SignupSuccess";
 import axios from "axios";
+import '../../css/member/signup.css';
 
-const SignUp = () => {
+const SocialLogin = ({ userInfo }) => {
     const navigate = useNavigate();
-    const [m_id, setM_id] = useState('');
-    const [m_pw, setM_pw] = useState('');
-    const [m_pw_again, setM_pw_again] = useState('');
-    const [m_mail, setM_mail] = useState('');
+    const [socialId, setSocialId] = useState(userInfo?.m_kakao_id || userInfo?.m_mail);
+    const [socialType, setSocialType] = useState(userInfo?.m_kakao_id ? 'kakao' : 'google');
+    const [m_name, setM_name] = useState(userInfo?.m_name || '');  // 기본 값은 userInfo에서 받아오도록 설정
+    const [m_mail, setM_mail] = useState(userInfo?.m_mail || '');  // 이메일을 기본 값으로 설정
     const [m_phone, setM_phone] = useState('');
-    const [m_name, setM_name] = useState('');
     const [m_nickname, setM_nickname] = useState('');
     const [m_gender, setM_gender] = useState('');
     const [m_age, setM_age] = useState('');
-    const [profileImage, setProfileImage] = useState(null);
     const [nicknameStatus, setNicknameStatus] = useState('');
-    const [formError, setFormError] = useState('');
     const [postcode, setPostcode] = useState('');
     const [address, setAddress] = useState('');
     const [detailAddress, setDetailAddress] = useState('');
+    const [m_profile_img, setM_profile_img] = useState(userInfo?.m_profile_img || null);
 
-        //Daum address
-        const openPostcodePopup = () => {
-            new window.daum.Postcode({
-                oncomplete: (data) => {
+
+    useEffect(() => {
+        localStorage.setItem('m_mail', m_mail);
+        localStorage.setItem('m_name', m_name);
+        localStorage.setItem('m_profile_img', m_profile_img);
+
+    }, []);
+
+    // Daum 주소 찾기 팝업
+    const openPostcodePopup = () => {
+        new window.daum.Postcode({
+            oncomplete: (data) => {
                 const addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
-    
                 let extraAddr = '';
                 if (data.userSelectedType === 'R') {
                     if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
-                    extraAddr += data.bname;
+                        extraAddr += data.bname;
                     }
                     if (data.buildingName !== '' && data.apartment === 'Y') {
-                    extraAddr += (extraAddr !== '' ? `, ${data.buildingName}` : data.buildingName);
+                        extraAddr += (extraAddr !== '' ? `, ${data.buildingName}` : data.buildingName);
                     }
                 }
-    
                 setPostcode(data.zonecode);
                 setAddress(addr);
-                },
-            }).open();
-        };
+            },
+        }).open();
+    };
 
     const handleInputData = (event) => {
         const { name, value } = event.target;
-        if (name === 'm_id') setM_id(value);
-        else if (name === 'm_pw') setM_pw(value);
-        else if (name === 'm_pw_again') setM_pw_again(value);
-        else if (name === 'm_mail') setM_mail(value);
+        if (name === 'm_mail') setM_mail(value);
         else if (name === 'm_phone') setM_phone(value);
-        else if (name === 'm_name') setM_name(value);
         else if (name === 'm_nickname') setM_nickname(value);
         else if (name === 'm_gender') setM_gender(value);
         else if (name === 'm_age') setM_age(value);
@@ -62,58 +60,58 @@ const SignUp = () => {
     }
 
     const handleFileChange = (event) => {
-        setProfileImage(event.target.files[0]);
+        setM_profile_img(event.target.files[0]);
     }
 
-    //Submit to Server
+    // Submit to Server
     const handleSubmit = async (event) => {
         event.preventDefault();
-
-        // 비밀번호 확인 체크
-        if (m_pw !== m_pw_again) {
-            setFormError('비밀번호가 일치하지 않습니다.');
-            return;
-        }
         
-        //주소 합쳐서 보내기
+        // 주소 합쳐서 보내기
         const fullAddress = `${postcode} ${address} ${detailAddress}`;
 
         const formData = new FormData();
+        formData.append("m_social_id", socialId);
+        formData.append('m_social_type', socialType);
         formData.append('m_name', m_name);
-        formData.append('m_id', m_id);
-        formData.append('m_pw', m_pw);
         formData.append('m_mail', m_mail);
         formData.append('m_phone', m_phone);
         formData.append('m_nickname', m_nickname);
         formData.append('m_gender', m_gender);
         formData.append('m_age', m_age);
         formData.append('m_address', fullAddress);
-        if (profileImage) {
-            formData.append("file", profileImage);
+        if (m_profile_img) {
+            formData.append("file", m_profile_img);
         } 
-        axios.post('http://localhost:5000/member/signup_confirm', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
+        console.log("formData", socialId);
+        console.log("formData", socialType);
+        console.log("formData", m_name);
+        console.log("formData", m_phone);
+        console.log("formData", m_mail);
+        console.log("formData", m_nickname);
+        console.log("formData", m_age);
+        console.log("formData", fullAddress);
+        console.log("formData", m_profile_img);
+
+        axios.post('http://localhost:5000/member/social_signup', formData, {
+            headers: { 'Content-Type': 'application/json' },
             withCredentials: true,  
         })
         .then(response => {
             console.log("[회원가입 성공]", response.data);
-            navigate("/login"); 
+            navigate("/"); 
         })
         .catch(err => {
-            if (err.response && err.response.data) {
-                setFormError(err.response.data.message || "회원가입 중 오류가 발생했습니다.");
-            } else {
-                setFormError("서버와 통신할 수 없습니다. 잠시 후 다시 시도해주세요.");
-            }
+           console.log("회원가입 도중 문제가 발생했습니다.", err);
+           alert("문제가 발생했습니다. 관리자에게 문의 하세요");
         });
     }
-
 
     return (
         <article className='signup_article'>
             <div className='article_wrap'>
                 <div className='title'>
-                    <h4>회원가입</h4>
+                    <h4>추가 정보</h4>
                 </div>
                 <div className='content'>
                     <form name="signup_form" onSubmit={handleSubmit} encType='multipart/form-data'>
@@ -124,7 +122,7 @@ const SignUp = () => {
                                     <td>
                                         <img
                                             className="profileImg"
-                                            src={profileImage ? URL.createObjectURL(profileImage) : "/img/profile_default.png"}
+                                            src={m_profile_img ? m_profile_img : "/img/profile_default.png"}
                                             alt="Profile Preview"
                                             id="profilePreview"
                                             style={{ cursor: 'pointer' }}
@@ -145,56 +143,16 @@ const SignUp = () => {
                                     <td>이름</td>
                                     <td>
                                         <input
-                                            type='text'
-                                            id='m_name'
-                                            name='m_name'
-                                            placeholder='이름을 입력하세요.'
+                                            type="text"
+                                            id="m_name"
+                                            name="m_name"
+                                            placeholder="이름을 입력하세요."
                                             value={m_name}
                                             onChange={handleInputData}
                                         />
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>아이디</td>
-                                    <td>
-                                        <input
-                                            type='text'
-                                            id='m_id'
-                                            name='m_id'
-                                            placeholder='아이디를 입력하세요.'
-                                            value={m_id}
-                                            onChange={handleInputData}
-                                        />
-                                        <p>※ 알파벳과 숫자를 포함해 6자 이상 적어주세요.</p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>비밀번호</td>
-                                    <td>
-                                        <input
-                                            type='password'
-                                            id='m_pw'
-                                            name='m_pw'
-                                            placeholder='비밀번호를 입력하세요.'
-                                            value={m_pw}
-                                            onChange={handleInputData}
-                                        />
-                                         <p>※ 알파벳과 숫자를 포함해 8자 이상 적어주세요.</p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>비밀번호 확인</td>
-                                    <td>
-                                        <input
-                                            type='password'
-                                            id='m_pw_again'
-                                            name='m_pw_again'
-                                            placeholder='비밀번호를 확인 입력하세요.'
-                                            value={m_pw_again}
-                                            onChange={handleInputData}
-                                        />
-                                    </td>
-                                </tr>
+
                                 <tr>
                                     <td>이메일</td>
                                     <td>
@@ -276,21 +234,21 @@ const SignUp = () => {
                                     <td>주소</td>
                                     <td>
                                         <div className='address_container'>
-                                        <input
-                                            type="text"
-                                            name="postcode"
-                                            value={postcode}
-                                            readOnly
-                                            placeholder="우편번호"
-                                        />
-                                        <input
-                                            type="text"
-                                            name="address"
-                                            value={address}
-                                            readOnly
-                                            placeholder="주소"
-                                        />
-                                        <button type="button" onClick={openPostcodePopup}>주소 찾기</button>
+                                            <input
+                                                type="text"
+                                                name="postcode"
+                                                value={postcode}
+                                                readOnly
+                                                placeholder="우편번호"
+                                            />
+                                            <input
+                                                type="text"
+                                                name="address"
+                                                value={address}
+                                                readOnly
+                                                placeholder="주소"
+                                            />
+                                            <button type="button" onClick={openPostcodePopup}>주소 찾기</button>
                                         </div>
                                         <input
                                             type="text"
@@ -304,7 +262,7 @@ const SignUp = () => {
                             </tbody>
                         </table>
                         <div>
-                            <button type="submit" onClick={handleSubmit}>회원가입</button>
+                            <button type="submit">확인</button>
                         </div>
                     </form>
                 </div>
@@ -313,4 +271,4 @@ const SignUp = () => {
     );
 }
 
-export default SignUp;
+export default SocialLogin;
