@@ -3,6 +3,7 @@ import axios from "axios";
 
 import '../../css/article.css';
 import {Link} from "react-router-dom";
+import AllGroup from "./AllGroup";
 
 const Article2 = () => {
 
@@ -22,6 +23,7 @@ const Article2 = () => {
     }
     console.log(ad);
   return (
+    <>
     <article className="article_2">
       <div className="article_wrap2">
           <h2>프리미엄 모임</h2>
@@ -50,45 +52,13 @@ const Article2 = () => {
             </ul>
         </div>        
       </div>
-      <div className="article_wrap2">
-          <h2>이런 활동을 찾고 있나요?</h2>
-          <div className="random_list">
-            <ul>
-              <li>
-                <img src={process.env.PUBLIC_URL + '/img/exam.png'} alt="exam" />
-                <span>모임명</span><br />
-                <span>모임설명</span><br />
-                <span>[]모임 더보기</span><br />
-              </li>
-              <li>
-                <img src={process.env.PUBLIC_URL + '/img/exam.png'} alt="exam" />
-                <span>모임명</span><br />
-                <span>모임설명</span><br />
-                <span>[]모임 더보기</span><br />
-              </li>
-              <li>
-                <img src={process.env.PUBLIC_URL + '/img/exam.png'} alt="exam" />
-                <span>모임명</span><br />
-                <span>모임설명</span><br />
-                <span>[]모임 더보기</span><br />
-              </li>
-              <li>
-                <img src={process.env.PUBLIC_URL + '/img/exam.png'} alt="exam" />
-                <span>모임명</span><br />
-                <span>모임설명</span><br />
-                <span>[]모임 더보기</span><br />
-              </li>
-              <li>
-                <img src={process.env.PUBLIC_URL + '/img/exam.png'} alt="exam" />
-                <span>모임명</span><br />
-                <span>모임설명</span><br />
-                <span>[]모임 더보기</span><br />
-              </li>
-              
-            </ul>
-        </div>        
+    </article>
+    <article className="article_3">
+      <div className="article_wrap3">
+          <AllGroup />       
       </div>
     </article>
+    </>
   );
 };
 

@@ -5,7 +5,6 @@ import GroupSettingsModal from "./GroupSettingsModal";
 import ChatRoom from "./ChatRoom";
 import MemberList from "./MemberList";
 import PostList from "./PostList";
-import ProfileModal from "./ProfileModal";
 
 const GroupHome = () => {
   const { g_no } = useParams();
@@ -345,8 +344,6 @@ const GroupHome = () => {
         return "간부 회원"; // g_m_role === 2
       case 3:
         return "모임장"; // g_m_role === 3
-      default:
-        return "알 수 없음"; // 기타 예외 상황
     }
   };
 
@@ -526,6 +523,30 @@ const handleEditImageUpload = (event) => {
       alert("댓글 삭제 중 오류가 발생했습니다.");
     }
   };
+
+  const handleKickMember = async (g_no, m_no) => {
+    try {
+      const response = await fetch(`http://localhost:5000/group/${g_no}/kick`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ m_no }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        alert("해당 멤버를 강퇴했습니다.");
+        // 강퇴된 멤버를 UI에서 제거
+        setMembers((prevMembers) => prevMembers.filter((member) => member.m_no !== m_no));
+      } else {
+        alert(data.message || "강퇴 처리에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("강퇴 요청 오류:", error);
+      alert("강퇴 처리 중 오류가 발생했습니다.");
+    }
+  };
+  
   const handleOpenSettingsModal = () => {
     setIsSettingsModalOpen(true); // 모달 열기
   };
@@ -590,6 +611,7 @@ const handleEditImageUpload = (event) => {
       isUploading={isUploading}
       formatRelativeDate={formatRelativeDate}
       setCurrentPostText={setCurrentPostText}
+      handleKickMember={handleKickMember}
     />
   );
       case "일정":
@@ -621,7 +643,11 @@ const handleEditImageUpload = (event) => {
       case "채팅방":
         return (
           <div className="home_board">
-            <ChatRoom g_no={groupData.g_no} />
+            <ChatRoom 
+            g_no={groupData.g_no}
+            gMRole={gMRole} 
+            handleKickMember={handleKickMember}
+            />
           </div>
         );
         case "멤버":
@@ -651,6 +677,8 @@ const handleEditImageUpload = (event) => {
                 loading={loading}
                 members={members}
                 getMemberGrade={getMemberGrade}
+                gMRole={gMRole}
+                g_no={g_no}
               />
             </div>
           );

@@ -24,12 +24,15 @@ const ProfileModal = ({ member, isOpen, onClose, filterPostsByMember }) => {
         </div>
         <div className="profile_info">
           <p>카테고리: {member.m_category}</p>
-          <p>가입일: {new Date(member.g_reg_date).toLocaleDateString()}</p>
+          <p>
+            가입일:{" "}
+            {member.g_reg_date
+              ? new Date(member.g_reg_date).toLocaleDateString()
+              : "-"}
+          </p>
+
         </div>
         <div className="modal_buttons">
-          <button className="modal_button" onClick={handleViewPosts}>
-            작성글 보기
-          </button>
           <button className="modal_button modal_button_close" onClick={onClose}>
             닫기
           </button>

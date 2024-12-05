@@ -45,9 +45,9 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
             .then(response => {
                 const { accessToken, memberInfo } = response.data;
                 localStorage.setItem("accessToken", accessToken);
-                // localStorage.setItem("m_id", m_id);
-                // localStorage.setItem("m_no", memberInfo.m_no);
-                // localStorage.setItem("m_profile_img", memberInfo.m_profile_img);
+                localStorage.setItem("m_id", m_id);
+                localStorage.setItem("m_no", memberInfo.m_no);
+                localStorage.setItem("m_profile_img", memberInfo.m_profile_img);
                 setMemberInfo(memberInfo);
                 setJwt(accessToken);
                 setIsLoggedIn(true);

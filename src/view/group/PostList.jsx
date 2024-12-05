@@ -28,7 +28,9 @@ const PostList = ({
   currentPostText,
   isUploading,
   formatRelativeDate,
+  handleKickMember,
 }) => {
+  
   if (groupData.g_public === 0 && !isMember) {
     return (
       <div className="home_board">
@@ -241,11 +243,14 @@ const PostList = ({
                 
                 </div>
               </div>
-        <ProfileModal
-          member={selectedMember}
-          isOpen={isModalOpen}
-          onClose={closeModal}
-        />
+              <ProfileModal
+                member={selectedMember}
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                g_m_role={gMRole}
+                handleKickMember={handleKickMember}
+              />
+
       </div>
     </div>
   );
