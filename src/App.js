@@ -16,6 +16,7 @@ import Payfail from './view/profile/Payfail.jsx';
 import SocialLogin from './view/member/SocialLogin.jsx';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import QRLogin from './view/member/QrLogin.jsx';
 
 function App() {
 
@@ -117,6 +118,7 @@ function App() {
             <SocialLogin jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} userInfo={userInfo}/>
           </>
         } />
+         <Route path="/qr_login" element={<QRLogin jwt={jwt} setJwt={setJwt} />} />
         
 
       </Routes>

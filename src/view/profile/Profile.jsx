@@ -51,6 +51,7 @@ const Profile = () => {
             });
     }, []);
 
+
     useEffect(() => {
 
     }, []);
@@ -132,7 +133,11 @@ const Profile = () => {
         formData.append("m_gender", newGender);
         formData.append("m_phone", newPhone);
         formData.append("m_address", `${postcode} ${newAddress} ${detailAddress}`);
-        formData.append("m_id", memberId);
+        if(memberInfo.m_social_type === null) {
+            formData.append("m_id", memberId)
+        } else {
+            formData.append("m_social_id", memberId)
+        }
         if(newCategories==="") {
             formData.append("m_category", categories)
         } else {

@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import instance from '../../api/axios';
 import '../../css/member/LocalLogin.css';
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from '@react-oauth/google';
 import {jwtDecode} from "jwt-decode";
+import QRLogin from "./QrLogin";
+import axios from 'axios';
+
 
 const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
     const navigate = useNavigate();
@@ -34,7 +37,11 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
         formData.append("m_id", m_id);
         formData.append("m_pw", m_pw);
 
-        instance.post('/member/localLogin', formData)
+        axios.post('http://192.168.2.5:5000/member/localLogin', formData, {
+            headers : {
+                'Content-Type' : 'application/json'
+            }
+        })
             .then(response => {
                 const { accessToken, memberInfo } = response.data;
                 localStorage.setItem("accessToken", accessToken);
@@ -52,70 +59,98 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
             });
     };
     //구글 로그인
-    const handleGoogleLoginSuccess = (credentialResponse) => {
-        const decoded = jwtDecode(credentialResponse.credential);
-        instance.post('/auth/google', { ID_token: credentialResponse.credential })
-            .then(response => {
-
-                let existMember = response.data.userFromDb;
-
-                if(existMember === 11) {
-                    const accessToken = response.data.accessToken;
-                    const user = {
-                        m_mail: response.data.user.m_mail,
-                        m_name: response.data.user.m_name,
-                        m_profile_img: response.data.user.m_profile_img,
-                    };
-                    localStorage.setItem("accessToken", accessToken);
-                    setUserInfo(user);
-                    setJwt(accessToken);
-                    setIsLoggedIn(true);
-                    navigate("/signup_success");
-
-                } else {
-                    console.log("######", response.data.user);
-                    const user = {
-                        m_mail: response.data.user.m_mail,
-                        m_name: response.data.user.m_name,
-                        m_profile_img: response.data.user.m_profile_img,
-                    };
-                    setUserInfo(user);
-                    navigate("/social_login")
-                }
-
-            })
-            .catch(err => alert("Google 로그인 실패!"));
+    const handleGoogleLoginSuccess = async (tokenResponse) => {
+        const { access_token } = tokenResponse;
+    
+        try {
+            // 서버로 id_token 전달
+            const response = await instance.post('/auth/google', { access_token });
+            const existMember = response.data.userFromDb;
+    
+            if (existMember === 11) {
+                // 신규 회원 처리
+                const accessToken = response.data.accessToken;
+                const user = {
+                    m_mail: response.data.user.m_mail,
+                    m_name: response.data.user.m_name,
+                    m_profile_img: response.data.user.m_profile_img,
+                };
+                localStorage.setItem("accessToken", accessToken);
+                setUserInfo(user);
+                setJwt(accessToken);
+                setIsLoggedIn(true);
+                navigate("/signup_success");
+            } else {
+                // 기존 회원 처리
+                const user = {
+                    m_mail: response.data.user.m_mail,
+                    m_name: response.data.user.m_name,
+                    m_profile_img: response.data.user.m_profile_img,
+                };
+                setUserInfo(user);
+                navigate("/social_login");
+            }
+        } catch (err) {
+            console.error("Google Login Error:", err);
+            alert("Google 로그인 실패!");
+        }
     };
 
+    const googleLogin = useGoogleLogin({
+        onSuccess: handleGoogleLoginSuccess,
+        onError: () => alert("Google 로그인 실패!"),
+        clientId: "378518007722-pt147i1dec56ncndfmlvi9q6hppqnkaf.apps.googleusercontent.comOUR_GOOGLE_CLIENT_ID",
+        scope: 'openid email profile',
+        response_type: 'token id_token',
+    });
+
     //카카오 로그인
-    const handleKakaoLogin = () => {
+    const handleKakaoLogin = async () => {
         if (!window.Kakao || !window.Kakao.Auth) {
             alert("Kakao SDK가 초기화되지 않았습니다.");
             return;
         }
-
+    
         window.Kakao.Auth.login({
-            success: function (authObj) {
-                instance.post('/auth/kakao', { access_token: authObj.access_token })
-                    .then(response => {
-                        const jwtToken = response.data.accessToken;
-                        localStorage.setItem("accessToken", jwtToken);
-
+            success: async function (authObj) {
+                const access_token = authObj.access_token;
+    
+                try {
+                    // 서버로 access_token 전달
+                    const response = await instance.post('/auth/kakao', { access_token });
+                    const existMember = response.data.userFromDb;
+    
+                    if (existMember === 11) {
+                        // 신규 회원 처리
+                        const accessToken = response.data.accessToken;
                         const user = {
-                            m_kakao_id : response.data.user.m_kakao_id,
+                            m_kakao_id: response.data.user.m_kakao_id,
                             m_name: response.data.user.m_nickname,
                             m_profile_img: response.data.user.m_profile_img,
                         };
-
+                        localStorage.setItem("accessToken", accessToken);
                         setUserInfo(user);
-                        setJwt(jwtToken);
+                        setJwt(accessToken);
                         setIsLoggedIn(true);
-                        navigate("/social_login");
-                    })
-                    .catch(() => alert("Kakao 로그인 실패!"));
+                        navigate("/signup_success");  // 신규 회원 페이지로 이동
+                    } else {
+                        // 기존 회원 처리
+                        const user = {
+                            m_kakao_id: response.data.user.m_kakao_id,
+                            m_name: response.data.user.m_nickname,
+                            m_profile_img: response.data.user.m_profile_img,
+                        };
+                        setUserInfo(user);
+                        navigate("/social_login");  // 기존 회원 페이지로 이동
+                    }
+                } catch (err) {
+                    console.error("Kakao Login Error:", err);
+                    alert("Kakao 로그인 실패!");
+                }
             },
-            fail: function () {
-                alert("[fail]]Kakao 로그인 실패!");
+            fail: function (error) {
+                console.log("Kakao login failed:", error);
+                alert("Kakao 로그인 실패!");
             }
         });
     };
@@ -137,13 +172,16 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
                 </div>
                 <div className="social_title">
                     <h4>Social Login</h4>
-                    <GoogleLogin onSuccess={handleGoogleLoginSuccess} onError={() => alert("Google 로그인 실패!")} />
+                        <button className="google-login-button" onClick={googleLogin}>
+                            <img src="/img/google_logo.png" alt="" /> Continue with Google
+                        </button>
                     <a href="javascript:void(0);" onClick={handleKakaoLogin}>
                         <div className="kakao_logo">
                             <img src="/img/kakao_logo.png" alt="kakao Logo" />
                         </div>
-                        Kakao Login
+                        Continue with kakao
                     </a>
+                    <QRLogin />
                 </div>
             </div>
         </article>

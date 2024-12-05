@@ -81,18 +81,8 @@ const SocialLogin = ({ userInfo }) => {
         formData.append('m_age', m_age);
         formData.append('m_address', fullAddress);
         if (m_profile_img) {
-            formData.append("file", m_profile_img);
+            formData.append("m_profile_img", m_profile_img);
         } 
-        console.log("formData", socialId);
-        console.log("formData", socialType);
-        console.log("formData", m_name);
-        console.log("formData", m_phone);
-        console.log("formData", m_mail);
-        console.log("formData", m_nickname);
-        console.log("formData", m_age);
-        console.log("formData", fullAddress);
-        console.log("formData", m_profile_img);
-
         axios.post('http://localhost:5000/member/social_signup', formData, {
             headers: { 'Content-Type': 'application/json' },
             withCredentials: true,  
