@@ -258,12 +258,14 @@ const ChatRoom = () => {
   const handleMemberClick = (member) => {
     setSelectedMember(member); // 클릭된 멤버 정보 저장
     setIsModalOpens(true); // 모달 열기
+
   };
 
   const closeModal = () => {
     setSelectedMember(null); // 선택된 멤버 초기화
     setIsModalOpens(false); // 모달 닫기
   };
+  
 
    if (!isMember || gMRole === 0) {
     return <p className="no_member">접근 권한이 없습니다.</p>; // 멤버가 아니면 다른 내용을 렌더링
@@ -361,7 +363,12 @@ const ChatRoom = () => {
           })
         )}
         <div ref={messagesEndRef}></div>
-        <ProfileModal member={selectedMember} isOpen={isModalOpens} onClose={closeModal} />
+        <ProfileModal
+                member={selectedMember}
+                isOpen={isModalOpens}
+                onClose={closeModal}
+                g_m_role={gMRole}
+              />
       </div>
       {imagePreview && (
         <div className="image_preview">
