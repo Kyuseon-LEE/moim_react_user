@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "../../css/group/group_home.css";
 import GroupSettingsModal from "./GroupSettingsModal";
 import ChatRoom from "./ChatRoom";
@@ -46,7 +46,6 @@ const GroupHome = () => {
     } else if (diffHours < 24) {
       return `${diffHours}시간 전`; // 1시간 ~ 23시간 전
     } else {
-      // 날짜 포맷: YYYY.MM.DD
       const year = postDate.getFullYear();
       const month = String(postDate.getMonth() + 1).padStart(2, "0");
       const day = String(postDate.getDate()).padStart(2, "0");
@@ -90,18 +89,22 @@ const GroupHome = () => {
   // 그룹에 가입된 유저인지 확인하기
   useEffect(() => {
     const fetchMembershipStatus = async () => {
+      const mNo = localStorage.getItem("m_no"); // 로그인 여부 확인
+      if (!mNo) {
+        // 로그인하지 않은 경우
+        console.warn("로그인하지 않은 사용자입니다.");
+        setIsMember(false); // 멤버 여부를 false로 설정
+        setLoading(false); // 로딩 종료
+        return;
+      }
+  
       try {
-        const mNo = localStorage.getItem("m_no"); // 로컬스토리지에서 m_no 가져오기
-        if (!mNo) {
-          throw new Error("로그인이 필요합니다.");
-        }
-
         // 멤버 여부 확인 API 호출
         const response = await fetch(`http://localhost:5000/group/${g_no}/is-member/${mNo}`);
         if (!response.ok) {
           throw new Error("멤버 여부 확인에 실패했습니다.");
         }
-
+  
         const { isMember } = await response.json();
         setIsMember(isMember); // 멤버 여부 상태 업데이트
       } catch (error) {
@@ -111,7 +114,7 @@ const GroupHome = () => {
         setLoading(false); // 로딩 상태 종료
       }
     };
-
+  
     fetchMembershipStatus();
   }, [g_no]);
 
@@ -124,7 +127,6 @@ const GroupHome = () => {
         const data = await response.json();
         setPosts(data);
 
-        // 게시글별 댓글 데이터 가져오기
         data.forEach((post) => fetchComments(post.p_no));
       } catch (error) {
         console.error("게시글 데이터 오류:", error.message);
@@ -150,10 +152,10 @@ const GroupHome = () => {
    // 유저 권한(g_m_role) 값 가져오기
    useEffect(() => {
     const fetchGroupRole = async () => {
-      const mNo = localStorage.getItem("m_no"); // 로컬스토리지에서 m_no 가져오기
+      const mNo = localStorage.getItem("m_no"); // 로그인 여부 확인
       if (!mNo) {
-        console.warn("로그인이 필요합니다.");
-        setGmRole(null); // 로그인 정보가 없으면 기본값 설정
+        console.warn("로그인하지 않은 사용자입니다.");
+        setGmRole(null); // 로그인하지 않은 경우 기본값 설정
         return;
       }
   
@@ -193,7 +195,6 @@ const GroupHome = () => {
         }
         const data = await response.json();
         setMembers(Array.isArray(data.members) ? data.members : []);
-    // 멤버 데이터 상태 업데이트
       } catch (error) {
         console.error("Error fetching members:", error.message);
       }
@@ -205,7 +206,6 @@ const GroupHome = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest(".post_menu") && !event.target.closest("svg")) {
-        // 메뉴나 SVG 외부 클릭 시 메뉴 닫기
         setMenuVisibility({});
       }
     };
@@ -216,7 +216,6 @@ const GroupHome = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-  
   
   const handleWritePost = () => {
     setIsWritingPost(true); // 게시글 작성 창 열기
@@ -270,7 +269,6 @@ const GroupHome = () => {
         setIsUploading(false); // 업로드 완료 상태로 전환
       });
   };
-  
 
   // 게시글 작성
   const handlePostSubmit = async () => {
@@ -302,8 +300,15 @@ const GroupHome = () => {
     }
 };
 
-   // 모임 가입하기 버튼 클릭
-   const handleJoinClick = () => {
+   const navigate = useNavigate();
+
+  const handleJoinClick = () => {
+    const m_no = localStorage.getItem("m_no");
+    if (!m_no) {
+      alert("로그인이 필요합니다.");
+      navigate("/login"); 
+      return;
+    }
     setIsJoinModalOpen(true);
   };
 
@@ -353,7 +358,6 @@ const GroupHome = () => {
       [p_no]: value, // 특정 게시글의 댓글 입력 상태 업데이트
     }));
   };
-  
 
   const handleCommentSubmit = async (p_no) => {
     const commentText = commentTexts[p_no] || ""; // 해당 게시글의 댓글 내용
@@ -441,7 +445,7 @@ const handleSaveEdit = async () => {
   const p_img = uploadedFileName || null; // 업로드된 이미지 경로 또는 null
   const body = { m_no, p_text: currentPostText, p_img };
 
-  console.log("수정 요청 데이터:", body); // 디버깅용 데이터 출력
+  console.log("수정 요청 데이터:", body);
 
   try {
     const response = await fetch(`http://localhost:5000/group/posts/${editingPostId}/edit`, {
@@ -462,7 +466,6 @@ const handleSaveEdit = async () => {
     alert("수정 중 오류가 발생했습니다.");
   }
 };
-
 
 const handleEditImageUpload = (event) => {
   const file = event.target.files[0];
@@ -565,9 +568,8 @@ const handleEditImageUpload = (event) => {
     setIsModalOpen(false); // 모달 닫기
   };
   
-  
   if (loading) {
-    return <p>Loading...</p>;
+    return <p></p>;
   }
 
   if (error) {
@@ -575,9 +577,8 @@ const handleEditImageUpload = (event) => {
   }
 
   if (!groupData) {
-    return <p>그룹 정보를 찾을 수 없습니다.</p>;
+    return <p></p>;
   }
-  
 
   // 각 탭에 따라 표시할 내용을 정의
   const renderContent = () => {
@@ -672,7 +673,6 @@ const handleEditImageUpload = (event) => {
                 </svg>
               </div>
         
-              {/* 분리된 MemberList 컴포넌트 */}
               <MemberList
                 loading={loading}
                 members={members}
@@ -682,7 +682,6 @@ const handleEditImageUpload = (event) => {
               />
             </div>
           );
-
         
       default:
         return null;
@@ -750,17 +749,14 @@ const handleEditImageUpload = (event) => {
             </div>
           )
         ) : groupData.g_regist === 0 ? (
-          // 회원이 아니고 가입이 마감된 경우
           <div className="group_access">가입이 불가능한 모임입니다.</div>
         ) : (
-          // 회원이 아니고 가입 가능 상태
           <div className="group_access" onClick={handleJoinClick}>
             모임 가입하기
           </div>
         )}
+        
 
-
-      {/* 가입 신청 모달 */}
       {isJoinModalOpen && (
         <div className="modal">
           <div className="modal_contents">
@@ -781,6 +777,8 @@ const handleEditImageUpload = (event) => {
               ? "모임이 공개 상태입니다. 누구나 모임을 검색하고 소개를 볼 수 있습니다."
               : "모임이 비공개 상태입니다. 멤버만 게시글과 소개를 볼 수 있습니다."}
           </p>
+          <p className="info_category"># {groupData.g_category}</p>
+          <p className="info_location"># {groupData.g_location}</p>
           {gMRole === 3 && ( // g_m_role이 3일 때만 버튼 표시
             <div className="group_modi" onClick={handleOpenSettingsModal}>
               <img src={process.env.PUBLIC_URL + "/img/modi.png"} alt="modi" />
@@ -788,19 +786,16 @@ const handleEditImageUpload = (event) => {
             </div>
           )}
 
-          {/* 그룹 설정 모달 */}
           <GroupSettingsModal
-            isOpen={isSettingsModalOpen} // 모달 상태 전달
-            onClose={handleCloseSettingsModal} // 닫기 핸들러 전달
-            groupData={groupData} // 그룹 데이터 전달
+            isOpen={isSettingsModalOpen} 
+            onClose={handleCloseSettingsModal}
+            groupData={groupData}
             onSettingsUpdated={(updatedData) => {
-              console.log("업데이트된 데이터:", updatedData); // 디버깅용 로그
-              setGroupData(updatedData); // 업데이트된 데이터 반영
+              console.log("업데이트된 데이터:", updatedData);
+              setGroupData(updatedData);
             }}
           />
         </div>
-        
-
         {renderContent()}
       </div>
     </article>

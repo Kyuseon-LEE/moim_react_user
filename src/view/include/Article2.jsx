@@ -3,7 +3,8 @@ import axios from "axios";
 
 import '../../css/article.css';
 import {Link} from "react-router-dom";
-import AllGroup from "./AllGroup";
+import RandomGroup from "./RandomGroup";
+import MatchingGroup from "./MatchingGroup";
 
 const Article2 = () => {
 
@@ -41,21 +42,12 @@ const Article2 = () => {
           <Link to={ad.ad_link}><img src={ad.ad_img} alt={ad.ad_name} /></Link>
       </div>
       <div className="article_wrap2">
-          <h2>최근 활동이 활발한 모임</h2>
-          <div className="premium_list">
-            <ul>
-              <li>
-                <img src={process.env.PUBLIC_URL + '/img/exam.png'} alt="exam" />
-                <span>지금 []명이 함께하고 있어요</span><br />
-                <span>모임이름</span>
-              </li>
-            </ul>
-        </div>        
+        <MatchingGroup />
       </div>
     </article>
     <article className="article_3">
       <div className="article_wrap3">
-          <AllGroup />       
+          <RandomGroup />       
       </div>
     </article>
     </>

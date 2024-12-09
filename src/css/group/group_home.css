@@ -802,5 +802,13 @@
   background: #e53935;
 }
 
-  
-  
+.info_category,
+.info_location{
+  display: inline-block;
+  padding:5px 10px;
+  background-color: #f8f8f8;
+  border:1px solid #ccc;
+  border-radius: 15px;
+  margin-top:15px;
+  margin-right:5px;
+}

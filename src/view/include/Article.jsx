@@ -93,13 +93,31 @@ const Article = () => {
         setError("그룹 정보를 가져올 수 없습니다."); // 오류 메시지 설정
       });
   }, [userId]);
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 4;
+
+  const handlePrevClick = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
+  };
+
+  const handleNextClick = () => {
+    setCurrentPage((prevPage) =>
+      Math.min(prevPage + 1, Math.ceil(groups.length / itemsPerPage) - 1)
+    );
+  };
+
+  const visibleGroups = groups.slice(
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
+  );
   
 
   return (
     <article className="article_1">
       <div className="article_wrap_main">
         <div className="together">
-          <svg
+        <svg
             height="15px"
             width="15px"
             viewBox="0 0 293.334 293.334"
@@ -113,31 +131,56 @@ const Article = () => {
           {error && <p className="error">{error}</p>}
         </div>
         <div className="my_list">
-            <ul>
-              <a href="/create">
-                <li className="create">
-                  <p className="plus">+</p>
-                  <p>만들기</p>
-                </li>
-              </a>
-              {groups
-                .filter((group) => group.g_m_role !== 0) // g_m_role이 0이 아닌 그룹만 포함
-                .map((group) => (
-                  <li key={group.g_no} onClick={() => handleGroupClick(group.g_no)}>
-                    <a>
-                      <img
-                        src={group.g_img_name}
-                        alt={group.g_name}
-                      />
-                      <div className="info">
-                        <p>{group.g_name}</p>
-                        <p>{group.memberCount}명</p>
-                      </div>
-                    </a>
-                  </li>
-                ))}
+          <ul>
+            <a href="/create">
+              <li className="create">
+                <p className="plus">+</p>
+                <p>만들기</p>
+              </li>
+            </a>
+            {visibleGroups.map((group) => (
+              <li key={group.g_no} onClick={() => handleGroupClick(group.g_no)}>
+                <a>
+                  <img src={group.g_img_name} alt={group.g_name} />
+                  <div className="info">
+                    <p>{group.g_name}</p>
+                    <p>{group.memberCount}명</p>
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+          {groups.length > itemsPerPage && (
+        <div className="carousel_controls">
+          <img
+            src={
+              currentPage === 0
+                ? process.env.PUBLIC_URL + "/img/left_disabled.png"
+                : process.env.PUBLIC_URL + "/img/left.png"
+            }
+            alt="Previous"
+            onClick={handlePrevClick}
+            className={`carousel_button_left ${
+              currentPage === 0 ? "disabled" : ""
+            }`}
+          />
 
-            </ul>
+          <img
+            src={
+              currentPage === Math.ceil(groups.length / itemsPerPage) - 1
+                ? process.env.PUBLIC_URL + "/img/right_disabled.png"
+                : process.env.PUBLIC_URL + "/img/right.png"
+            }
+            alt="Next"
+            onClick={handleNextClick}
+            className={`carousel_button_right ${
+              currentPage === Math.ceil(groups.length / itemsPerPage) - 1
+                ? "disabled"
+                : ""
+            }`}
+          />
+        </div>
+      )}
         </div>
       </div>
     </article>

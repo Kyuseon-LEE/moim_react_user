@@ -1,0 +1,161 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
+.all_article{
+    width:100%;
+    background-color: rgba(245, 245, 245, 0.2);
+    font-family: "Pretendard Variable";
+}
+.all_article h1{
+    margin: 0 auto;
+    height:80px;
+    width:100%;
+    text-align: center;
+    background-color: #fff;
+    line-height: 80px;
+    border-bottom:1px solid #ccc;
+    
+}
+.group_all {
+    width:1000px;
+    margin: 0 auto;
+    padding:10px;
+    font-family: Arial, sans-serif;
+    padding:0 0 100px 0;
+    min-height: 75vh;
+}
+
+.group_all h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.group_list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .group_item {
+    display: flex;
+    width: 50%; 
+    padding: 20px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #ddd;
+  }
+
+.group_item:nth-child(odd)::after {
+    content: "";
+    width: 100%;    
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+
+
+.group_item:hover {
+    background-color: #f9f9f9;
+}
+
+.group_image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.group_details {
+    flex: 1;
+}
+
+.group_name {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 5px;
+}
+
+.group_info {
+    font-size: 0.9em;
+    color: #666;
+    margin: 0 0 10px;
+    line-height: 1.4;
+    overflow: hidden;
+    width:350px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.group_meta {
+    font-size: 0.85em;
+    color: #999;
+}
+
+.group_meta span {
+    margin-right: 10px;
+}
+
+.group_all_location,
+.group_all_category{
+    padding:5px 10px;
+    border:1px solid #ccc;
+    border-radius: 10px;
+    color:#333;
+    background-color: #fff;
+}
+
+.all_info{
+    margin-bottom:15px;
+}
+.group_all h3{
+    margin-bottom:10px;
+}
+.all_category_list{
+    margin-top:30px;
+    height:auto;
+    height:200px;
+    margin-bottom:10px;
+}
+.all_group_category {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+.all_group_category li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 87px;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    font-family: "Pretendard Variable";
+}
+
+.all_group_category li img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.all_group_category li:hover img {
+    opacity: 0.8;
+}
+.no_groups_message{
+    text-align: center;
+    margin-top:50px;
+    font-family: "Pretendard Variable";
+    height:500px;
+    line-height: 500px;
+}
+.select_category_name{
+    margin-bottom:20px;
+}

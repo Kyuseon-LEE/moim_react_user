@@ -246,4 +246,81 @@ section{
 
 /* 메인이미지 끝 */
 
+/* 푸터 */
+footer {
+    width:100%;
+    background-color: #f7f7f7;
+    font-size: 0.8em;
+    font-family: "Pretendard Variable"
+}
+
+.footer_wrap {
+    width:1000px;
+    margin:0 auto;
+    height:270px;
+    font-size: 0.9em;
+    padding-top:20px;
+}
+.bt_info > img{
+    margin-bottom: 20px;
+    width:70px;
+}
+.inner_t {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.info_left {
+    width: 60%;
+}
+.info_right > div{
+    float:left;
+}
+
+.bt_info img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.bt_title {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+}
+
+.bt_info_list div, .wrap_cs div, .bank_txt div {
+    margin-bottom: 10px;
+}
+
+.wrap_cs {
+    margin-top: 20px;
+}
+
+.bt_tel, .bt_mail, .bt_time {
+    margin-top: 15px;
+}
+
+.bank_txt {
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .inner_t {
+        flex-direction: column;
+    }
+    .info_left, .info_right {
+        width: 100%;
+    }
+}
+
+.bt_info2{
+    margin-top: 40px;
+    margin-right:100px;  
+}
+.bt_info3{
+    margin-top: 40px;
+}
+
 

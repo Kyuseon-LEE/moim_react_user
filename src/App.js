@@ -3,10 +3,11 @@ import Header from './view/include/Header';
 import MainImg from './view/include/MainImg';
 import Article from './view/include/Article';
 import Article2 from './view/include/Article2';
+import Footer from './view/include/Footer';
 import SignUp from './view/member/SignUp.jsx';
 import GroupCreate from './view/group/GroupCreate';
 import GroupHome from './view/group/GroupHome';
-import GroupPost from './view/group/GroupPost';
+import GroupAll from './view/group/GroupAll';
 import LocalLogin from './view/member/LocalLogin.jsx'
 import Profile from './view/profile/Profile.jsx'
 import SignupSuccess from './view/member/SignupSuccess.jsx';
@@ -44,6 +45,7 @@ function App() {
                 />
               )}
             <Article2 jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           </>
         } />
         
@@ -74,10 +76,11 @@ function App() {
             <GroupHome jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
           </>
         } />
-        <Route path="/group/:g_no/posts/:m_no" element={
+        <Route path="/group/all" element={
           <>
             <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-            <GroupPost jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+            <GroupAll jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+            <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           </>
         } />
 

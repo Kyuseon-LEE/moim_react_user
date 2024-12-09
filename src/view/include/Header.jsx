@@ -26,6 +26,8 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
         localStorage.removeItem("m_id");
         localStorage.removeItem("m_no");
         localStorage.removeItem("m_profile_img");
+        localStorage.removeItem("m_category");
+        localStorage.removeItem("m_address");
         setJwt('');
         setIsLoggedIn(false);
         alert("세션이 만료되었습니다. 다시 로그인해주세요.");
@@ -50,6 +52,8 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
     localStorage.removeItem("m_id");
     localStorage.removeItem("m_no");
     localStorage.removeItem("m_profile_img");
+    localStorage.removeItem("m_category");
+    localStorage.removeItem("m_address");
     setJwt('');  // jwt 상태 초기화
     setIsLoggedIn(false);  // 로그인 상태 변경
     window.location.href = "/";

@@ -37,7 +37,7 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
         formData.append("m_id", m_id);
         formData.append("m_pw", m_pw);
 
-        axios.post('http://192.168.2.5:5000/member/localLogin', formData, {
+        axios.post('http://localhost:5000/member/localLogin', formData, {
             headers : {
                 'Content-Type' : 'application/json'
             }
@@ -48,6 +48,8 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
                 localStorage.setItem("m_id", m_id);
                 localStorage.setItem("m_no", memberInfo.m_no);
                 localStorage.setItem("m_profile_img", memberInfo.m_profile_img);
+                localStorage.setItem("m_category", memberInfo.m_category);
+                localStorage.setItem("m_address", memberInfo.m_address);
                 setMemberInfo(memberInfo);
                 setJwt(accessToken);
                 setIsLoggedIn(true);
