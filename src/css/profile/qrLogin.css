@@ -1,0 +1,76 @@
+/* 기본 레이아웃 설정 */
+#qr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.qr_wrap {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 350px;
+    max-width: 100%;
+}
+
+/* 제목 스타일 */
+.qr_wrap h3 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* QR 코드 스타일 */
+.qr_wrap .img {
+    max-width: 200px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* 설명 텍스트 스타일 */
+.qr_wrap div {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.qr_wrap span {
+    font-size: 12px;
+    color: #777;
+}
+
+/* 인증 성공 후 메시지 스타일 */
+.qr_wrap.success > h3 {
+    color: #1f9d22;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* QR 코드 안내 문구 */
+.qr_wrap .guide-text {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* 스타일 조정 */
+.qr_wrap .qr-timer {
+    font-size: 12px;
+    color: #555;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+/* 네트워크 공용 알림 */
+.qr_wrap .network-warning {
+    font-size: 12px;
+    color: #ff6f61;
+    margin-top: 15px;
+    font-weight: bold;
+}

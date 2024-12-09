@@ -199,7 +199,7 @@ const Profile = () => {
     return (
         <article className="article4">
             <div className="profile_article_wrap">
-                <Nav setActiveIndex={setActiveIndex}/>
+                <Nav />
                 <div className="my_info">
                     <div className="info_title">내 정보</div>
                     <div className="use_profile">

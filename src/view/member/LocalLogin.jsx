@@ -4,7 +4,6 @@ import '../../css/member/LocalLogin.css';
 import { useNavigate } from "react-router-dom";
 import { useGoogleLogin } from '@react-oauth/google';
 import {jwtDecode} from "jwt-decode";
-import QRLogin from "./QrLogin";
 import axios from 'axios';
 
 
@@ -166,8 +165,8 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
                         <input type="text" name="m_id" placeholder="ID" onChange={handleInputData} />
                         <input type="password" name="m_pw" placeholder="PW" onChange={handleInputData} />
                         <div className="find_account">
-                            <a href="/member/id_find_form">아이디 찾기</a>
-                            <a href="/member/pw_find_form">비밀번호 찾기</a>
+                            <a href="/id_find_form">아이디 찾기</a>
+                            <a href="/pw_find_form">비밀번호 찾기</a>
                         </div>
                         <input type="button" value="로그인" onClick={handleSubmit} />
                     </form>
@@ -183,7 +182,6 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
                         </div>
                         Continue with kakao
                     </a>
-                    <QRLogin />
                 </div>
             </div>
         </article>

@@ -1,0 +1,55 @@
+.FindIdConfirm_wrap {
+    width: 800px;
+    margin: 100px auto;
+    margin-bottom: 40px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    padding: 20px;
+}
+
+.FindIdConfirm_wrap > h2 {
+    text-align: center;
+    margin:20px auto;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+    width: 80%;
+    font-size: 26px;
+}
+
+.FindIdConfirm_wrap > .content {
+    text-align: center;
+}
+
+.FindIdConfirm_wrap > .content > .id,
+.FindIdConfirm_wrap > .content > .reg_date {
+    display: flex;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 550;
+    margin-bottom: 40px;
+}
+
+.FindIdConfirm_wrap > .content > .id > span {
+    font-size: 18px;
+}
+
+.links {
+    display: flex;
+    justify-content: center;
+    margin-left: 30px;
+}
+.links > div {
+    margin: 10px;
+    margin-left: 15px;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 15px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.02);
+}
+
+
+.FindIdConfirm_wrap > .pw_content {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 18px;
+    padding-bottom: 80px;
+}

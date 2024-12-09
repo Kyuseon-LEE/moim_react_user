@@ -1,0 +1,47 @@
+/* Membership Display */
+div.creditDataForm1 {
+    width: 40%;
+    margin: 20px auto;
+    text-align: center;
+    border: 1px solid #ddd;
+    padding: 80px 0;
+    background-color: #f1f1f1;
+    border-radius: 7px;
+}
+.creditDataForm1 > .name {
+    margin-top: 50px;
+}
+.creditDataForm1 > .name,
+.creditDataForm1 > .mail,
+.creditDataForm1 > .pay_method,
+.creditDataForm1 > .pay_reg_date,
+.creditDataForm1 > .pay_period {
+    margin-bottom: 40px;
+}
+
+.creditDataForm1 > .name > span,
+.creditDataForm1 > .mail > span,
+.creditDataForm1 > .pay_method > span,
+.creditDataForm1 > .pay_reg_date > span,
+.creditDataForm1 > .pay_period > span {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+/* Optional: Style the button for canceling membership */
+.creditDataForm1 > .cancle_membership input[type="button"] {
+    width: 200px;
+    height: 50px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    font-size: 17px;
+    border-radius: 4px;
+}
+
+.creditDataForm1 > .cancle_membership input[type="button"]:hover {
+    cursor: pointer;
+    background-color: rgba(0, 150, 250, .4);
+    color: #fff;
+    font-weight: 550;
+    border: 1px solid rgba(0, 150, 250, .4);
+}
