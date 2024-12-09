@@ -16,7 +16,14 @@ import Payfail from './view/profile/Payfail.jsx';
 import SocialLogin from './view/member/SocialLogin.jsx';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import QRLogin from './view/member/QrLogin.jsx';
+import QRLogin from './view/profile/QrLogin.jsx';
+import Membership from './view/profile/Membership.jsx';
+import MobileLoginConfirm from './view/profile/MobileLoginConfirm.jsx';
+import FindId from './view/member/FindId.jsx';
+import Nav from './view/profile/Nav.jsx';
+import FindIdConfirm from './view/member/FindIdConfirm.jsx';
+import FindPw from './view/member/FindPw.jsx';
+import FindPwConfirm from './view/member/FindPwConfirm.jsx';
 
 function App() {
 
@@ -25,6 +32,7 @@ function App() {
   const [jwt, setJwt] = useState('');  // jwt 상태 관리
   const [isLoggedIn, setIsLoggedIn] = useState(!!jwt);
   const [userInfo, setUserInfo] = useState(null); //social
+  const [memberInfo, setMemberInfo] = useState(null);
 
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
@@ -91,13 +99,13 @@ function App() {
         <Route path="/profile" element={
           <>
             <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
-            <Profile jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <Profile jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
           </>
         } />
         <Route path="/credit" element={
           <>
             <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
-            <Credit jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <Credit jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setMemberInfo={setMemberInfo}/>
           </>
         } />
           <Route path="/pay_success" element={
@@ -118,7 +126,47 @@ function App() {
             <SocialLogin jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} userInfo={userInfo}/>
           </>
         } />
-         <Route path="/qr_login" element={<QRLogin jwt={jwt} setJwt={setJwt} />} />
+         <Route path="/qr_login" element={
+          <>
+            <QRLogin jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          </>
+         } />
+         <Route path='/mobile_login_confirm' element={
+          <>
+          <MobileLoginConfirm jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} memberInfo={memberInfo}/>
+          </>
+         }/>
+          <Route path='/membership' element={
+          <>
+          <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          <Membership jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} memberInfo={memberInfo} setMemberInfo={setMemberInfo}/>
+          </>
+         }/>
+          <Route path='/id_find_form' element={
+          <>
+          <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          <FindId jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} memberInfo={memberInfo} setMemberInfo={setMemberInfo}/>
+          </>
+         }/>
+          <Route path='/find_id_confirm' element={
+          <>
+          <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          <FindIdConfirm jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} memberInfo={memberInfo} setMemberInfo={setMemberInfo}/>
+          </>
+         }/>
+          <Route path='/pw_find_form' element={
+          <>
+          <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          <FindPw jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} memberInfo={memberInfo} setMemberInfo={setMemberInfo}/>
+          </>
+         }/>
+          <Route path='/pw_find_confirm' element={
+          <>
+          <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          <FindPwConfirm jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} memberInfo={memberInfo} setMemberInfo={setMemberInfo}/>
+          </>
+         }/>
+
         
 
       </Routes>

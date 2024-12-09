@@ -1,0 +1,99 @@
+/* findId.css */
+.find_user {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+.findId_wrap {
+    width: 50%;
+    background: #fff;
+    border-radius: 7px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    text-align: center;
+}
+
+.findId_wrap  > .id_header_wrap {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+}
+
+.findId_wrap  > .id_header_wrap h3 {
+    flex: 1;
+    padding: 10px 0;
+    cursor: pointer;
+    color: #999;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.id_header_wrap h3.active {
+    color: #007bff;
+    font-weight: bold;
+    border-bottom: 2px solid #007bff;
+}
+.find_user > .findId_wrap > .content {
+    text-align: center;
+}
+
+.content > .checkName,
+.content > .checkPhone,
+.content > .checkId,
+.content > .checkMail {
+    width: 400px;
+    margin: 0 auto;
+}
+
+.content > .checkName > span,
+.content > .checkPhone > span,
+.content > .checkId > span,
+.content > .checkMail > span
+ {
+    display: block;
+    margin-bottom: 1px;
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+    text-align: left;
+    margin-left: 10px;
+}
+
+.content > .checkName > input[type="text"],
+.content > .checkPhone > input[type="text"],
+.content > .checkId > input[type="text"],
+.content > .checkMail > input[type="email"] 
+{
+    width: 400px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 10px;
+}
+.content > .checkName > input[type="text"]:focus ,
+.content > .checkPhone > input[type="text"]:focus  {
+    outline: none;
+    border: 1px solid #ddd;
+}
+
+
+
+.findId_wrap >.content > input[type="button"] {
+    width: 200px;
+    padding: 10px 12px;
+    background: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 20px;
+}
+
+.findId_wrap >.content > input[type="button"]:hover {
+    background: #0056b3;
+}
