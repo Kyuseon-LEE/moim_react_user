@@ -29,6 +29,7 @@ import FindPwConfirm from './view/member/FindPwConfirm.jsx';
 import PreviousPassword from './view/profile/PreviousPassword.jsx';
 import ChangePassword from './view/profile/ChangePassword.jsx';
 import MyGroupList from './view/profile/MyGroupList.jsx';
+import AnnouncementList from "./view/announcement/AnnouncementList";
 
 function App() {
 
@@ -211,7 +212,13 @@ function App() {
           <ChangePassword jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} memberInfo={memberInfo} setMemberInfo={setMemberInfo}/>
           </>
          }/>
-
+        <Route path='/announcement_list' element={
+            <>
+                <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                <AnnouncementList jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            </>
+        }/>
         
 
       </Routes>

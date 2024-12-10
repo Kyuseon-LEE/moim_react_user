@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 
 const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [customerMenuOpen, setCustomerMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation(); 
 
@@ -41,11 +42,16 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
 
   useEffect(() => {
     setMenuOpen(false); // 경로가 변경되면 메뉴 닫기
+    setCustomerMenuOpen(false);
   }, [location]);
   
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  const toggleCustomerMenu = () => {
+    setCustomerMenuOpen(prev => !prev);
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");  // localStorage에서 jwt 삭제
@@ -71,35 +77,53 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
           <img src={process.env.PUBLIC_URL + '/img/logo.png'} alt="Logo" />
         </a>
 
-        <div className="menu_icon" onClick={toggleMenu}>
+        <div className="menu_icon" >
           <svg
-            width="25"
-            height="25"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+              onClick={toggleMenu}
+              width="25"
+              height="25"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M2 4h16v2H2V4zM2 14h16v2H2v-2zM18 9H2v2h16V9z"
-              fill="currentColor"
+                d="M2 4h16v2H2V4zM2 14h16v2H2v-2zM18 9H2v2h16V9z"
+                fill="currentColor"
             />
+          </svg>
+          <svg
+              onClick={toggleCustomerMenu}
+              xmlns="http://www.w3.org/2000/svg"
+              width="25"
+              height="25"
+              style={{paddingBottom: 1, marginLeft: 20}}
+              viewBox="0 0 24 24">
+            <path
+                fill="currentColor"
+                  d="M10.6 16q0-2.025.363-2.912T12.5 11.15q1.025-.9 1.563-1.562t.537-1.513q0-1.025-.687-1.7T12 5.7q-1.275 0-1.937.775T9.125 8.05L6.55 6.95q.525-1.6 1.925-2.775T12 3q2.625 0 4.038 1.463t1.412 3.512q0 1.25-.537 2.138t-1.688 2.012Q14 13.3 13.738 13.913T13.475 16zm1.4 6q-.825 0-1.412-.587T10 20t.588-1.412T12 18t1.413.588T14 20t-.587 1.413T12 22"/>
           </svg>
         </div>
 
         <nav className={`menu_bar ${menuOpen ? 'show' : ''}`}>
           <ul>
             {!isLoggedIn ? (
-              <>
+                <>
 
-                <li><Link to="/signUp" onClick={closeMenu}>회원가입</Link></li>
-                <li><Link to="/login" onClick={closeMenu}>로그인</Link></li>
-              </>
+                  <li><Link to="/signUp" onClick={closeMenu}>회원가입</Link></li>
+                  <li><Link to="/login" onClick={closeMenu}>로그인</Link></li>
+                </>
             ) : (
-              <>
-                <li><Link to="/profile" onClick={closeMenu}>내정보</Link></li>
-                <li><Link to="#none" onClick={handleLogout}>로그아웃</Link></li>
-              </>
+                <>
+                  <li><Link to="/profile" onClick={closeMenu}>내정보</Link></li>
+                  <li><Link to="#none" onClick={handleLogout}>로그아웃</Link></li>
+                </>
             )}
+          </ul>
+        </nav>
+        <nav className={`menu_bar ${customerMenuOpen ? 'show' : ''}`}>
+          <ul>
+            <li><Link to="/announcement_list">공지사항</Link></li>
+            <li><Link to="#none">고객센터</Link></li>
           </ul>
         </nav>
       </div>
