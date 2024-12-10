@@ -15,13 +15,14 @@ const MyGroupList = ({memberInfo, setMemberInfo}) => {
     let accessToken = localStorage.getItem("accessToken")
     instance.post('/group/getMyGroup', {accessToken: accessToken})
     .then(response => {
+
       console.log("나의 그룹 가져오기 성공---->", response.data.groupDtos);
       let group =response.data.groupDtos;
       setGroups(group)
 
       //토글 상태 설정
       const initialToggoleState = group.reduce((acc, curr) => {
-        acc[curr.g_no] = curr.isPremium;
+        acc[curr.g_no] = curr.g_status === 1;
         return acc;
       },{});
       setToggleState(initialToggoleState);
