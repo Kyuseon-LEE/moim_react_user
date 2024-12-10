@@ -1,9 +1,11 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
 #section5_wrap {
     width: 85%;
     margin: 40px auto;
     height: 80vh;
     display: flex;
     align-items: center;
+    font-family: "Pretendard Variable";
 }
 
 #section5_wrap h3 {
@@ -47,6 +49,7 @@
     height: 600px;
     text-align: center;
     border-radius: 7px;
+    
 }
 .creditDataForm > div {
     margin-bottom: 15px;

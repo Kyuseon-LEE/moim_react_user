@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ProfileModal from "./ProfileModal";
 
 const PostList = ({
@@ -30,6 +30,16 @@ const PostList = ({
   formatRelativeDate,
   handleKickMember,
 }) => {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredPosts = posts.filter(
+    (post) =>
+      (post.p_no !== undefined) && // groupData 생성 메시지는 p_no가 없다고 가정
+      (!searchQuery || // 검색어가 없거나
+        post.p_text.toLowerCase().includes(searchQuery.toLowerCase()) || // 글 내용에 포함
+        post.m_nickname?.toLowerCase().includes(searchQuery.toLowerCase())) // 작성자 닉네임에 포함
+  );
+  
   
   if (groupData.g_public === 0 && !isMember) {
     return (
@@ -42,24 +52,16 @@ const PostList = ({
   return (
     <div className="home_board">
       <div className="home_search">
-        <input type="text" placeholder="글 내용을 입력하세요" />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="15"
-          height="15"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
+        <input
+          type="text"
+          placeholder="글 내용 및 작성자를 입력하세요"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)} // 검색어 업데이트
+        />
       </div>
       <div className="board_list">
-        {posts.map((post) => (
+        
+        {filteredPosts.map((post) => (
           <div key={post.p_no} className="post_item">
             <div className="author_info">
               <img
@@ -232,25 +234,25 @@ const PostList = ({
             )}
           </div>
         ))}
-        <div className="post_item">
-                <div className="author_info">
-                <img src={process.env.PUBLIC_URL + '/img/logo_mini.png'} alt="Logo" />
-                  <p className="author_nick">moim?</p>
-                  <p className="author_date">{formatRelativeDate(groupData.g_reg_date)}</p>
-                </div>
-                <div className="author_board">
-                  <p>{groupData.g_name}이(가) 생성 되었습니다</p>
-                
-                </div>
-              </div>
-              <ProfileModal
-                member={selectedMember}
-                isOpen={isModalOpen}
-                onClose={closeModal}
-                g_m_role={gMRole}
-                handleKickMember={handleKickMember}
-              />
-
+       {!searchQuery && (
+          <div className="post_item">
+            <div className="author_info">
+              <img src={process.env.PUBLIC_URL + "/img/logo_mini.png"} alt="Logo" />
+              <p className="author_nick">moim?</p>
+              <p className="author_date">{formatRelativeDate(groupData.g_reg_date)}</p>
+            </div>
+            <div className="author_board">
+              <p>{groupData.g_name}이(가) 생성 되었습니다</p>
+            </div>
+          </div>
+        )}
+        <ProfileModal
+          member={selectedMember}
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          g_m_role={gMRole}
+          handleKickMember={handleKickMember}
+        />
       </div>
     </div>
   );

@@ -1,0 +1,90 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
+.my_group_article {
+    width: 100%;
+    min-height: 75vh;
+    background-color: #fff;
+    margin-top: 60px;
+    font-family: "Pretendard Variable";
+}
+.my_group_article_wrap {
+    width: 60%;
+    margin: 0 auto;
+    border: none;
+    display: flex;
+}
+.side_bar {
+    width: 240px;
+    height: 10%;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    margin-right: 30px;
+    border-radius: 4px;
+
+}
+.side_bar ul li img {
+    display: none; 
+    width: 20px;
+}
+.side_bar ul li.active {
+    background-color: #ddd;
+}
+.side_bar ul li.active img {
+    display: block; 
+}
+.side_bar ul {
+    text-align: left;
+}
+.side_bar ul li {
+    border-bottom: 1px solid #ddd;
+    padding: 14px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+.my_group_list {
+    width:1000px;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 800px;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    min-height:400px;
+    margin-bottom: 50px;
+}
+  
+.my_group_list h2 {
+    text-align: left;
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.group_table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.group_table th,
+.group_table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align:center;
+}
+
+.group_table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  text-align: center;
+}
+
+
+.group_table img.my_group_image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+

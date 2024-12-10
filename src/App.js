@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Header from './view/include/Header';
 import MainImg from './view/include/MainImg';
+import SearchResults from './view/search/SearchResults';
 import Article from './view/include/Article';
 import Article2 from './view/include/Article2';
-import Footer from './view/include/footer.jsx';
+import Footer from './view/include/Footer.jsx';
 import SignUp from './view/member/SignUp.jsx';
 import GroupCreate from './view/group/GroupCreate';
 import GroupHome from './view/group/GroupHome';
@@ -27,6 +28,7 @@ import FindPw from './view/member/FindPw.jsx';
 import FindPwConfirm from './view/member/FindPwConfirm.jsx';
 import PreviousPassword from './view/profile/PreviousPassword.jsx';
 import ChangePassword from './view/profile/ChangePassword.jsx';
+import MyGroupList from './view/profile/MyGroupList.jsx';
 
 function App() {
 
@@ -70,6 +72,14 @@ function App() {
           <>
             <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
             <SignupSuccess jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          </>
+        } />
+
+        <Route path="/search" element={
+          <>
+            <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <SearchResults jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           </>
         } />
 
@@ -186,6 +196,13 @@ function App() {
           <>
           <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           <PreviousPassword jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} memberInfo={memberInfo} setMemberInfo={setMemberInfo}/>
+          </>
+         }/>
+         <Route path='/my_group_list' element={
+          <>
+          <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          <MyGroupList jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} memberInfo={memberInfo} setMemberInfo={setMemberInfo}/>
+          <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           </>
          }/>
           <Route path='/change_password' element={
