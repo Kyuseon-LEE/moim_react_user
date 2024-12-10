@@ -13,7 +13,6 @@ const Membership = () => {
     const [creditInfo, setCreditInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [memberInfo, setMemberInfo] = useState(null);
-    const [mNo, setMNo] = useState("");
     const [isOn, setIsOn] = useState(false);
     const navigate = useNavigate(); 
 
@@ -23,7 +22,6 @@ const Membership = () => {
                 const response = await instance.post('/credit/getpayment');
                 setMemberInfo(response.data.creditDtos.memberDto);
                 setCreditInfo(response.data.creditDtos);
-                setMNo(response.data.creditDtos.memberDto.m_no);
 
             } catch (err) {
                 console.error("모든정보를 가져오는데 실패했습니다.", err);
@@ -34,6 +32,14 @@ const Membership = () => {
 
         fetchPaymentInfo();
     }, []); 
+
+    useEffect(() => {
+        if (isOn) {
+            console.log("hello");
+        } else {
+            console.log("hi");
+        }
+    }, [isOn]);
 
     const cancelMembership = () => {
         const isConfirm = window.confirm("정말로 멤버쉽을 해지하시겠습니까?");
@@ -51,20 +57,10 @@ const Membership = () => {
         }
 
     }
+
     //프리미엄 멤버방 스위치
     const handleToggle = () => {
         setIsOn((prevState) => !prevState)
-        if(isOn === false) {
-            instance.post('/group/updateStatusGroup', {
-                m_no : mNo,
-            })
-            .then(response => {
-                console.log("업데이트 성공", response.data);
-            })
-            .catch(err => {
-                console.log("업데이트 실패", err);
-            });
-        }
     };
 
 
@@ -106,7 +102,7 @@ const Membership = () => {
                 <div className="cancle_membership">
                     <input type="button" value="해지하기" onClick={cancelMembership}/>
                 </div>
-                <p>{isOn ? "프리미엄 회원방 On" : "프리미엄 회원방 off"}</p>
+                <p>{isOn ? "전원켜짐" : "전원꺼짐"}</p>
                 <div className="premium">
                     <div className={`toggle-switch ${isOn ? 'on' : 'off'}`} onClick={handleToggle}><div className="slider"></div></div>
                 </div>
