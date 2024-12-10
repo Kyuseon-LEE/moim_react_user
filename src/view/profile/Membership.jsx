@@ -13,7 +13,6 @@ const Membership = () => {
     const [creditInfo, setCreditInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [memberInfo, setMemberInfo] = useState(null);
-    const [isOn, setIsOn] = useState(false);
     const navigate = useNavigate(); 
 
     useEffect(() => {
@@ -33,13 +32,6 @@ const Membership = () => {
         fetchPaymentInfo();
     }, []); 
 
-    useEffect(() => {
-        if (isOn) {
-            console.log("hello");
-        } else {
-            console.log("hi");
-        }
-    }, [isOn]);
 
     const cancelMembership = () => {
         const isConfirm = window.confirm("정말로 멤버쉽을 해지하시겠습니까?");
@@ -57,13 +49,6 @@ const Membership = () => {
         }
 
     }
-
-    //프리미엄 멤버방 스위치
-    const handleToggle = () => {
-        setIsOn((prevState) => !prevState)
-    };
-
-
 
     if (isLoading) {
         return <div>로딩 중...</div>;
@@ -101,10 +86,6 @@ const Membership = () => {
                 </div>
                 <div className="cancle_membership">
                     <input type="button" value="해지하기" onClick={cancelMembership}/>
-                </div>
-                <p>{isOn ? "전원켜짐" : "전원꺼짐"}</p>
-                <div className="premium">
-                    <div className={`toggle-switch ${isOn ? 'on' : 'off'}`} onClick={handleToggle}><div className="slider"></div></div>
                 </div>
             </div>
         </div>
