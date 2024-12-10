@@ -51,6 +51,7 @@ const Nav = () => {
           </>
         )}
         <li onClick={() => openPopup("/qr_login")}><Link to="#">QR로그인</Link></li>
+        <li><Link to="/previous_password">비밀번호 변경</Link></li>
       </ul>
     </div>
   );

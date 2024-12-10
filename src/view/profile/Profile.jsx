@@ -22,8 +22,8 @@ const Profile = () => {
     const [newCategories, setNewCategories] = useState("");
     const [postcode, setPostcode] = useState(""); // 새로운 우편번호
     const [detailAddress, setDetailAddress] = useState(""); // 상세 주소
-    const [newProfileImg, setNewProfileImg] = useState(null); //프로필 이미지
-    const [profileImgFile, setProfileImgFile] = useState(null); // 새로운 이미지 파일 객체
+    const [newProfileImg, setNewProfileImg] = useState(null); 
+    const [profileImg, setProfileImg] = useState(null);
     const [categories, setCategories] = useState("");
     const [memberId, setMemberId] = useState(""); //사용자 ID값
     const [mGrade, setMGrade] = useState('');
@@ -40,7 +40,7 @@ const Profile = () => {
                 setNewGender(response.data.memberDtos.m_gender);
                 setNewPhone(response.data.memberDtos.m_phone); 
                 setNewAddress(response.data.memberDtos.m_address);
-                setProfileImgFile(response.data.memberDtos.m_profile_img);
+                setProfileImg(response.data.memberDtos.m_profile_img);
                 setMemberId(response.data.memberDtos.m_id || response.data.memberDtos.m_social_id);
                 setCategories(response.data.memberDtos.m_category);
                 setMGrade(response.data.memberDtos.m_grade);
@@ -49,11 +49,6 @@ const Profile = () => {
             .catch(err => {
                 console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
             });
-    }, []);
-
-
-    useEffect(() => {
-
     }, []);
 
 
@@ -71,15 +66,11 @@ const Profile = () => {
         setDetailAddress(e.target.value);
     };
     const handleCategoryChange = useCallback((categories, callback) => {
-        setNewCategories(categories); // 상태 업데이트
-        if (callback) callback(); // 상태 변경 후 콜백 실행
+        setNewCategories(categories); 
+        if (callback) callback();
     }, []);
     const handleProfileImgChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setProfileImgFile(file);
-            setNewProfileImg(URL.createObjectURL(file));  
-        }
+        setNewProfileImg(e.target.files[0]);
     };
 
     // 수정 버튼 클릭 시 편집 모드 전환
@@ -119,7 +110,7 @@ const Profile = () => {
             setDetailAddress(""); // 상세 주소 초기화
         } else if(field === 'm_profile_img') {
             setProfileImgEdit(false);
-            setProfileImgFile(memberInfo.m_profile_img)
+            setProfileImg(memberInfo.m_profile_img)
         } 
     };
 
@@ -127,75 +118,107 @@ const Profile = () => {
         setCategoriesEdit(false);  // 모달 닫기 상태
         setCategories(memberInfo.m_category);  // 초기값으로 되돌리기
     }
-    const handleSaveClick = useCallback(() => {
+
+    const handleSaveClick = useCallback(async () => {
         const formData = new FormData();
+        // 사용자 입력 데이터 추가
         formData.append("m_nickname", newNickname);
         formData.append("m_gender", newGender);
         formData.append("m_phone", newPhone);
         formData.append("m_address", `${postcode} ${newAddress} ${detailAddress}`);
-        if(memberInfo.m_social_type === null) {
-            formData.append("m_id", memberId)
+    
+        // 사용자 ID 추가 (일반 ID or 소셜 ID)
+        if (memberInfo.m_social_type === null) {
+            formData.append("m_id", memberId);
         } else {
-            formData.append("m_social_id", memberId)
+            formData.append("m_social_id", memberId);
         }
-        if(newCategories==="") {
-            formData.append("m_category", categories)
+    
+        // 카테고리 추가
+        formData.append("m_category", newCategories === "" ? categories : newCategories);
+    
+        try {
+            // 서버로 데이터 전송
+            const response = await instance.post('/member/updateMemberInfo', formData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            console.log("정보가 업데이트되었습니다.", response.data);
+    
+            // 상태 업데이트 및 편집 모드 종료
+            setMemberInfo({
+                ...memberInfo,
+                m_nickname: newNickname,
+                m_gender: newGender,
+                m_phone: newPhone,
+                m_address: `${postcode} ${newAddress} ${detailAddress}`,
+                m_category: newCategories,
+            });
+    
+            // 모든 편집 모드 초기화
+            setNicknameEdit(false);
+            setGenderEdit(false);
+            setPhoneEdit(false);
+            setAddressEdit(false);
+            setCategoriesEdit(false);
+        } catch (error) {
+            console.error("정보 업데이트에 실패했습니다.", error);
+        }
+    });
+
+    //다음주소
+    const openPostcodePopup = () => {
+        new window.daum.Postcode({
+            oncomplete: (data) => {
+            const addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
+
+            let extraAddr = ''; // 참고 항목
+            if (data.userSelectedType === 'R') {
+                if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                extraAddr += data.bname;
+                }
+                if (data.buildingName !== '' && data.apartment === 'Y') {
+                extraAddr += (extraAddr !== '' ? `, ${data.buildingName}` : data.buildingName);
+                }
+            }
+
+            setPostcode(data.zonecode);
+            setNewAddress(addr);
+            },
+        }).open();
+    };
+
+    //프로필사진 변경
+    const saveMProfileImg = () => {
+        const formData = new FormData();
+        if(newProfileImg) {
+            formData.append("file", newProfileImg);
+        }
+        
+        if (memberInfo.m_social_type === null) {
+            formData.append("m_id", memberId);
         } else {
-            formData.append("m_category", newCategories);
+            formData.append("m_social_id", memberId);
         }
-        if(profileImgFile) {
-            formData.append("file", profileImgFile);
-        }
-        instance.post('/member/updateMemberInfo', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
+         
+        instance.post('/member/newProfileImage', formData, {
+            headers : {
+                'Content-Type' : 'multipart/form-data'
             }
         })
         .then(response => {
-            console.log("정보가 업데이트되었습니다.", response.data);
-            setMemberInfo({
-                ...memberInfo,
-                m_nickname: newNickname,  // 변경된 닉네임 반영
-                m_gender: newGender,  // 변경된 성별 반영
-                m_phone: newPhone,    // 변경된 휴대폰 번호 반영
-                m_address: `${postcode} ${newAddress} ${detailAddress}`,  // 변경된 주소 반영
-                m_profile_img : newProfileImg || memberInfo.m_profile_img,  // 변경된 이미지 반영 (새 이미지가 없으면 기존 이미지 유지)
-                m_category : newCategories
-            });
-            setNicknameEdit(false);  
-            setGenderEdit(false);  
-            setPhoneEdit(false); 
-            setAddressEdit(false);
-            setProfileImgEdit(false); 
-            setCategoriesEdit(false);
+            console.log("이미지파일 업데이트 성공", response.data)
         })
         .catch(err => {
-            console.error("정보 업데이트에 실패했습니다.", err);
+            console.log("프로필사진 변경 실패", err)
         });
-    })
+        
+        
+    }
 
-    //새로운 주소 Daum으로 받기
-        //Daum address
-        const openPostcodePopup = () => {
-            new window.daum.Postcode({
-                oncomplete: (data) => {
-                const addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
-    
-                let extraAddr = ''; // 참고 항목
-                if (data.userSelectedType === 'R') {
-                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
-                    extraAddr += data.bname;
-                    }
-                    if (data.buildingName !== '' && data.apartment === 'Y') {
-                    extraAddr += (extraAddr !== '' ? `, ${data.buildingName}` : data.buildingName);
-                    }
-                }
-    
-                setPostcode(data.zonecode);
-                setNewAddress(addr);
-                },
-            }).open();
-        };
+
     return (
         <article className="article4">
             <div className="profile_article_wrap">
@@ -205,10 +228,10 @@ const Profile = () => {
                     <div className="use_profile">
                     <div className="text">사용 중인 프로필</div>
                     <div className="profile_img">
-                            {/* 프로필 이미지가 있으면 새로운 이미지, 없으면 기존 이미지 */}
-                            {newProfileImg ? (<img src={newProfileImg} alt="프로필 이미지" />) : memberInfo?.m_profile_img ? (<img src={memberInfo.m_profile_img} alt="프로필 이미지" />) : (<></>)}
+                            <img src={
+                                newProfileImg ? URL.createObjectURL(newProfileImg) : profileImg
+                            }/>
                         </div>
-                        {/* 프로필 이미지 파일 입력 */}
                         <input
                             type="file"
                             id="profileImgInput"
@@ -216,14 +239,13 @@ const Profile = () => {
                             onChange={handleProfileImgChange}
                             accept="image/*"
                         />
-                        {/* 편집 모드에서 확인/취소 버튼 */}
                         {profileImgEdit ? (
                             <>
                                 <input
                                     type="button"
                                     value="확인"
                                     name="confirm"
-                                    onClick={handleSaveClick}
+                                    onClick={saveMProfileImg}
                                 />
                                 <input
                                     type="button"

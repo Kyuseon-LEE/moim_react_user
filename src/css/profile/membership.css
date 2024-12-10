@@ -45,3 +45,49 @@ div.creditDataForm1 {
     font-weight: 550;
     border: 1px solid rgba(0, 150, 250, .4);
 }
+
+/* Premium member swith */
+.premium {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+    justify-content: center;
+}
+
+.toggle-switch {
+    width: 60px;
+    height: 30px;
+    border-radius: 15px;
+    background-color: #ccc;
+    /* display: flex; */
+    /* align-items: center; */
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-switch.on {
+    background-color: #4caf50;
+}
+
+.toggle-switch .slider {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: white;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease;
+}
+
+.toggle-switch.on .slider {
+    transform: translateX(30px);
+}
+
+.creditDataForm1 > p {
+    margin-top: 30px;
+    font-size: 16px;
+    color: #333;
+}

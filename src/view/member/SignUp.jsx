@@ -45,6 +45,8 @@ const SignUp = () => {
             }).open();
         };
 
+
+    //데이터
     const handleInputData = (event) => {
         const { name, value } = event.target;
         if (name === 'm_id') setM_id(value);
@@ -60,24 +62,44 @@ const SignUp = () => {
         else if (name === 'address') setAddress(value)
         else if (name === 'detailAddress') setDetailAddress(value)
     }
-
+    //이미지 데이터
     const handleFileChange = (event) => {
         setProfileImage(event.target.files[0]);
     }
 
-    //Submit to Server
+    //서버전송
     const handleSubmit = async (event) => {
         event.preventDefault();
-
-        // 비밀번호 확인 체크
+    
+        // 유효성 검사
+        if (!m_name || !m_id || !m_pw || !m_mail || !m_phone || !m_nickname || !m_gender || !m_age || !postcode || !address || !detailAddress) {
+            setFormError('모든 필드를 입력해주세요.');
+            return;
+        }
+    
+        if (m_id.length < 6) {
+            setFormError('아이디는 최소 6자 이상이어야 합니다.');
+            return;
+        }
+    
+        if (m_pw.length < 8) {
+            setFormError('비밀번호는 최소 8자 이상이어야 합니다.');
+            return;
+        }
+    
         if (m_pw !== m_pw_again) {
             setFormError('비밀번호가 일치하지 않습니다.');
             return;
         }
-        
-        //주소 합쳐서 보내기
-        const fullAddress = `${postcode} ${address} ${detailAddress}`;
 
+        if (nicknameStatus === "이미 존재하는 닉네임 입니다") {
+            setFormError("닉네임이 이미 존재합니다. 다른 닉네임을 선택해주세요.");
+            return;
+        }
+    
+        // 주소 합쳐서 보내기
+        const fullAddress = `${postcode} ${address} ${detailAddress}`;
+    
         const formData = new FormData();
         formData.append('m_name', m_name);
         formData.append('m_id', m_id);
@@ -88,9 +110,15 @@ const SignUp = () => {
         formData.append('m_gender', m_gender);
         formData.append('m_age', m_age);
         formData.append('m_address', fullAddress);
-        if (profileImage) {
+
+        if (!profileImage) {
+            const defaultImageResponse = await fetch("/img/profile_default.png");
+            const defaultImageBlob = await defaultImageResponse.blob();
+            formData.append("file", defaultImageBlob, "profile_default.png");
+        } else {
             formData.append("file", profileImage);
-        } 
+        }
+    
         axios.post('http://localhost:5000/member/signup_confirm', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
             withCredentials: true,  
@@ -106,9 +134,30 @@ const SignUp = () => {
                 setFormError("서버와 통신할 수 없습니다. 잠시 후 다시 시도해주세요.");
             }
         });
+    };
+
+    const checkNickname = () => {
+        if (m_nickname === '') {
+            return;  // 닉네임이 비어있는 경우 요청을 보내지 않음
+        } else {
+            instance.get(`/member/checkNickname`, {
+                params: { m_nickname: m_nickname }
+            })
+            .then(response => {
+                console.log("닉네임 중복체크 응답", response.data);
+                let nicknameStatus = response.data;
+                if(nicknameStatus === 18) {
+                    setNicknameStatus("사용 가능한 닉네임 입니다.");
+                } else {
+                    setNicknameStatus("이미 존재하는 닉네임 입니다");
+                }
+            })
+            .catch(err => {
+                console.log("닉네임 중복문제 ", err);
+            });
+        }
     }
-
-
+    
     return (
         <article className='signup_article'>
             <div className='article_wrap'>
@@ -165,7 +214,7 @@ const SignUp = () => {
                                             value={m_id}
                                             onChange={handleInputData}
                                         />
-                                        <p>※ 알파벳과 숫자를 포함해 6자 이상 적어주세요.</p>
+                                        <p>※ 아이디는 4자 이상 적어주세요.</p>
                                     </td>
                                 </tr>
                                 <tr>
@@ -179,7 +228,7 @@ const SignUp = () => {
                                             value={m_pw}
                                             onChange={handleInputData}
                                         />
-                                         <p>※ 알파벳과 숫자를 포함해 8자 이상 적어주세요.</p>
+                                         <p>※ 비밀번호는 8자 이상 적어주세요.</p>
                                     </td>
                                 </tr>
                                 <tr>
@@ -232,7 +281,7 @@ const SignUp = () => {
                                             value={m_nickname}
                                             onChange={handleInputData}
                                         />
-                                        <button type="button">중복확인</button>
+                                        <button type="button" onClick={checkNickname}>중복확인</button>
                                         <p>{nicknameStatus}</p>
                                     </td>
                                 </tr>
@@ -304,6 +353,7 @@ const SignUp = () => {
                             </tbody>
                         </table>
                         <div>
+                            {formError && <p className="error-message">{formError}</p>}
                             <button type="submit" onClick={handleSubmit}>회원가입</button>
                         </div>
                     </form>
