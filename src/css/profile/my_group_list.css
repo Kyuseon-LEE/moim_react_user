@@ -88,3 +88,45 @@
   object-fit: cover;
 }
 
+/* Premium member swith */
+.premium {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.toggle-switch {
+    width: 60px;
+    height: 30px;
+    border-radius: 15px;
+    background-color: #ccc;
+    /* display: flex; */
+    /* align-items: center; */
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-switch.on {
+    background-color: #4caf50;
+}
+
+.toggle-switch .slider {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: white;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease;
+}
+
+.toggle-switch.on .slider {
+    transform: translateX(30px);
+}
+
+

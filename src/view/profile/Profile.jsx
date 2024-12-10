@@ -210,6 +210,7 @@ const Profile = () => {
         })
         .then(response => {
             console.log("이미지파일 업데이트 성공", response.data)
+            setProfileImgEdit(false);
         })
         .catch(err => {
             console.log("프로필사진 변경 실패", err)
