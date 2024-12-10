@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import '../../css/article.css';
 import { useNavigate } from "react-router-dom";
+import instance from '../../api/axios';
 
 const Article = () => {
   const navigate = useNavigate();
   const [city, setCity] = useState("");
   const [error, setError] = useState(null);
   const [randomPhrase, setRandomPhrase] = useState(""); 
-  const [groups, setGroups] = useState([]); // 로그인 유저의 그룹 정보
-  const userId = localStorage.getItem("m_id")
+  const [groups, setGroups] = useState([]); // 로그인 유저의 그룹 정보  
+  const [memberInfo, setMemberInfo] = useState('');
+  const userId = memberInfo?.m_id || memberInfo?.m_social_id;
   const handleGroupClick = (g_no) => {
     navigate(`/group/${g_no}`); // 동적 경로로 이동
   };
@@ -20,6 +22,18 @@ const Article = () => {
     "와 함께하는 즐거움을 느껴보세요!",
     "와 활동적인 하루를 만들어보세요!",
   ];
+
+  // 회원 정보 가져오기
+  useEffect(() => {
+    instance.post('/member/getMemberInfo')
+        .then(response => {
+            console.log("성공적으로 사용자의 정보를 가져왔습니다.");
+            setMemberInfo(response.data.memberDtos);
+        })
+        .catch(err => {
+            console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
+        });
+  }, []);
 
   // 랜덤 문구 설정
   useEffect(() => {

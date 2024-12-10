@@ -1,6 +1,6 @@
 import '../../css/group/create.css';
-import React, { useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import React, { useState, useEffect } from "react";
+import instance from '../../api/axios';
 
 const GroupCreate = () => {
   const [imagePreview, setImagePreview] = useState(null);
@@ -15,6 +15,7 @@ const GroupCreate = () => {
   const [groupInfo, setGroupInfo] = useState("");
   const [groupConfirm, setGroupConfirm] = useState("1"); // 기본값: 즉시 가입
   const [groupMaxNumber, setGroupMaxNumber] = useState("10"); // 기본값: 10명
+  const [memberInfo, setMemberInfo] = useState('');
 
   const categories = ["여행", "운동", "문화/공연", "음악", "게임", "사진", "요리"]; // 주제 목록
   const locations = {
@@ -60,6 +61,18 @@ const GroupCreate = () => {
       "전북 임실군", "전북 장수군", "전북 전주시", "전북 정읍시", "전북 진안군"
   ],
   };
+
+  // 회원 정보 가져오기
+  useEffect(() => {
+    instance.post('/member/getMemberInfo')
+        .then(response => {
+            console.log("성공적으로 사용자의 정보를 가져왔습니다.");
+            setMemberInfo(response.data.memberDtos);
+        })
+        .catch(err => {
+            console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
+        });
+  }, []);
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -177,8 +190,9 @@ const GroupCreate = () => {
       g_confirm: groupConfirm,
       g_max_number: groupMaxNumber,
       g_img_name: uploadedFileName,
-      m_id: localStorage.getItem("m_id"),
-    };
+      m_id: memberInfo?.m_id || memberInfo?.m_social_id
+  };
+  
   
     console.log("Data being sent to Node.js:", groupData);
   

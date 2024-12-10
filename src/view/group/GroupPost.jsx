@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ProfileModal from "./ProfileModal";
+import instance from '../../api/axios';
 
 const GroupPost = ({
   g_no,
@@ -28,6 +29,19 @@ const GroupPost = ({
   const [editingPostId, setEditingPostId] = useState(null);
   const [currentPostText, setCurrentPostTextLocal] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [memberInfo, setMemberInfo] = useState('');
+
+  // 회원 정보 가져오기
+  useEffect(() => {
+    instance.post('/member/getMemberInfo')
+        .then(response => {
+            console.log("성공적으로 사용자의 정보를 가져왔습니다.");
+            setMemberInfo(response.data.memberDtos);
+        })
+        .catch(err => {
+            console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
+        });
+  }, []);
 
   useEffect(() => {
     const fetchPostsByMember = async () => {
@@ -122,12 +136,12 @@ const GroupPost = ({
               </svg>
               {menuVisibility[post.p_no] && (
                 <div className="post_menu">
-                  {post.m_no === parseInt(localStorage.getItem("m_no")) && (
+                  {post.m_no === parseInt(memberInfo.m_no) && (
                     <button onClick={() => handleEdit(post.p_no, post.p_text)}>
                       수정
                     </button>
                   )}
-                  {(gMRole === 3 || post.m_no === parseInt(localStorage.getItem("m_no"))) && (
+                  {(gMRole === 3 || post.m_no === parseInt(memberInfo.m_no)) && (
                     <button onClick={() => handleDeletePost(post.p_no)}>
                       삭제
                     </button>
@@ -199,7 +213,7 @@ const GroupPost = ({
                 <div className="comment_view">
                   <img
                     src={
-                      localStorage.getItem("m_profile_img") ||
+                      memberInfo.m_profile_img ||
                       `${process.env.PUBLIC_URL}/img/profile_default.png`
                     }
                     alt="Profile"

@@ -6,6 +6,7 @@ import ChatRoom from "./ChatRoom";
 import MemberList from "./MemberList";
 import PostList from "./PostList";
 import GroupEvent from "./GroupEvent";
+import instance from '../../api/axios';
 
 const GroupHome = () => {
   const { g_no } = useParams();
@@ -31,6 +32,7 @@ const GroupHome = () => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null); // 선택된 멤버 정보
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
+  const [memberInfo, setMemberInfo] = useState('');
 
   // 게시글 날짜 포맷
   function formatRelativeDate(dateString) {
@@ -61,7 +63,18 @@ const GroupHome = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}. ${month}. ${day}`;
   }
-  
+  // 회원 정보 가져오기
+  useEffect(() => {
+    instance.post('/member/getMemberInfo')
+        .then(response => {
+            console.log("성공적으로 사용자의 정보를 가져왔습니다.");
+            setMemberInfo(response.data.memberDtos);
+        })
+        .catch(err => {
+            console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
+        });
+  }, []);
+
   useEffect(() => {
     const fetchGroupData = async () => {
       try {
@@ -90,34 +103,39 @@ const GroupHome = () => {
   // 그룹에 가입된 유저인지 확인하기
   useEffect(() => {
     const fetchMembershipStatus = async () => {
-      const mNo = localStorage.getItem("m_no"); // 로그인 여부 확인
-      if (!mNo) {
-        // 로그인하지 않은 경우
-        console.warn("로그인하지 않은 사용자입니다.");
-        setIsMember(false); // 멤버 여부를 false로 설정
-        setLoading(false); // 로딩 종료
-        return;
-      }
-  
-      try {
-        // 멤버 여부 확인 API 호출
-        const response = await fetch(`http://localhost:5000/group/${g_no}/is-member/${mNo}`);
-        if (!response.ok) {
-          throw new Error("멤버 여부 확인에 실패했습니다.");
+        if (!memberInfo || !memberInfo.m_no) {
+            // 로그인하지 않은 경우
+            console.warn("로그인하지 않은 사용자입니다.");
+            setIsMember(false); // 멤버 여부를 false로 설정
+            setLoading(false); // 로딩 종료
+            return;
         }
-  
-        const { isMember } = await response.json();
-        setIsMember(isMember); // 멤버 여부 상태 업데이트
-      } catch (error) {
-        console.error("Error:", error.message);
-        setError(error.message); // 에러 메시지 저장
-      } finally {
-        setLoading(false); // 로딩 상태 종료
-      }
+
+        const mNo = memberInfo.m_no; // memberInfo에서 m_no 가져오기
+        console.log("현재 사용자 m_no:", mNo); // 디버깅 로그
+
+        try {
+            // 멤버 여부 확인 API 호출
+            const response = await fetch(`http://localhost:5000/group/${g_no}/is-member/${mNo}`);
+            if (!response.ok) {
+                throw new Error("멤버 여부 확인에 실패했습니다.");
+            }
+
+            const { isMember } = await response.json();
+            setIsMember(isMember); // 멤버 여부 상태 업데이트
+        } catch (error) {
+            console.error("Error:", error.message);
+            setError(error.message); // 에러 메시지 저장
+        } finally {
+            setLoading(false); // 로딩 상태 종료
+        }
     };
-  
-    fetchMembershipStatus();
-  }, [g_no]);
+
+    if (memberInfo && memberInfo.m_no) {
+        fetchMembershipStatus();
+    }
+}, [g_no, memberInfo]);
+
 
   // 그룹에 작성된 포스트 내용 목록 가져오기
   useEffect(() => {
@@ -153,38 +171,44 @@ const GroupHome = () => {
    // 유저 권한(g_m_role) 값 가져오기
    useEffect(() => {
     const fetchGroupRole = async () => {
-      const mNo = localStorage.getItem("m_no"); // 로그인 여부 확인
-      if (!mNo) {
-        console.warn("로그인하지 않은 사용자입니다.");
-        setGmRole(null); // 로그인하지 않은 경우 기본값 설정
-        return;
-      }
-  
-      try {
-        const response = await fetch(`http://localhost:5000/group/${g_no}/member/${mNo}/role`);
-        if (!response.ok) {
-          console.warn("Member role 정보를 가져오지 못했습니다.");
-          setGmRole(null); // 실패 시 null로 설정
-          return;
+        if (!memberInfo || !memberInfo.m_no) {
+            console.warn("로그인하지 않은 사용자입니다.");
+            setGmRole(null); // 로그인하지 않은 경우 기본값 설정
+            setLoading(false);
+            return;
         }
-  
-        const data = await response.json();
-        if (data.success) {
-          setGmRole(data.g_m_role); // g_m_role 값 설정
-        } else {
-          console.warn(data.message);
-          setGmRole(null); // 실패 시 null로 설정
+
+        const mNo = memberInfo.m_no; // memberInfo에서 m_no 가져오기
+        console.log("현재 사용자 m_no:", mNo); // 디버깅용 로그
+
+        try {
+            const response = await fetch(`http://localhost:5000/group/${g_no}/member/${mNo}/role`);
+            if (!response.ok) {
+                console.warn("Member role 정보를 가져오지 못했습니다.");
+                setGmRole(null); // 실패 시 null로 설정
+                return;
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                setGmRole(data.g_m_role); // g_m_role 값 설정
+            } else {
+                console.warn(data.message);
+                setGmRole(null); // 실패 시 null로 설정
+            }
+        } catch (error) {
+            console.error("Error fetching member role:", error.message);
+            setGmRole(null); // 오류 발생 시 null로 설정
+        } finally {
+            setLoading(false);
         }
-      } catch (error) {
-        console.error("Error fetching member role:", error.message);
-        setGmRole(null); // 오류 발생 시 null로 설정
-      } finally {
-        setLoading(false);
-      }
     };
-  
-    fetchGroupRole();
-  }, [g_no]);
+
+    if (memberInfo && memberInfo.m_no) {
+        fetchGroupRole();
+    }
+}, [g_no, memberInfo]);
+
   
   // 그룹 멤버 리스트
   useEffect(() => {
@@ -272,16 +296,20 @@ const GroupHome = () => {
   };
 
   // 게시글 작성
-  const handlePostSubmit = async () => {
+ const handlePostSubmit = async () => {
     if (!postContent.trim()) {
         alert("게시글 내용을 입력해주세요.");
         return;
     }
 
-    const mNo = localStorage.getItem("m_no");
+    if (!memberInfo || !memberInfo.m_no) {
+        alert("로그인이 필요합니다.");
+        return;
+    }
+
     const postData = {
         g_no,
-        m_no: mNo,
+        m_no: memberInfo.m_no, // memberInfo에서 m_no 가져오기
         p_text: postContent,
         p_img: uploadedFileName,
     };
@@ -301,17 +329,19 @@ const GroupHome = () => {
     }
 };
 
+
    const navigate = useNavigate();
 
-  const handleJoinClick = () => {
-    const m_no = localStorage.getItem("m_no");
-    if (!m_no) {
-      alert("로그인이 필요합니다.");
-      navigate("/login"); 
-      return;
+   const handleJoinClick = () => {
+    if (!memberInfo || !memberInfo.m_no) {
+        alert("로그인이 필요합니다.");
+        navigate("/login"); 
+        return;
     }
+
     setIsJoinModalOpen(true);
-  };
+};
+
 
   // 모임 가입 신청 모달 닫기
   const closeJoinModal = () => {
@@ -320,27 +350,33 @@ const GroupHome = () => {
 
   // 가입 신청 완료
   const handleJoinSubmit = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/group/${g_no}/join`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          m_no: localStorage.getItem("m_no"), // 사용자 번호
-          message: "가입 신청 메시지", // 메시지
-        }),
-      });
-  
-      if (!response.ok) {
-        throw new Error("가입 신청에 실패했습니다.");
-      }
-  
-      alert("가입 신청이 완료되었습니다.");
-      window.location.reload();
-    } catch (error) {
-      console.error("가입 신청 오류:", error.message);
-      alert("가입 신청 중 오류가 발생했습니다.");
+    if (!memberInfo || !memberInfo.m_no) {
+        alert("로그인이 필요합니다.");
+        return;
     }
-  };
+
+    try {
+        const response = await fetch(`http://localhost:5000/group/${g_no}/join`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                m_no: memberInfo.m_no, // 사용자 번호
+                message: "가입 신청 메시지", // 메시지
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error("가입 신청에 실패했습니다.");
+        }
+
+        alert("가입 신청이 완료되었습니다.");
+        window.location.reload();
+    } catch (error) {
+        console.error("가입 신청 오류:", error.message);
+        alert("가입 신청 중 오류가 발생했습니다.");
+    }
+};
+
 
   const getMemberGrade = (role) => {
     switch (role) {
@@ -371,7 +407,7 @@ const GroupHome = () => {
     const commentData = {
       g_no, // 그룹 번호
       p_no, // 게시글 번호
-      m_no: localStorage.getItem("m_no"), // 작성자 번호
+      m_no: memberInfo.m_no, // 작성자 번호
       co_text: commentText, // 댓글 내용
     };
   
@@ -408,7 +444,12 @@ const GroupHome = () => {
   
   
   const handleDeletePost = async (p_no) => {
-    const m_no = localStorage.getItem("m_no"); // 현재 로그인 사용자 ID
+    if (!memberInfo || !memberInfo.m_no) {
+        alert("로그인이 필요합니다.");
+        return;
+    }
+
+    const m_no = memberInfo.m_no; // memberInfo에서 m_no 가져오기
 
     try {
         const response = await fetch(`http://localhost:5000/group/${g_no}/posts/${p_no}/delete`, {
@@ -430,19 +471,24 @@ const GroupHome = () => {
     }
 };
 
+
 const handleEditClose = () => {
   setEditingPostId(null); // 수정 상태 종료
   setCurrentPostText(""); // 내용 초기화
 };
 
 const handleSaveEdit = async () => {
-  const m_no = localStorage.getItem("m_no");
+  if (!memberInfo || !memberInfo.m_no) {
+    alert("로그인이 필요합니다.");
+    return;
+  }
 
   if (!currentPostText.trim()) {
     alert("내용을 입력해주세요.");
     return;
   }
 
+  const m_no = memberInfo.m_no; // memberInfo에서 m_no 가져오기
   const p_img = uploadedFileName || null; // 업로드된 이미지 경로 또는 null
   const body = { m_no, p_text: currentPostText, p_img };
 
@@ -467,6 +513,7 @@ const handleSaveEdit = async () => {
     alert("수정 중 오류가 발생했습니다.");
   }
 };
+
 
 const handleEditImageUpload = (event) => {
   const file = event.target.files[0];
@@ -510,23 +557,29 @@ const handleEditImageUpload = (event) => {
   };
 
   const handleDeleteComment = async (co_no, p_no) => {
-    const m_no = localStorage.getItem("m_no");
-  
-    try {
-      const response = await fetch(`http://localhost:5000/group/comment/${co_no}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ m_no }),
-      });
-  
-      if (!response.ok) throw new Error("댓글 삭제 실패");
-      alert("댓글이 삭제되었습니다.");
-      fetchComments(p_no); // 댓글 삭제 후 댓글 목록 갱신
-    } catch (error) {
-      console.error("댓글 삭제 오류:", error.message);
-      alert("댓글 삭제 중 오류가 발생했습니다.");
+    if (!memberInfo || !memberInfo.m_no) {
+        alert("로그인이 필요합니다.");
+        return;
     }
-  };
+
+    const m_no = memberInfo.m_no; // memberInfo에서 m_no 가져오기
+
+    try {
+        const response = await fetch(`http://localhost:5000/group/comment/${co_no}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ m_no }),
+        });
+
+        if (!response.ok) throw new Error("댓글 삭제 실패");
+        alert("댓글이 삭제되었습니다.");
+        fetchComments(p_no); // 댓글 삭제 후 댓글 목록 갱신
+    } catch (error) {
+        console.error("댓글 삭제 오류:", error.message);
+        alert("댓글 삭제 중 오류가 발생했습니다.");
+    }
+};
+
 
   const handleKickMember = async (g_no, m_no) => {
     try {

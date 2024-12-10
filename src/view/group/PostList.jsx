@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProfileModal from "./ProfileModal";
+import instance from '../../api/axios';
 
 const PostList = ({
   groupData,
@@ -31,6 +32,7 @@ const PostList = ({
   handleKickMember,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [memberInfo, setMemberInfo] = useState('');
 
   const filteredPosts = posts.filter(
     (post) =>
@@ -39,6 +41,18 @@ const PostList = ({
         post.p_text.toLowerCase().includes(searchQuery.toLowerCase()) || // 글 내용에 포함
         post.m_nickname?.toLowerCase().includes(searchQuery.toLowerCase())) // 작성자 닉네임에 포함
   );
+
+    // 회원 정보 가져오기
+    useEffect(() => {
+      instance.post('/member/getMemberInfo')
+          .then(response => {
+              console.log("성공적으로 사용자의 정보를 가져왔습니다.");
+              setMemberInfo(response.data.memberDtos);
+          })
+          .catch(err => {
+              console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
+          });
+    }, []);
   
   
   if (groupData.g_public === 0 && !isMember) {
@@ -106,10 +120,10 @@ const PostList = ({
               </svg>
               {menuVisibility[post.p_no] && (
                 <div className="post_menu">
-                  {post.m_no === parseInt(localStorage.getItem("m_no")) && (
+                  {post.m_no === parseInt(memberInfo.m_no) && (
                     <button onClick={() => handleEdit(post.p_no, post.p_text)}>수정</button>
                   )}
-                  {(gMRole === 3 || post.m_no === parseInt(localStorage.getItem("m_no"))) && (
+                  {(gMRole === 3 || post.m_no === parseInt(memberInfo.m_no)) && (
                     <button onClick={() => handleDeletePost(post.p_no)}>삭제</button>
                   )}
                   <button>신고하기</button>
@@ -187,7 +201,7 @@ const PostList = ({
                         >
                           {getMemberGrade(comment.g_m_role)}
                         </span>
-                        {comment.m_no === parseInt(localStorage.getItem("m_no")) && (
+                        {comment.m_no === parseInt(memberInfo.m_no) && (
                           <span
                             className="comment_delete"
                             onClick={() => handleDeleteComment(comment.co_no, post.p_no)}
@@ -208,7 +222,7 @@ const PostList = ({
                 <div className="comment_view">
                   <img
                     src={
-                      localStorage.getItem("m_profile_img") ||
+                      memberInfo.m_profile_img ||
                       `${process.env.PUBLIC_URL}/img/profile_default.png`
                     }
                     alt="Profile"

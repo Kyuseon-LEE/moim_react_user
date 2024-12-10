@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import instance from '../../api/axios';
 
 const MatchingGroup = () => {
   const [popularGroups, setPopularGroups] = useState([]);
   const [categoryGroups, setCategoryGroups] = useState([]);
   const [locationGroups, setLocationGroups] = useState([]);
   const [randomSectionIndex, setRandomSectionIndex] = useState(null); // 랜덤 섹션 인덱스
+  const [memberInfo, setMemberInfo] = useState('');
   const navigate = useNavigate();
 
   const extractRegion = (address) => {
@@ -18,47 +20,66 @@ const MatchingGroup = () => {
     return null;
   };
 
-  const userRegion = extractRegion(localStorage.getItem("m_address"));
+  const userRegion = memberInfo?.m_address ? extractRegion(memberInfo.m_address) : null;
+
+  // 회원 정보 가져오기
+  useEffect(() => {
+    instance.post('/member/getMemberInfo')
+        .then(response => {
+            console.log("성공적으로 사용자의 정보를 가져왔습니다.");
+            setMemberInfo(response.data.memberDtos);
+        })
+        .catch(err => {
+            console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
+        });
+  }, []);
 
   useEffect(() => {
     const fetchGroups = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/group/all");
-        const allGroups = response.data;
+        if (!memberInfo || !memberInfo.m_category) {
+            console.warn("사용자 카테고리 정보가 없습니다.");
+            return;
+        }
 
-        const userCategories = localStorage
-          .getItem("m_category")
-          ?.split(",")
-          .map((category) => category.trim());
+        const userCategories = memberInfo.m_category
+            .split(",")
+            .map((category) => category.trim());
 
-        const sortedGroups = allGroups
-          .sort((a, b) => b.memberCount - a.memberCount)
-          .slice(0, 5);
+        try {
+            const response = await axios.get("http://localhost:5000/group/all");
+            const allGroups = response.data;
 
-        const categoryMatchedGroups = allGroups.filter((group) =>
-          userCategories?.some(
-            (userCategory) => group.g_category === userCategory
-          )
-        );
+            const sortedGroups = allGroups
+                .sort((a, b) => b.memberCount - a.memberCount)
+                .slice(0, 5);
 
-        const locationMatchedGroups = allGroups.filter(
-          (group) => group.g_location === userRegion
-        );
+            const categoryMatchedGroups = allGroups.filter((group) =>
+                userCategories.some(
+                    (userCategory) => group.g_category === userCategory
+                )
+            );
 
-        setPopularGroups(sortedGroups);
-        setCategoryGroups(categoryMatchedGroups);
-        setLocationGroups(locationMatchedGroups);
+            const locationMatchedGroups = allGroups.filter(
+                (group) => group.g_location === userRegion
+            );
 
-        // 랜덤으로 노출할 섹션 인덱스 설정
-        const randomIndex = Math.floor(Math.random() * 3); // 0, 1, 2 중 하나
-        setRandomSectionIndex(randomIndex);
-      } catch (error) {
-        console.error("Error fetching groups:", error);
-      }
+            setPopularGroups(sortedGroups);
+            setCategoryGroups(categoryMatchedGroups);
+            setLocationGroups(locationMatchedGroups);
+
+            // 랜덤으로 노출할 섹션 인덱스 설정
+            const randomIndex = Math.floor(Math.random() * 3); // 0, 1, 2 중 하나
+            setRandomSectionIndex(randomIndex);
+        } catch (error) {
+            console.error("Error fetching groups:", error);
+        }
     };
 
-    fetchGroups();
-  }, []);
+    if (memberInfo && memberInfo.m_category) {
+        fetchGroups();
+    }
+}, [memberInfo]);
+
 
   const renderGroups = (groups) =>
     groups.map((group) => (
@@ -80,7 +101,7 @@ const MatchingGroup = () => {
 
   
   const renderRandomSection = () => {
-    const isLoggedIn = !!localStorage.getItem("m_no"); // 로그인 여부 확인
+    const isLoggedIn = !!memberInfo.m_no; // 로그인 여부 확인
   
     if (!isLoggedIn) {
       // 로그인하지 않은 경우, case 0만 보여줌

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import "../../css/group/chat_room.css";
 import ProfileModal from "./ProfileModal";
+import instance from '../../api/axios';
 
 const ChatRoom = () => {
   const { g_no } = useParams(); // 그룹 ID
@@ -13,7 +14,6 @@ const ChatRoom = () => {
   const [imagePreview, setImagePreview] = useState(null); // 이미지 미리보기
   const [uploadedFileName, setUploadedFileName] = useState(""); // 업로드된 파일 경로
   const [isUploading, setIsUploading] = useState(false); // 업로드 진행 상태
-  const m_no = parseInt(localStorage.getItem("m_no")); // 현재 사용자 ID
   const messagesEndRef = useRef(null); // 메시지 컨테이너의 끝을 참조
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // 현재 이미지 인덱스
@@ -23,60 +23,91 @@ const ChatRoom = () => {
   const [gMRole, setGmRole] = useState(null); // g_m_role 상태  
   const [selectedMember, setSelectedMember] = useState(null); // 선택된 멤버 정보
   const [isModalOpens, setIsModalOpens] = useState(false); // 모달 상태
+  const [memberInfo, setMemberInfo] = useState('');
 
-  useEffect(() => {
-    const checkMembership = async () => {
-      try {
-        const response = await fetch(`http://localhost:5000/group/${g_no}/is-member/${m_no}`);
-        const data = await response.json();
-        if (data.isMember) {
-          setIsMember(true);
-        } else {
-        }
-      } catch (error) {
-        console.error("그룹 멤버 여부 확인 실패:", error.message);
-        alert("오류가 발생했습니다. 메인 페이지로 이동합니다.");
-        navigate("/");
+    // 회원 정보 가져오기
+    useEffect(() => {
+      instance.post('/member/getMemberInfo')
+          .then(response => {
+              console.log("성공적으로 사용자의 정보를 가져왔습니다.");
+              setMemberInfo(response.data.memberDtos);
+          })
+          .catch(err => {
+              console.error("사용자의 정보를 가져오는데 실패했습니다.", err);
+          });
+    }, []);
+
+    useEffect(() => {
+      const checkMembership = async () => {
+          if (!memberInfo || !memberInfo.m_no) {
+              alert("로그인이 필요합니다. 메인 페이지로 이동합니다.");
+              navigate("/");
+              return;
+          }
+  
+          const m_no = memberInfo.m_no; // memberInfo에서 m_no 가져오기
+          console.log("현재 사용자 m_no:", m_no); // 디버깅용 로그
+  
+          try {
+              const response = await fetch(`http://localhost:5000/group/${g_no}/is-member/${m_no}`);
+              const data = await response.json();
+              if (data.isMember) {
+                  setIsMember(true);
+              } else {
+                  setIsMember(false);
+              }
+          } catch (error) {
+              console.error("그룹 멤버 여부 확인 실패:", error.message);
+              alert("오류가 발생했습니다. 메인 페이지로 이동합니다.");
+              navigate("/");
+          }
+      };
+  
+      if (memberInfo && memberInfo.m_no) {
+          checkMembership();
       }
-    };
-
-    checkMembership();
-  }, [g_no, m_no, navigate]);
+  }, [g_no, memberInfo, navigate]);
+  
 
   useEffect(() => {
     const fetchGroupRole = async () => {
-      const mNo = localStorage.getItem("m_no"); // 로컬스토리지에서 m_no 가져오기
-      if (!mNo) {
-        console.warn("로그인이 필요합니다.");
-        setGmRole(null); // 로그인 정보가 없으면 기본값 설정
-        return;
-      }
-  
-      try {
-        const response = await fetch(`http://localhost:5000/group/${g_no}/member/${mNo}/role`);
-        if (!response.ok) {
-          console.warn("Member role 정보를 가져오지 못했습니다.");
-          setGmRole(null); // 실패 시 null로 설정
-          return;
+        if (!memberInfo || !memberInfo.m_no) {
+            setGmRole(null); // 로그인 정보가 없으면 기본값 설정
+            setLoading(false); // 로딩 상태 종료
+            return;
         }
-  
-        const data = await response.json();
-        if (data.success) {
-          setGmRole(data.g_m_role); // g_m_role 값 설정
-        } else {
-          console.warn(data.message);
-          setGmRole(null); // 실패 시 null로 설정
+
+        const mNo = memberInfo.m_no; // memberInfo에서 m_no 가져오기
+        console.log("현재 사용자 m_no:", mNo); // 디버깅 로그
+
+        try {
+            const response = await fetch(`http://localhost:5000/group/${g_no}/member/${mNo}/role`);
+            if (!response.ok) {
+                console.warn("Member role 정보를 가져오지 못했습니다.");
+                setGmRole(null); // 실패 시 null로 설정
+                return;
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                setGmRole(data.g_m_role); // g_m_role 값 설정
+            } else {
+                console.warn(data.message);
+                setGmRole(null); // 실패 시 null로 설정
+            }
+        } catch (error) {
+            console.error("Error fetching member role:", error.message);
+            setGmRole(null); // 오류 발생 시 null로 설정
+        } finally {
+            setLoading(false); // 로딩 상태 종료
         }
-      } catch (error) {
-        console.error("Error fetching member role:", error.message);
-        setGmRole(null); // 오류 발생 시 null로 설정
-      } finally {
-        setLoading(false);
-      }
     };
-  
-    fetchGroupRole();
-  }, [g_no]);
+
+    if (memberInfo && memberInfo.m_no) {
+        fetchGroupRole();
+    }
+}, [g_no, memberInfo]);
+
 
   // 메시지 컨테이너 끝으로 스크롤
   const scrollToBottom = () => {
@@ -89,22 +120,27 @@ const ChatRoom = () => {
 
 
   useEffect(() => {
-    const fetchMessages = async () => {
-    setLoading(true);
-    try {
-        const response = await fetch(`http://localhost:5000/group/${g_no}/messages?m_no=${m_no}`);
-        const data = await response.json();
-
-        if (data.success) {
-            setMessages(data.data); // 메시지 설정
-        }
-    } catch (error) {
-        console.error("Error fetching messages:", error.message);
-    } finally {
-        setLoading(false);
+    if (!memberInfo || !memberInfo.m_no) {
+        return;
     }
-};
 
+    const m_no = memberInfo.m_no; // memberInfo에서 m_no 가져오기
+
+    const fetchMessages = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(`http://localhost:5000/group/${g_no}/messages?m_no=${m_no}`);
+            const data = await response.json();
+
+            if (data.success) {
+                setMessages(data.data); // 메시지 설정
+            }
+        } catch (error) {
+            console.error("Error fetching messages:", error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     fetchMessages();
 
@@ -113,18 +149,19 @@ const ChatRoom = () => {
     newSocket.emit("joinGroup", g_no);
 
     newSocket.on("receiveMessage", (newMessage) => {
-      console.log("Received message:", newMessage); // 로그 출력
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+        console.log("Received message:", newMessage); // 로그 출력
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
     return () => {
-      newSocket.disconnect();
+        newSocket.disconnect();
     };
-  }, [g_no, m_no]);
+}, [g_no, memberInfo]);
 
-  useEffect(() => {
+useEffect(() => {
     scrollToBottom(); // 메시지 변경 시 스크롤 이동
-  }, [messages]);
+}, [messages]);
+
 
   const sendMessage = async () => {
     if (!message.trim() && !uploadedFileName) {
@@ -134,7 +171,7 @@ const ChatRoom = () => {
   
     const newMessage = {
       g_no,
-      m_no,
+      m_no: memberInfo.m_no,
       c_content: message, // 입력된 메시지
       c_img_url: uploadedFileName, // 업로드된 이미지 경로
       c_reg_date: new Date().toISOString(),
@@ -288,7 +325,8 @@ const ChatRoom = () => {
             const showDate = shouldShowDate(msg, prevMessage); // 날짜 표시 여부
             const showMNo = shouldShowMNo(msg, prevMessage); // m_no 표시 여부
             const showTime = shouldShowTime(msg, nextMessage); // 시간 표시 여부
-            const isMine = msg.m_no === m_no;
+            const isMine = msg.m_no === (memberInfo?.m_no || null);
+
 
             return (
               <React.Fragment key={index}>
