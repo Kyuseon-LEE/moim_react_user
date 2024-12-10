@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from './view/include/Header';
 import MainImg from './view/include/MainImg';
+import SearchResults from './view/search/SearchResults';
 import Article from './view/include/Article';
 import Article2 from './view/include/Article2';
 import Footer from './view/include/Footer';
@@ -68,6 +69,14 @@ function App() {
           <>
             <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
             <SignupSuccess jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          </>
+        } />
+
+        <Route path="/search" element={
+          <>
+            <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <SearchResults jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+            <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           </>
         } />
 

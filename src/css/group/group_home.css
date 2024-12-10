@@ -259,76 +259,7 @@
   border-radius: 15px;
   font-size:0.9em;
 }
-.moim_board{
-    width:550px;
-    margin-left:240px;
-    border-radius: 30px;
-}
-.moim_board h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
 
-.schedule_list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.schedule_card {
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #ffffff;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-}
-
-.schedule_card h3 {
-  margin: 0 0 10px 0;
-  font-size: 18px;
-}
-
-.schedule_card p {
-  margin: 5px 0;
-}
-
-.schedule_form {
-  margin-top: 20px;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-}
-
-.schedule_form h3 {
-  margin-bottom: 15px;
-}
-
-.schedule_form input,
-.schedule_form textarea,
-.schedule_form button {
-  display: block;
-  width: 95%;
-  margin-bottom: 10px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-
-.schedule_form textarea {
-  resize: none;
-}
-
-.schedule_form button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.schedule_form button:hover {
-  background-color: #0056b3;
-}
 .member_board{
     width:550px;
     background-color: #fff;

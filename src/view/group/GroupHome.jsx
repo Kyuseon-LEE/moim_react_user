@@ -5,6 +5,7 @@ import GroupSettingsModal from "./GroupSettingsModal";
 import ChatRoom from "./ChatRoom";
 import MemberList from "./MemberList";
 import PostList from "./PostList";
+import GroupEvent from "./GroupEvent";
 
 const GroupHome = () => {
   const { g_no } = useParams();
@@ -617,29 +618,9 @@ const handleEditImageUpload = (event) => {
   );
       case "일정":
         return (
-          <div className="moim_board">
-            <h2>정모 일정 관리</h2>
-          
-            <div className="schedule_list">
-              <div className="schedule_card">
-                <h3>정모 #1</h3>
-                <p>날짜: 2024-12-01</p>
-                <p>시간: 18:00</p>
-                <p>장소: 서울역</p> 
-                <p>첫 정모입니다!</p>
-              </div>
-            </div>
-
-            <div className="schedule_form">
-              <h3>새 일정 추가</h3>
-              <input type="text" placeholder="제목" />
-              <input type="date" />
-              <input type="time" />
-              <input type="text" placeholder="장소" />
-              <textarea placeholder="추가 설명"></textarea>
-              <button>일정 추가</button>
-            </div>
-          </div>
+          <GroupEvent 
+          g_no={g_no}
+          />
         );
       case "채팅방":
         return (
@@ -653,25 +634,7 @@ const handleEditImageUpload = (event) => {
         );
         case "멤버":
           return (
-            <div className="member_board">
-              <div className="member_search">
-              <h3>멤버 {members.filter((member) => member.g_m_role !== 0).length}</h3>
-                <input type="text" placeholder="멤버검색" />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="15"
-                  height="15"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-              </div>
+            <div className="member_board">             
         
               <MemberList
                 loading={loading}

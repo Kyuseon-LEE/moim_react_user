@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import ProfileModal from "./ProfileModal";
 
 const MemberList = ({ loading, members, getMemberGrade, gMRole, g_no }) => {
-  const [selectedMember, setSelectedMember] = useState(null); // 프로필 모달에서 사용
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); // 프로필 모달 열림 상태
-  const [selectedRoleMember, setSelectedRoleMember] = useState(null); // 등급 관리 대상 멤버
-  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false); // 등급 관리 모달 열림 상태
-  const [selectedMemberRole, setSelectedMemberRole] = useState(null); // 등급 관리 대상 멤버의 g_m_role
-  const [activeSection, setActiveSection] = useState("members"); // 현재 활성화된 섹션 ("members" 또는 "pending")
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); 
+  const [selectedRoleMember, setSelectedRoleMember] = useState(null); 
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [selectedMemberRole, setSelectedMemberRole] = useState(null);
+  const [activeSection, setActiveSection] = useState("members");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // 프로필 모달 열기
   const openProfileModal = (member) => {
@@ -143,10 +144,39 @@ const MemberList = ({ loading, members, getMemberGrade, gMRole, g_no }) => {
       alert("거절 처리 중 오류가 발생했습니다.");
     }
   };
+  // 멤버 검색
+  const filteredMembers = members.filter(
+    (member) =>
+      member.g_m_role !== 0 && // 가입된 멤버만 필터링
+      (!searchQuery || // 검색어가 없거나
+        member.m_nickname.toLowerCase().includes(searchQuery.toLowerCase())) // 닉네임에 검색어 포함
+  );
+
+  const filteredPendingMembers = members.filter(
+    (member) =>
+      member.g_m_role === 0 && // 대기중인 멤버만 필터링
+      (!searchQuery || // 검색어가 없거나
+        member.m_nickname.toLowerCase().includes(searchQuery.toLowerCase())) // 닉네임에 검색어 포함
+  );
   
   return (
-    <div className="member_list_wrap">
-      <div className="member_list">
+    <>
+      <div className="member_search">
+        <h3>
+          멤버 {filteredMembers.length}
+        </h3>
+        <div className="search_input">
+          <input
+            type="text"
+            placeholder="멤버검색"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="member_list_wrap">
+        <div className="member_list">
           <h4
             className={`toggle_section ${
               activeSection === "members" ? "active" : ""
@@ -156,24 +186,26 @@ const MemberList = ({ loading, members, getMemberGrade, gMRole, g_no }) => {
             멤버 목록
           </h4>
           {gMRole === 3 && (
-          <h4
-            className={`toggle_section ${
-              activeSection === "pending" ? "active" : ""
-            }`}
-            onClick={() => setActiveSection("pending")}
-          >
-            가입 대기자 목록
-          </h4>
+            <h4
+              className={`toggle_section ${
+                activeSection === "pending" ? "active" : ""
+              }`}
+              onClick={() => setActiveSection("pending")}
+            >
+              가입 대기자 목록
+            </h4>
           )}
-        {activeSection === "members" && (
-          <div className="member_section">
-            {loading ? (
-              <p>로딩 중...</p>
-            ) : members.length > 0 ? (
-              members
-                .filter((member) => member.g_m_role !== 0)
-                .map((member) => (
-                  <div className="member_info" key={member.m_no || member.g_m_no}>
+
+          {activeSection === "members" && (
+            <div className="member_section">
+              {loading ? (
+                <p>로딩 중...</p>
+              ) : filteredMembers.length > 0 ? (
+                filteredMembers.map((member) => (
+                  <div
+                    className="member_info"
+                    key={member.m_no || member.g_m_no}
+                  >
                     <img
                       src={
                         member.m_profile_img ||
@@ -223,19 +255,20 @@ const MemberList = ({ loading, members, getMemberGrade, gMRole, g_no }) => {
                     </p>
                   </div>
                 ))
-            ) : (
-              <p>멤버가 없습니다.</p>
-            )}
-          </div>
-        )}
-        
-        {activeSection === "pending" && (
-          <div className="pending_section">
-            {members.filter((member) => member.g_m_role === 0).length > 0 ? (
-              members
-                .filter((member) => member.g_m_role === 0)
-                .map((member) => (
-                  <div className="member_info" key={member.m_no || member.g_m_no}>
+              ) : (
+                <p>멤버가 없습니다.</p>
+              )}
+            </div>
+          )}
+
+          {activeSection === "pending" && (
+            <div className="pending_section">
+              {filteredPendingMembers.length > 0 ? (
+                filteredPendingMembers.map((member) => (
+                  <div
+                    className="member_info"
+                    key={member.m_no || member.g_m_no}
+                  >
                     <img
                       src={
                         member.m_profile_img ||
@@ -252,7 +285,7 @@ const MemberList = ({ loading, members, getMemberGrade, gMRole, g_no }) => {
                       <span className="member_grade role-pending"></span>
                       <span
                         className="member_public"
-                        onClick={() => handleRejectMember(member.m_no)} // 거절 처리 함수 호출
+                        onClick={() => handleRejectMember(member.m_no)}
                       >
                         거절
                       </span>
@@ -265,50 +298,52 @@ const MemberList = ({ loading, members, getMemberGrade, gMRole, g_no }) => {
                     </p>
                   </div>
                 ))
-            ) : (
-              <p className="no_pending_members">가입 대기자 목록이 없습니다.</p>
-            )}
-          </div>
+              ) : (
+                <p className="no_pending_members">가입 대기자 목록이 없습니다.</p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {isProfileModalOpen && selectedMember && (
+          <ProfileModal
+            member={selectedMember}
+            isOpen={isProfileModalOpen}
+            onClose={closeProfileModal}
+            g_m_role={gMRole}
+          />
         )}
 
-      </div>
-
-      {isProfileModalOpen && selectedMember && (
-        <ProfileModal
-          member={selectedMember}
-          isOpen={isProfileModalOpen}
-          onClose={closeProfileModal}
-          g_m_role={gMRole}
-        />
-      )}
-
-      {isRoleModalOpen && selectedRoleMember && (
-        <div className="role_modal">
-          <div className="modal_overlay" onClick={closeRoleModal}></div>
-          <div className="role_modal_content">
-            <h4>등급 관리 - {selectedRoleMember.m_nickname}</h4>
-            <p>현재 등급: {getMemberGrade(selectedMemberRole)}</p>
-            <select
-              value={selectedMemberRole}
-              onChange={(e) => setSelectedMemberRole(parseInt(e.target.value))}
-            >
-              <option value={1}>일반 회원</option>
-              <option value={2}>간부 회원</option>
-            </select>
-            <div className="modal_buttons">
-              <button
-                onClick={() =>
-                  handleRoleChange(selectedRoleMember.m_no, selectedMemberRole)
+        {isRoleModalOpen && selectedRoleMember && (
+          <div className="role_modal">
+            <div className="modal_overlay" onClick={closeRoleModal}></div>
+            <div className="role_modal_content">
+              <h4>등급 관리 - {selectedRoleMember.m_nickname}</h4>
+              <p>현재 등급: {getMemberGrade(selectedMemberRole)}</p>
+              <select
+                value={selectedMemberRole}
+                onChange={(e) =>
+                  setSelectedMemberRole(parseInt(e.target.value))
                 }
               >
-                저장
-              </button>
-              <button onClick={closeRoleModal}>취소</button>
+                <option value={1}>일반 회원</option>
+                <option value={2}>간부 회원</option>
+              </select>
+              <div className="modal_buttons">
+                <button
+                  onClick={() =>
+                    handleRoleChange(selectedRoleMember.m_no, selectedMemberRole)
+                  }
+                >
+                  저장
+                </button>
+                <button onClick={closeRoleModal}>취소</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };
 

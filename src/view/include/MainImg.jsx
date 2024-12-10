@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import locations from "../../util/locations"
 
 const MainImg = () => {
     const [showLocationMenu, setShowLocationMenu] = useState(false);
@@ -7,50 +9,9 @@ const MainImg = () => {
     const [selectedCategory, setSelectedCategory] = useState("카테고리 선택");
     const [selectedSubLocation, setSelectedSubLocation] = useState("");
     const [subLocations, setSubLocations] = useState([]);
+    const [searchQuery, setSearchQuery] = useState(""); // 검색어 상태 추가
 
-  const locations = {
-    서울: ["서울 강남구", "서울 강동구", "서울 강북구", "서울 강서구", "서울 관악구", "서울 광진구", "서울 구로구", "서울 금천구", "서울 노원구", "서울 도봉구", "서울 동대문구", "서울 동작구", "서울 마포구", "서울 서대문구",
-        "서울 서초구", "서울 성동구", "서울 성북구", "서울 송파구", "서울 양천구", "서울 영등포구", "서울 용산구", "서울 은평구", "서울 종로구", "서울 중구", "서울 중랑구" 
-    ],
-    부산: ["부산 강서구", "부산 금정구", "부산 기장군", "부산 남구", "부산 동구", "부산 동래구", "부산 부산진구", "부산 북구", "부산 사상구",
-        "부산 사하구", "부산 서구", "부산 수영구", "부산 연제구", "부산 영도구","부산 중구", "부산 해운대구"
-    ],
-    대구: ["대구 군위군", "대구 남구", "대구 달서구", "대구 달성군", "대구 동구", "대구 북구", "대구 서구", "대구 수성구", "대구 중구"],
-    인천: ["인천 강화군", "인천 계양구", "인천 남동구", "인천 동구", "인천 미추홀구", "인천 부평구", "인천 서구", "인천 연수구", "인천 옹진군", "인천 중구"],
-    광주: ["광주 광산구", "광주 남구", "광주 동구", "광주 북구", "광주 서구"],
-    대전: ["대전 대덕구", "대전 동구", "대전 서구", "대전 유성구", "대전 중구"],
-    울산: ["울산 남구", "울산 동구", "울산 북구", "울산 울주군", "울산 중구"],
-    세종: ["세종특별자치시"],
-    경기: ["경기 가평군", "경기 고양시", "경기 과천시", "경기 광명시", "경기 광주시", "경기 구리시", "경기 군포시","경기 김포시","경기 남양주시",
-        "경기 동두천시", "경기 부천시", "경기 성남시", "경기 수원시", "경기 시흥시", "경기 안산시", "경기 안성시", "경기 안양시", "경기 양주시",
-        "경기 양평군", "경기 여주시", "경기 연천군", "경기 오산시", "경기 용인시", "경기 의왕시", "경기 의정부시", "경기 이천시", "경기 파주시",
-        "경기 평택시", "경기 포천시", "경기 하남시", "경기 화성시"
-    ],
-    충북: ["충북 괴산군", "충북 단양군", "충북 보은군", "충북 영동군", "충북 옥천군", "충북 음성군", "충북 제천시", "충북 증평군", "충북 진천군",
-        "충북 청주시", "충북 충주시"
-    ],
-    충남: ["충남 계룡시", "충남 공주시", "충남 금산군", "충남 논산시", "충남 당진시", "충남 보령시", "충남 부여군", "충남 서산시", "충남 서천군",
-        "충남 아산시", "충남 예산군", "충남 천안시", "충남 청양군", "충남 태안군", "충남 홍성군"
-    ],
-    전남: ["전남 강진군", "전남 고흥군", "전남 곡성군", "전남 광양시", "전남 구례군", "전남 나주시", "전남 담양군", "전남 목포시", "전남 무안군",
-        "전남 보성군", "전남 순천시", "전남 신안군", "전남 여수시", "전남 영광군", "전남 영암군", "전남 완도군", "전남 장성군", "전남 장흥군",
-        "전남 진도군", "전남 함평군", "전남 해남군", "전남 화순군"
-    ],
-    경북: ["경북 경산시", "경북 경주시", "경북 고령군", "경북 구미시", "경북 김천시", "경북 문경시", "경북 봉화군", "경북 상주시", "경북 성주군",
-        "경북 안동시", "경북 영덕군", "경북 영양군", "경북 영주시", "경북 영천시", "경북 예천군", "경북 울릉군", "경북 울진군", "경북 의성군",
-        "경북 청도군", "경북 청송군", "경북 칠곡군", "경북 포항시"
-    ],
-    경남: ["경남 거제시", "경남 거창군", "경남 고성군", "경남 김해시", "경남 남해군", "경남 밀양시", "경남 사천시", "경남 산청군", "경남 양산시",
-        "경남 의령군","경남 진주시", "경남 창녕군", "경남 창원시", "경남 통영시", "경남 하동군","경남 함안군","경남 함양군", "경남 합천군"
-    ],
-    제주: ["제주 서귀포시", "제주 제주시"],
-    강원: ["강원 강릉시", "강원 고성군", "강원 동해시", "강원 삼척시", "강원 속초시", "강원 양구군", "강원 양양군", "강원 영월군", "강원 원주시",
-        "강원 인제군", "강원 정선군", "강원 철원군", "강원 춘천시", "강원 태백시", "강원 평창군", "강원 홍천군", "강원 화천군", "강원 횡성군"
-    ],
-    전북: ["전북 고창군", "전북 군산시", "전북 김제시", "전북 남원시", "전북 무주군", "전북 부안군", "전북 순창군", "전북 완주군", "전북 익산시",
-        "전북 임실군", "전북 장수군", "전북 전주시", "전북 정읍시", "전북 진안군"
-    ],
-  };
+    const navigate = useNavigate();  
 
   const toggleLocationMenu = () => {
     setShowLocationMenu(!showLocationMenu);
@@ -62,21 +23,23 @@ const MainImg = () => {
     setShowLocationMenu(false);
   };
 
-  const closeMenus = (e) => {
-    // 클릭한 곳이 드롭다운 내부인지 확인
-    if (!e.target.closest(".dropdown_menu1")) {
-      setShowLocationMenu(false);
-      setShowCategoryMenu(false);
-    }
+  const closeMenus = () => {
+    setShowLocationMenu(false);
+    setShowCategoryMenu(false);
   };
 
   const handleLocationSelect = (location) => {
     setSelectedLocation(location);
-    setSubLocations(locations[location] || []); 
+    setSubLocations(locations[location] || []);
+    setSelectedSubLocation(""); 
   };
 
   const handleSubLocationSelect = (subLocation) => {
-    setSelectedSubLocation(subLocation);
+    if (subLocation === "전체") {
+      setSelectedSubLocation("");
+    } else {
+      setSelectedSubLocation(subLocation);
+    }
     setShowLocationMenu(false);
   };
 
@@ -84,6 +47,60 @@ const MainImg = () => {
     setSelectedCategory(category);
     setShowCategoryMenu(false);
   };
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+  
+    // 검색어, 지역, 카테고리 중 하나라도 입력되었는지 확인
+    const isAnyFieldFilled =
+      searchQuery.trim().length > 0 ||
+      (selectedLocation !== "지역 선택" && selectedLocation) ||
+      (selectedCategory !== "카테고리 선택" && selectedCategory);
+  
+    if (!isAnyFieldFilled) {
+      alert("검색어, 지역, 카테고리 중 하나를 입력하거나 선택해주세요.");
+      return;
+    }
+  
+    // 검색어 추가 (입력된 경우에만)
+    if (searchQuery.trim()) {
+      params.append("query", searchQuery.trim());
+    }
+  
+    // 지역 조건 추가 (선택된 경우에만)
+    if (selectedSubLocation === "전체" || selectedSubLocation === "") {
+      if (selectedLocation !== "지역 선택") {
+        params.append("location", selectedLocation); // 메인 지역만 전달
+      }
+    } else if (selectedSubLocation) {
+      params.append("location", selectedSubLocation); // 서브 지역 전달
+    }
+  
+    // 카테고리 조건 추가 (선택된 경우에만)
+    if (selectedCategory !== "카테고리 선택") {
+      params.append("category", selectedCategory);
+    }
+  
+    navigate(`/search?${params.toString()}`); // 검색 결과 페이지로 이동
+  };
+  
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        !event.target.closest(".location") &&
+        !event.target.closest(".category")
+      ) {
+        closeMenus();
+      }
+    };
+
+    window.addEventListener("click", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   return (
     <section onClick={closeMenus}>
@@ -95,7 +112,12 @@ const MainImg = () => {
         </p>
         <div className="search_form">
           <p>모임 검색</p>
-          <input type="text" placeholder="검색어를 입력하세요" />
+          <input
+            type="text"
+            placeholder="검색어를 입력하세요"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
           <div
             className="location"
             onClick={(e) => {
@@ -108,35 +130,35 @@ const MainImg = () => {
               <div className="dropdown_menu1">
                 <ul className="main_location">
                   {Object.keys(locations)
-                  .slice(0,9)
-                  .map((location) => (
-                    <li
-                      key={location}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleLocationSelect(location);
-                      }}
-                    >
-                      {location}
-                    </li>
-                  ))}
+                    .slice(0, 9)
+                    .map((location) => (
+                      <li
+                        key={location}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLocationSelect(location);
+                        }}
+                      >
+                        {location}
+                      </li>
+                    ))}
                 </ul>
                 <ul className="main_location">
                   {Object.keys(locations)
-                  .slice(10,17)
-                  .map((location) => (
-                    <li
-                      key={location}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleLocationSelect(location);
-                      }}
-                    >
-                      {location}
-                    </li>
-                  ))}
+                    .slice(10, 17)
+                    .map((location) => (
+                      <li
+                        key={location}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLocationSelect(location);
+                        }}
+                      >
+                        {location}
+                      </li>
+                    ))}
                 </ul>
-                
+
                 {subLocations.length > 0 && (
                   <ul className="sub_locations">
                     {subLocations.map((subLocation) => (
@@ -170,7 +192,7 @@ const MainImg = () => {
                     (category) => (
                       <li
                         key={category}
-                        onClick={() => handleCategorySelect(category)}  
+                        onClick={() => handleCategorySelect(category)}
                       >
                         {category}
                       </li>
@@ -180,7 +202,9 @@ const MainImg = () => {
               </div>
             )}
           </div>
-          <button className="searching">검색</button>
+          <button className="searching" onClick={handleSearch}>
+            검색
+          </button>
         </div>
       </div>
     </section>
