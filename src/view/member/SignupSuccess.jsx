@@ -25,16 +25,19 @@ const SignupSuccess = () => {
             setSelectedCategories([...selectedCategories, category]);
         }
     };
-// handler
+
     const handleSkip = () => {
         console.log("click!!");
         navigate("/");
     }
 
     const handleSubmit = () => {
-        console.log("넘겨주는 카테고리", selectedCategories);
+        // 빈 배열이면 null로 설정
+        const categoriesToSubmit = selectedCategories.length === 0 ? null : selectedCategories;
 
-        instance.post("/member/insertCategories", { m_category: selectedCategories })
+        console.log("넘겨주는 카테고리", categoriesToSubmit);
+
+        instance.post("/member/insertCategories", { m_category: categoriesToSubmit })
         .then(response => {
             console.log("성공적으로 axios 요청이 응답했습니다.",response.data);
             navigate("/");
@@ -43,7 +46,6 @@ const SignupSuccess = () => {
             console.log("axios 요청에 실패 했습니다.", err);
         })
     } 
-
 
     return(
         <section id="section">

@@ -59,6 +59,7 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
                 alert(errorMessage);
             });
     };
+    
     //구글 로그인
     const handleGoogleLoginSuccess = async (tokenResponse) => {
         const { access_token } = tokenResponse;
@@ -69,7 +70,7 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
             const existMember = response.data.userFromDb;
     
             if (existMember === 11) {
-                // 신규 회원 처리
+                // 기존 회원 처리
                 const accessToken = response.data.accessToken;
                 const user = {
                     m_mail: response.data.user.m_mail,
@@ -82,7 +83,7 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
                 setIsLoggedIn(true);
                 navigate("/signup_success");
             } else {
-                // 기존 회원 처리
+                // 신규회원
                 const user = {
                     m_mail: response.data.user.m_mail,
                     m_name: response.data.user.m_name,

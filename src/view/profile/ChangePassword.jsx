@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import '../../css/member/PreviousPassword.css';
 import instance from '../../api/axios';
 import { redirect, useNavigate } from "react-router-dom";
+import Nav from "./Nav";
 
 const ChangePassword = ({ setIsLoggedIn }) => {
     const [password, setPassword] = useState("");
@@ -47,17 +48,22 @@ const ChangePassword = ({ setIsLoggedIn }) => {
     }
 
     return(
-        <div className="previous_password">
-            <h2>새로운 비밀번호</h2>
-            <div className="content">
-                <span>새 비밀번호:</span>
-                <input type="password" onChange={(e) => setPassword(e.target.value)}/><br /><br />
-                <span>비밀번호 확인:</span>
-                <input type="password" onChange={(e) => setConfirmPassword(e.target.value)}/>
+        <div className="article4">
+            <div className="profile_article_wrap">
+                <Nav />
+                <div className="previous_password">
+                    <h2>새로운 비밀번호</h2>
+                    <div className="content">
+                        <span>새 비밀번호:</span>
+                        <input type="password" onChange={(e) => setPassword(e.target.value)}/><br /><br />
+                        <span>비밀번호 확인:</span>
+                        <input type="password" onChange={(e) => setConfirmPassword(e.target.value)}/>
+                    </div>
+                    {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    <input type="button" value="확인"  onClick={handleChangePassword}/>
+                    <input type="button" value="취소" onClick={cancel} />
+                </div>
             </div>
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
-            <input type="button" value="확인"  onClick={handleChangePassword}/>
-            <input type="button" value="취소" onClick={cancel} />
         </div>
     );
 }
