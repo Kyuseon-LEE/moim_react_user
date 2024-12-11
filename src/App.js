@@ -30,6 +30,10 @@ import PreviousPassword from './view/profile/PreviousPassword.jsx';
 import ChangePassword from './view/profile/ChangePassword.jsx';
 import MyGroupList from './view/profile/MyGroupList.jsx';
 import AnnouncementList from "./view/announcement/AnnouncementList";
+import AnnouncementDetail from "./view/announcement/AnnouncementDetail";
+import CustomerHome from "./view/customer/CustomerHome";
+import ContactUs from "./view/customer/ContactUs";
+import Faq from "./view/customer/Faq";
 
 function App() {
 
@@ -219,8 +223,34 @@ function App() {
                 <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
             </>
         }/>
-        
-
+          <Route path='/announcement_detail/:an_no' element={
+              <>
+                  <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <AnnouncementDetail jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+              </>
+          }/>
+          <Route path='/customer_home' element={
+              <>
+                  <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <CustomerHome jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+              </>
+          }/>
+          <Route path='/contact_us' element={
+              <>
+                  <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <ContactUs jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+              </>
+          }/>
+          <Route path='/faq' element={
+              <>
+                  <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <Faq jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+              </>
+          }/>
       </Routes>
 
     </BrowserRouter>
