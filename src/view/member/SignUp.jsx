@@ -136,20 +136,20 @@ const SignUp = () => {
         });
     };
 
-    const checkNickname = () => {
-        if (m_nickname === '') {
+    const checkId = () => {
+        if (m_id === '') {
             return;  // 닉네임이 비어있는 경우 요청을 보내지 않음
         } else {
             instance.get(`/member/checkNickname`, {
-                params: { m_nickname: m_nickname }
+                params: { m_id: m_id }
             })
             .then(response => {
-                console.log("닉네임 중복체크 응답", response.data);
+                console.log("아이디 중복체크 응답", response.data);
                 let nicknameStatus = response.data;
                 if(nicknameStatus === 18) {
-                    setNicknameStatus("사용 가능한 닉네임 입니다.");
+                    setNicknameStatus("사용 가능한 아이디 입니다.");
                 } else {
-                    setNicknameStatus("이미 존재하는 닉네임 입니다");
+                    setNicknameStatus("이미 존재하는 아이디 입니다");
                 }
             })
             .catch(err => {
@@ -214,6 +214,9 @@ const SignUp = () => {
                                             value={m_id}
                                             onChange={handleInputData}
                                         />
+                                        {/* 아이디 중복확인입니다. 닉네임x*/}
+                                        <button type="button" onClick={checkId}>중복확인</button>
+                                        <p>{nicknameStatus}</p>
                                         <p>※ 아이디는 4자 이상 적어주세요.</p>
                                     </td>
                                 </tr>
@@ -281,8 +284,6 @@ const SignUp = () => {
                                             value={m_nickname}
                                             onChange={handleInputData}
                                         />
-                                        <button type="button" onClick={checkNickname}>중복확인</button>
-                                        <p>{nicknameStatus}</p>
                                     </td>
                                 </tr>
                                 <tr>

@@ -121,7 +121,6 @@ const Profile = () => {
 
     const handleSaveClick = useCallback(async () => {
         const formData = new FormData();
-        // 사용자 입력 데이터 추가
         formData.append("m_nickname", newNickname);
         formData.append("m_gender", newGender);
         formData.append("m_phone", newPhone);
@@ -133,7 +132,6 @@ const Profile = () => {
         } else {
             formData.append("m_social_id", memberId);
         }
-    
         // 카테고리 추가
         formData.append("m_category", newCategories === "" ? categories : newCategories);
     
@@ -372,7 +370,15 @@ const Profile = () => {
                                 <>
                                     <div className="id">
                                         <span>아이디</span>
+                                        {memberInfo.m_id === null ? 
+                                        <>
+                                        <span id="id">{memberInfo.m_social_id}</span>
+                                        </> 
+                                        : 
+                                        <>
                                         <span id="id">{memberInfo.m_id}</span>
+                                        </>}
+                                        
                                     </div>
                                     <div className="grade">
                                         <span>멤버쉽</span>

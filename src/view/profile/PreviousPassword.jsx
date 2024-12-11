@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import '../../css/member/PreviousPassword.css';
 import instance from '../../api/axios';
 import { useNavigate } from "react-router-dom";
+import Nav from "./Nav";
 
 const PreviousPassword = () => {
     const [password, setPassword] = useState("");
@@ -29,6 +30,9 @@ const PreviousPassword = () => {
     }
 
     return(
+    <div className="article4">
+      <div className="profile_article_wrap">
+        <Nav />
         <div className="previous_password">
             <h2>비밀번호 확인</h2>
             <div className="content">
@@ -37,6 +41,8 @@ const PreviousPassword = () => {
             </div>
             <input type="button" value="확인" onClick={passwordConfirm} />
         </div>
+      </div>
+    </div>
     );
 }
 

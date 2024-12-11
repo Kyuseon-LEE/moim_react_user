@@ -1,0 +1,32 @@
+.customer-home-wrapper {
+    width: 1000px;
+    margin: 0 auto;
+}
+
+.customer-home-header {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+.customer-content {
+    margin: 0 auto;
+    width: 50%;
+
+}
+
+.customer-ul {
+    display: flex;
+    justify-content: space-between;
+}
+
+.customer-li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+    border-radius: 10px;
+}
+
+.customer-li:hover {
+    background-color: #b0c0ff;
+}
