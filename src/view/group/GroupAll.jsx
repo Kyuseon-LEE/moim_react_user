@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../../css/group/group_all.css";
@@ -6,11 +6,14 @@ import "../../css/group/group_all.css";
 const GroupAll = () => {
   const [groups, setGroups] = useState([]); // 전체 그룹 데이터
   const [filteredGroups, setFilteredGroups] = useState([]); // 필터링된 그룹 데이터
+  const [displayedGroups, setDisplayedGroups] = useState([]); // 현재 표시 중인 그룹 데이터
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
   const [selectedCategory, setSelectedCategory] = useState("전체"); // 선택된 카테고리
   const navigate = useNavigate();
+  const observerRef = useRef(); // Intersection Observer 참조
 
+  // 그룹 데이터 가져오기
   useEffect(() => {
     const fetchGroups = async () => {
       try {
@@ -24,6 +27,7 @@ const GroupAll = () => {
 
         setGroups(sortedGroups);
         setFilteredGroups(sortedGroups); // 초기에는 모든 그룹을 표시
+        setDisplayedGroups(sortedGroups.slice(0, 10)); // 처음 10개만 표시
         setLoading(false); // 로딩 완료
       } catch (err) {
         console.error("Error fetching group data:", err.message);
@@ -45,19 +49,46 @@ const GroupAll = () => {
     if (category === "전체") {
       // "전체보기" 선택 시 모든 그룹 표시
       setFilteredGroups(groups);
+      setDisplayedGroups(groups.slice(0, 8));
     } else {
       // 선택된 카테고리에 해당하는 그룹 필터링
       const filtered = groups.filter((group) => group.g_category === category);
       setFilteredGroups(filtered);
+      setDisplayedGroups(filtered.slice(0, 8)); 
     }
   };
 
+  // 무한 스크롤 핸들링
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setDisplayedGroups((prev) => {
+            const currentLength = prev.length;
+            const nextGroups = filteredGroups.slice(
+              currentLength,
+              currentLength + 2
+            );
+            return [...prev, ...nextGroups];
+          });
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (observerRef.current) observer.observe(observerRef.current);
+
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current);
+    };
+  }, [filteredGroups]);
+
   if (loading) {
-    return <p></p>;
+    return <p>로딩 중입니다...</p>;
   }
 
   if (error) {
-    return <p></p>;
+    return <p>{error}</p>;
   }
 
   return (
@@ -111,54 +142,61 @@ const GroupAll = () => {
         </div>
 
         {filteredGroups.length > 0 ? (
-        <>
-          <h2 className="select_category_name">{selectedCategory}</h2>
-         
-          <ul className="group_list">
-            {filteredGroups.map((group) => (
-              <li
-                key={group.g_no}
-                className="group_item"
-                onClick={() => handleGroupClick(group.g_no)}
-              >
-                <img
-                  src={group.g_img_name || "/img/default.png"}
-                  alt={group.g_name}
-                  className="group_image"
-                />
-                <div className="group_details">
-                  <h3 className="group_name">{group.g_name}</h3>
-                  <p className="group_info">{group.g_info}</p>
-                  <div className="group_meta">
-                    <div className="all_info">
-                      <span className="group_all_location">
-                        #{group.g_location}
+          <>
+            <h2 className="select_category_name">{selectedCategory}</h2>
+
+            <ul className="group_list">
+              {displayedGroups.map((group) => (
+                <li
+                  key={group.g_no}
+                  className="group_item"
+                  onClick={() => handleGroupClick(group.g_no)}
+                >
+                  <img
+                    src={group.g_img_name || "/img/default.png"}
+                    alt={group.g_name}
+                    className="group_image"
+                  />
+                  <div className="group_details">
+                    <h3 className="group_name">{group.g_name}</h3>
+                    <p className="group_info">{group.g_info}</p>
+                    <div className="group_meta">
+                      <div className="all_info">
+                        <span className="group_all_location">
+                          #{group.g_location}
+                        </span>
+                        <span className="group_all_category">
+                          #{group.g_category}
+                        </span>
+                        <span
+                          className={`group_all_category ${
+                            group.g_status === 1 ? "" : "hidden"
+                          }`}
+                        >
+                          {group.g_status === 1 && <>&nbsp;#프리미엄</>}
+                        </span>
+                        <br />
+                      </div>
+                      <span className="group_member_count">
+                        멤버 {group.memberCount || 0}명
                       </span>
-                      <span className="group_all_category">
-                        #{group.g_category}
+                      <span className="group_leader">
+                        리더 {group.g_master_nickname}
                       </span>
-                      <br />
                     </div>
-                    <span className="group_member_count">
-                      멤버 {group.memberCount || 0}명
-                    </span>
-                    <span className="group_leader">
-                      리더 {group.g_master_nickname}
-                    </span>
                   </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+            <div ref={observerRef}></div>
           </>
         ) : (
-        <>
-          <h2>{selectedCategory}</h2>  
-          <p className="no_groups_message">해당하는 모임이 없습니다.</p>
-        </>
+          <>
+            <h2>{selectedCategory}</h2>
+            <p className="no_groups_message">해당하는 모임이 없습니다.</p>
+          </>
         )}
       </div>
-      
     </article>
   );
 };

@@ -159,3 +159,7 @@
 .select_category_name{
     margin-bottom:20px;
 }
+.hidden {
+    display: none;
+  }
+  

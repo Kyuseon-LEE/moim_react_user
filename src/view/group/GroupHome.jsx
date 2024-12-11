@@ -673,6 +673,9 @@ const handleEditImageUpload = (event) => {
         return (
           <GroupEvent 
           g_no={g_no}
+          groupData={groupData}
+          isMember={isMember}
+          gMRole={gMRole} 
           />
         );
       case "채팅방":
@@ -722,7 +725,13 @@ const handleEditImageUpload = (event) => {
       <div className="home_wrap">
         <div className="home_info">
           <img src={groupData.g_img_name} alt="Group" />
-          <h2>{groupData.g_name}</h2>
+          <p className={`premium_status ${groupData.g_status === 1 ? "" : "hidden"}`}
+                      >
+                        {groupData.g_status === 1 && <>
+                <img src="/img/leader.png" alt="all" /> 프리미엄 그룹
+            </>}
+          </p>
+          <h2>{groupData.g_name}</h2>          
           <p className="info_member">멤버 {groupData.memberCount}</p>
           <p className="info_member">리더 {groupData.g_master_nickname}</p>
           <p className="info_intro">개설일 {formatDate(groupData.g_reg_date)}</p>

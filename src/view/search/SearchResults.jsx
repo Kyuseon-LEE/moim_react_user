@@ -57,7 +57,9 @@ const SearchResults = () => {
   }, [location.search]); // 쿼리 파라미터가 변경될 때마다 실행
 
   if (loading) {
-    return <p>검색 중입니다...</p>;
+    return <div className="search_loading-bar">
+    <div className="search_loading-spinner"></div>
+  </div>
   }
 
   if (error) {

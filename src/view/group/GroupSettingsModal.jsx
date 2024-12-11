@@ -125,13 +125,14 @@ const GroupSettingsModal = ({ isOpen, onClose, groupData, onSettingsUpdated }) =
             value={updatedGroupData.g_max_number || ""}
             onChange={handleInputChange}
           >
-            {[...Array(21).keys()].map((i) => (
+            {[...Array(groupData.g_status === 1 ? 41 : 21).keys()].map((i) => (
               <option key={i + 10} value={i + 10}>
                 {i + 10}명
               </option>
             ))}
           </select>
         </label>
+
         <label>
           공개 여부:
           <select

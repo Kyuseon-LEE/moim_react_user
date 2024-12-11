@@ -57,8 +57,22 @@
     width:210px;
     height:210px;
 }
+.premium_status{
+  margin:10px 0;
+  padding:3px;
+  font-weight: 700;
+  border: 1px solid #ccc;
+  width:120px;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 15px;
+}
+.premium_status img{
+  width:15px;
+  margin-right:3px;
+}
 .home_info h2{
-    margin-top:20px;
+    margin-top:5px;
     margin-bottom:10px;
 }
 .home_info > .info_member{
@@ -742,4 +756,9 @@
   border-radius: 15px;
   margin-top:15px;
   margin-right:5px;
+}
+
+.premium_moim img{
+  width:25px;
+  margin-right:10px;
 }

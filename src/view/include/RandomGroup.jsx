@@ -39,7 +39,13 @@ const RandomGroup = () => {
               />
               <span className="all_group_name">{group.g_name}</span>
               <span className="all_group_info">{group.g_info}</span>              
-              <span className="all_group_info">#{group.g_category} #{group.g_location}</span>              
+              <span className="all_group_info">#{group.g_category} #{group.g_location}
+              {group.g_status === 1 ? (
+                  <>
+                      &nbsp;#프리미엄 
+                  </>
+              ) : null}
+            </span>              
               <span
                 style={{ cursor: "pointer" }}
                 

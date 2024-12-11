@@ -229,7 +229,7 @@
     color: #666;
     margin-bottom: 10px;
     overflow: hidden;
-    width:180px;
+    width:200px;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
@@ -278,7 +278,7 @@
 .group_tag{
     margin-top: 5px;
     color:#666;
-    font-size:0.9em;
+    font-size:0.8em;
     display: inline-block;
 }
 

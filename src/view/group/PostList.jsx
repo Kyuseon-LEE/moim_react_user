@@ -55,13 +55,14 @@ const PostList = ({
     }, []);
   
   
-  if (groupData.g_public === 0 && !isMember) {
-    return (
-      <div className="home_board">
-        <p className="no_member">비공개 그룹입니다. 멤버만 게시글을 볼 수 있습니다.</p>
-      </div>
-    );
-  }
+    if (groupData.g_public === 0 && (!isMember || gMRole === 0)) {
+      return (
+        <div className="home_board">
+          <p className="no_member">비공개 그룹입니다. 멤버만 게시글을 볼 수 있습니다.</p>
+        </div>
+      );
+    }
+    
 
   return (
     <div className="home_board">

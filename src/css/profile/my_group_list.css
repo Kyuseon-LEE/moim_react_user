@@ -13,7 +13,7 @@
     display: flex;
 }
 .side_bar {
-    width: 240px;
+    width: 210px;
     height: 10%;
     border: 1px solid #ddd;
     background-color: #fff;
@@ -129,4 +129,68 @@
     transform: translateX(30px);
 }
 
+/* 기본 스타일 */
+.tab_navigation h2 {
+    font-size: 16px;
+    font-weight: normal;
+    color: #333;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease-in-out;
+    float:left;
+}
 
+/* 활성화된 상태 스타일 */
+.tab_navigation h2.active {
+    font-weight: bold;
+    color: #1273e4; /* 강조 색상 */
+    border-bottom: 2px solid #1273e4; /* 강조선 */
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width:400px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.modal-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.modal-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal-buttons button:first-child {
+  background: red;
+  color: white;
+}
+
+.modal-buttons button:last-child {
+  background: gray;
+  color: white;
+}
+
+  

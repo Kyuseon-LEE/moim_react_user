@@ -152,7 +152,9 @@ const Article = () => {
                 <p>만들기</p>
               </li>
             </a>
-            {visibleGroups.map((group) => (
+            {visibleGroups
+            .filter(group => group.g_m_role !== 0) // g_m_role이 0인 그룹 제외
+            .map(group => (
               <li key={group.g_no} onClick={() => handleGroupClick(group.g_no)}>
                 <a>
                   <img src={group.g_img_name} alt={group.g_name} />
