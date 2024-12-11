@@ -123,7 +123,7 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
         <nav className={`menu_bar ${customerMenuOpen ? 'show' : ''}`}>
           <ul>
             <li><Link to="/announcement_list">공지사항</Link></li>
-            <li><Link to="#none">고객센터</Link></li>
+            <li><Link to="/customer_home">고객센터</Link></li>
           </ul>
         </nav>
       </div>

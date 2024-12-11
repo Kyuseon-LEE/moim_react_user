@@ -21,7 +21,6 @@
 .announcementlist-wrapper .announcement-list-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
     font-size: 16px;
     color: #333;
 }
@@ -203,4 +202,13 @@
 
 .page-link:hover {
     background-color: #f0f0f0;
+}
+
+.announcement-sort-menu {
+    width: 100%
+}
+
+.announcement-sort-menu-select {
+    width: 80px;
+    height: 25px;
 }

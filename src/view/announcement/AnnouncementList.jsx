@@ -2,9 +2,11 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
 import "../../css/announcement/announcement_list.css";
+import {Link} from "react-router-dom";
 const AnnouncementList = () => {
 
     // 페이지네션을 위한 스테이트
+    const [sort, setSort] = useState("전체");
     const [totalItems, setTotalItems] = useState(0);
     const [currentItems, setCurrentItems] = useState([]);
     const [itemsPerPage] = useState(10);
@@ -13,7 +15,7 @@ const AnnouncementList = () => {
 
     useEffect(() => {
         setupData();
-    }, [currentPage, totalItems]);
+    }, [currentPage, totalItems, sort]);
 
 
     const setupData = () => {
@@ -21,7 +23,7 @@ const AnnouncementList = () => {
         fetchAnnouncementCount();
     }
     const fetchAnnouncementList = () => {
-        axios.get(`http://localhost:5000/ac/fetchAnnouncementList?page=${currentPage}&size=${itemsPerPage}`)
+        axios.get(`http://localhost:5000/ac/fetchAnnouncementList?page=${currentPage}&size=${itemsPerPage}&sort=${sort}`)
             .then(res => {
                 setCurrentItems(res.data.data);
             })
@@ -31,7 +33,7 @@ const AnnouncementList = () => {
             });
     }
     const fetchAnnouncementCount = () => {
-        axios.get('http://localhost:5000/ac/fetchAnnouncementCount')
+        axios.get(`http://localhost:5000/ac/fetchAnnouncementCount?sort=${sort}`)
             .then(res => {
                 setTotalItems(res.data.data);
             })
@@ -45,6 +47,9 @@ const AnnouncementList = () => {
         setCurrentPage(selectedPage);
     };
 
+    const sortMenuChangeHandle = (e) => {
+        setSort(e.target.value);
+    }
     return (
         <div className="announcementlist-wrapper">
             <div className="announcement-list-title">
@@ -52,6 +57,14 @@ const AnnouncementList = () => {
             </div>
 
             <div className="announcement-list-box">
+                <div className="announcement-sort-menu">
+                    <select className="announcement-sort-menu-select" value={sort} onChange={sortMenuChangeHandle} >
+                        <option value="전체">전체</option>
+                        <option value="공지">공지</option>
+                        <option value="이벤트">이벤트</option>
+                        <option value="뉴스">뉴스</option>
+                    </select>
+                </div>
                 <table className="announcement-list-table">
                     <thead>
                     <tr className="announcement-list-tr">
@@ -67,7 +80,11 @@ const AnnouncementList = () => {
                             <tr className="announcement-list-tr" key={announce.an_no}>
                                 <td className="announcement-list-td">{announce.an_no}</td>
                                 <td className="announcement-list-td">{announce.an_type}</td>
-                                <td className="announcement-list-td">{announce.an_title}</td>
+                                <td className="announcement-list-td">
+                                    <Link to={`/announcement_detail/${announce.an_no}`}>
+                                        {announce.an_title}
+                                    </Link>
+                                </td>
                                 <td className="announcement-list-td">{announce.an_reg_date}</td>
                             </tr>
                         ))
