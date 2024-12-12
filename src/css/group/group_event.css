@@ -90,3 +90,55 @@
   background-color: #f44336;
   color: white;
 }
+.vote_buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* 버튼 간 간격 */
+  margin-top: 10px; /* 위쪽 여백 */
+}
+
+.vote_buttons button {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.vote_buttons button:nth-child(1) {
+  background-color: #4caf50; /* 참석 버튼 색상 (초록) */
+  color: white;
+}
+
+.vote_buttons button:nth-child(2) {
+  background-color: #f44336; /* 불참 버튼 색상 (빨강) */
+  color: white;
+}
+
+.vote_buttons button:hover {
+  opacity: 0.8; /* 호버 시 투명도 조정 */
+}
+
+.vote_results {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* 참석과 불참 간 간격 */
+  margin-top: 15px; /* 위쪽 여백 */
+  font-size: 14px;
+  color: #555; /* 텍스트 색상 */
+}
+
+.vote_results p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.vote_results p:nth-child(1) {
+  color: #4caf50; /* 참석 색상 (초록) */
+}
+
+.vote_results p:nth-child(2) {
+  color: #f44336; /* 불참 색상 (빨강) */
+}

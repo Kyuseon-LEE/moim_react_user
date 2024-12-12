@@ -675,7 +675,8 @@ const handleEditImageUpload = (event) => {
           g_no={g_no}
           groupData={groupData}
           isMember={isMember}
-          gMRole={gMRole} 
+          gMRole={gMRole}
+          memberInfo={memberInfo}
           />
         );
       case "채팅방":
