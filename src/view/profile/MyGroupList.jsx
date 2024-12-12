@@ -218,7 +218,7 @@ const MyGroupList = ({ memberInfo, setMemberInfo }) => {
           <thead>
             {selectedTab === "managed" && (
               <tr>
-                <th>이미지</th>
+                <th></th>
                 <th>그룹 이름</th>
                 <th>위치</th>
                 <th>카테고리</th>
@@ -229,7 +229,7 @@ const MyGroupList = ({ memberInfo, setMemberInfo }) => {
             )}
             {selectedTab === "joined" && (
               <tr>
-                <th>이미지</th>
+                <th></th>
                 <th>그룹 이름</th>
                 <th>위치</th>
                 <th>카테고리</th>
@@ -240,7 +240,7 @@ const MyGroupList = ({ memberInfo, setMemberInfo }) => {
             )}
             {selectedTab === "pending" && (
               <tr>
-                <th>이미지</th>
+                <th></th>
                 <th>그룹 이름</th>
                 <th>위치</th>
                 <th>카테고리</th>

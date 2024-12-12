@@ -5,7 +5,8 @@ const GroupEvent = ({
   g_no,
   groupData,
   isMember,
-  gMRole, }) => {
+  gMRole,
+  memberInfo, }) => {
   const [events, setEvents] = useState([]); // 정모 일정 목록
   const [newEvent, setNewEvent] = useState({
     e_title: "",
@@ -16,7 +17,7 @@ const GroupEvent = ({
   });
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const [votes, setVotes] = useState({});
-  const [userVote, setUserVote] = useState({});
+  const [userVote, setUserVote] = useState({}); // 사용자별 투표 상태
 
   useEffect(() => {
     fetchEvents();
@@ -28,32 +29,90 @@ const GroupEvent = ({
       const data = await response.json();
       setEvents(data);
 
-      // Fetch votes for events
-      const votesResponse = await fetch(`http://localhost:5000/group/${g_no}/votes`);
-      const votesData = await votesResponse.json();
+      const votesData = {};
+      const userVotes = {};
+      for (const event of data) {
+        const votesResponse = await fetch(`http://localhost:5000/group/${event.e_no}/votes`);
+        const voteResult = await votesResponse.json();
+
+        // 투표 결과 가공
+        const groupedVotes = voteResult.reduce(
+          (acc, vote) => {
+            if (vote && vote.vote_status === 1) {
+              acc.yes += 1; // 참석
+            } else if (vote && vote.vote_status === 0) {
+              acc.no += 1; // 불참
+            }
+            return acc;
+          },
+        );
+
+        votesData[event.e_no] = groupedVotes;
+
+        // 사용자 투표 상태 확인
+        const userVote = voteResult.find(vote => vote && vote.m_no === memberInfo.m_no);
+        if (userVote) {
+          userVotes[event.e_no] = userVote.vote_status; // 1(참석) 또는 0(불참)
+        }
+      }
+
       setVotes(votesData);
+      setUserVote(userVotes); // 사용자 투표 상태 업데이트
     } catch (error) {
       console.error("Error fetching events:", error);
     }
   };
 
   const handleVote = async (e_no, voteStatus) => {
-    try {
-      const response = await fetch(`http://localhost:5000/group/${g_no}/events/${e_no}/vote`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ voteStatus }),
-      });
-
-      if (response.ok) {
-        alert("투표가 반영되었습니다.");
-        fetchEvents(); // Refresh events and votes
-      } else {
-        alert("투표 반영에 실패했습니다.");
+    const userEventVote = userVote[e_no]; // 현재 사용자의 투표 상태 확인
+  
+    if (userEventVote === voteStatus) {
+      // 동일한 상태를 다시 선택한 경우 -> 삭제 요청
+      try {
+        const response = await fetch(`http://localhost:5000/group/events/${e_no}/vote`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ m_no: memberInfo.m_no }),
+        });
+  
+        if (response.ok) {
+          alert("투표가 삭제되었습니다.");
+          fetchEvents(); // 상태 갱신
+        } else {
+          const errorData = await response.json();
+          console.error("Server Error:", errorData.message);
+          alert("투표 삭제에 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("Error deleting vote:", error);
+        alert("오류가 발생했습니다.");
       }
-    } catch (error) {
-      console.error("Error submitting vote:", error);
-      alert("오류가 발생했습니다.");
+    } else {
+      // 반대 상태를 선택한 경우 -> 업데이트 요청
+      const payload = {
+        m_no: memberInfo.m_no,
+        vote_status: voteStatus,
+      };
+  
+      try {
+        const response = await fetch(`http://localhost:5000/group/events/${e_no}/vote`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+  
+        if (response.ok) {
+          alert("투표가 반영되었습니다.");
+          fetchEvents(); // 상태 갱신
+        } else {
+          const errorData = await response.json();
+          console.error("Server Error:", errorData.message);
+          alert("이미 투표를 진행하셨습니다.");
+        }
+      } catch (error) {
+        console.error("Error submitting vote:", error);
+        alert("오류가 발생했습니다.");
+      }
     }
   };
 
@@ -87,7 +146,6 @@ const GroupEvent = ({
   };
 
   const handleAddEvent = async () => {
-    // 필수 입력값 검증
     if (
       !newEvent.e_title.trim() ||
       !newEvent.e_start_date.trim() ||
@@ -102,10 +160,9 @@ const GroupEvent = ({
     const tomorrowDate = getTomorrowDate();
     const currentTime = getCurrentTime();
 
-    // 오늘 날짜와 이전 날짜 등록 불가
     if (
       newEvent.e_start_date < tomorrowDate ||
-      (newEvent.e_start_date === tomorrowDate && newEvent.e_time < currentTime)
+      (newEvent.e_start_date === tomorrowDate && newEvent.e_time <= currentTime)
     ) {
       alert("이전 날짜 및 당일 일정 등록은 불가합니다.");
       return;
@@ -120,9 +177,9 @@ const GroupEvent = ({
 
       if (response.ok) {
         alert("일정이 등록되었습니다.");
-        setIsModalOpen(false); // 모달 닫기
-        resetNewEvent(); // 입력 필드 초기화
-        fetchEvents(); // 일정 목록 갱신
+        setIsModalOpen(false);
+        resetNewEvent();
+        fetchEvents();
       } else {
         alert("일정 등록에 실패했습니다.");
       }
@@ -130,6 +187,24 @@ const GroupEvent = ({
       console.error("일정 등록 중 오류 발생:", error);
       alert("오류가 발생했습니다.");
     }
+  };
+
+  const renderVoteButtons = (e_no) => {
+    const userEventVote = userVote[e_no];
+    
+    // 투표하지 않은 경우 버튼 표시
+    return (
+      <>
+        {(!isMember || gMRole === 0) ? (
+          <p></p>
+        ) : (
+          <div className="vote_buttons">
+            <button onClick={() => handleVote(e_no, 1)}>참석</button>
+            <button onClick={() => handleVote(e_no, 0)}>불참</button>
+          </div>
+        )}
+      </>
+    );    
   };
 
   if (groupData.g_public === 0 && (!isMember || gMRole === 0)) {
@@ -151,23 +226,26 @@ const GroupEvent = ({
           events.map((event) => (
             <div className="schedule_card" key={event.e_no}>
               <h3>{event.e_title}</h3>
-              <p>일시: {new Date(event.e_start_date).toISOString().split('T')[0]} 
-                 &nbsp;{event.e_time.split(':').slice(0, 2).join(':')}</p>              
+              <p>
+                일시: {new Date(event.e_start_date).toLocaleDateString("ko-KR", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                }).replace(/\./g, '.').trim()} 
+                &nbsp;{event.e_time.split(':').slice(0, 2).join(':')}
+              </p>             
               <p>장소: {event.e_location}</p>
               <p>내용: {event.e_text}</p>
-              <div className="vote_buttons">
-                <button onClick={() => handleVote(event.e_no, 1)}>참석</button>
-                <button onClick={() => handleVote(event.e_no, 0)}>불참</button>
-              </div>
+
+              {renderVoteButtons(event.e_no)}
 
               {votes[event.e_no] && (
                 <div className="vote_results">
-                  <p>참석: {votes[event.e_no].yes || 0}</p>
-                  <p>불참: {votes[event.e_no].no || 0}</p>
+                  <p>참석: {votes[event.e_no].yes}</p>
+                  <p>불참: {votes[event.e_no].no}</p>
                 </div>
               )}
             </div>
-            
           ))
         )}
       </div>
@@ -181,7 +259,7 @@ const GroupEvent = ({
       {isModalOpen && (
         <div className="event_modal_overlay" onClick={() => {
           setIsModalOpen(false);
-          resetNewEvent(); // 모달 닫힐 때 입력 초기화
+          resetNewEvent();
         }}>
           <div className="event_modal_content" onClick={(e) => e.stopPropagation()}>
             <h3>새 일정 추가</h3>
@@ -197,7 +275,7 @@ const GroupEvent = ({
               name="e_start_date"
               value={newEvent.e_start_date}
               onChange={handleInputChange}
-              min={getTomorrowDate()} // 최소 날짜는 내일
+              min={getTomorrowDate()}
             />
             <input
               type="time"
@@ -222,7 +300,7 @@ const GroupEvent = ({
               <button onClick={handleAddEvent}>등록</button>
               <button onClick={() => {
                 setIsModalOpen(false);
-                resetNewEvent(); // 입력 필드 초기화
+                resetNewEvent();
               }}>취소</button>
             </div>
           </div>

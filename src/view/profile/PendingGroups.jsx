@@ -106,7 +106,6 @@ const JoinedGroups = () => {
           ))
       ) : (
         <tr>
-          
         </tr>
       )}
     </tbody>
