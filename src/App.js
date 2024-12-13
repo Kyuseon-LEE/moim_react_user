@@ -34,6 +34,7 @@ import AnnouncementDetail from "./view/announcement/AnnouncementDetail";
 import CustomerHome from "./view/customer/CustomerHome";
 import ContactUs from "./view/customer/ContactUs";
 import Faq from "./view/customer/Faq";
+import ContactUsList from "./view/customer/ContactUsList";
 
 function App() {
 
@@ -240,7 +241,7 @@ function App() {
           <Route path='/contact_us' element={
               <>
                   <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-                  <ContactUs jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <ContactUsList jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
                   <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
               </>
           }/>
