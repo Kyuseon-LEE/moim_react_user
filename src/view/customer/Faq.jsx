@@ -2,6 +2,7 @@ import "../../css/customer/faq.css";
 import {useEffect, useState} from "react";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
+import {Link} from "react-router-dom";
 const Faq = () => {
 
     const [ faqList, setFaqList ] = useState([]);
@@ -110,7 +111,11 @@ const Faq = () => {
                                 <td className="faq-td">
                                     {faqCategory && faqCategory.find(category => category.faq_category_no === faq.faq_category)?.faq_category || "카테고리 없음"}
                                 </td>
-                                <td className="faq-td">{faq.faq_title}</td>
+                                <td className="faq-td">
+                                    <Link to={`/faq_detail/${faq.faq_no}`}>
+                                        {faq.faq_title}
+                                    </Link>
+                                </td>
                                 <td className="faq-td">{faq.faq_reg_date}</td>
                             </tr>
                         ))

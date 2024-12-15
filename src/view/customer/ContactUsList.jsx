@@ -2,10 +2,11 @@ import ReactPaginate from "react-paginate";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {Link, useNavigate} from "react-router-dom";
-
+import "../../css/customer/contact_us_list.css";
 const ContactUsList = () => {
 
     const [ inquiries, setInquiries ] = useState([]);
+    const [ faqCategory, setFaqCategory] = useState([]);
     const navigate = useNavigate();
 
     // 페이지네션을 위한 스테이트
@@ -16,7 +17,9 @@ const ContactUsList = () => {
 
     useEffect(() => {
         fetchUserInquiries();
+        fetchFaqCategory();
     }, []);
+
     const fetchUserInquiries = () => {
         const accessToken = localStorage.getItem("accessToken");
 
@@ -29,9 +32,18 @@ const ContactUsList = () => {
                 setInquiries(res.data.data);
             })
             .catch(err => {
-                alert('오류가 발생했습니다.');
-                navigate('/');
+                console.log(err);
             });
+    }
+
+    const fetchFaqCategory = () => {
+        axios.get("http://localhost:5000/faq/fetchFaqCategory")
+            .then(res => {
+                setFaqCategory(res.data.data);
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }
 
 
@@ -43,45 +55,60 @@ const ContactUsList = () => {
 
 
     return (
-        <div className="faq-wrapper">
-            <div className="faq-header">
-                <div className="faq-title">
+        <div className="contact-us-list-wrapper">
+            <div className="contact-us-list-header">
+                <div className="contact-us-list-title">
                     내 문의 내역
                 </div>
             </div>
 
-            <div className="faq-content">
-                <table className="faq-table">
-                    <thead className="faq-table-header">
-                    <tr className="faq-tr">
-                        <th className="faq-th">문의 번호</th>
-                        <th className="faq-th">카테고리</th>
-                        <th className="faq-th">제목</th>
-                        <th className="faq-th">상태</th>
-                        <th className="faq-th">문의일</th>
+            <div className="contact-us-list-content">
+                <table className="contact-us-list-table">
+                    <thead className="contact-us-list-table-header">
+                    <tr className="contact-us-list-tr">
+                        <th className="contact-us-list-th">문의 번호</th>
+                        <th className="contact-us-list-th">카테고리</th>
+                        <th className="contact-us-list-th">제목</th>
+                        <th className="contact-us-list-th">상태</th>
+                        <th className="contact-us-list-th">문의일</th>
 
                     </tr>
                     </thead>
                     <tbody>
                     {inquiries && inquiries.length > 0 ? (
                         inquiries.map((item) => (
-                            <tr className="faq-tr" key={item.csi_no}>
-                                <td className="faq-td">{item.csi_no}</td>
-                                <td className="faq-td">{item.csi_category}</td>
-                                <td className="faq-td">
-                                <Link to="#none">
-                                    {item.csi_title}
-                                </Link>
+                            <tr className="contact-us-list-tr" key={item.csi_no}>
+                                <td className="contact-us-list-td">{item.csi_no}</td>
+                                <td className="contact-us-list-td">
+                                    {faqCategory && faqCategory.find(category => category.faq_category_no === item.csi_category)?.faq_category || "카테고리 없음"}
                                 </td>
-                                <td className="faq-td">{item.csi_status}</td>
-                                <td className="faq-td">{item.csi_request_date}</td>
+                                <td className="contact-us-list-td">
+                                    <Link to={`/myInquiries/${item.csi_no}`}>
+                                        {item.csi_title}
+                                    </Link>
+                                </td>
+                                <td className="contact-us-list-td">
+                                    {item.csi_status === 1
+                                        ? '접수완료'
+                                        : item.csi_status === 2
+                                            ? '답변완료'
+                                            : item.csi_status === 3
+                                                ? '취소'
+                                                : '알 수 없음'}
+                                </td>
+                                <td className="contact-us-list-td">{item.csi_request_date}</td>
                             </tr>
                         ))
                     ) : (
-                        <tr>
-                            <td colSpan="4">문의 내역이 존재하지 않습니다.</td>
+                        <tr className="contact-us-list-tr">
+                            <td colSpan="5" className="contact-us-list-td">문의 내역이 존재하지 않습니다.</td>
                         </tr>
                     )}
+                    <tr className="contact-us-list-tr">
+                        <td className="contact-us-list-td last-td" colSpan="5">
+                            <button className="inquiry-button" onClick={() => navigate("/inquiries")}>문의하기</button>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
