@@ -29,7 +29,7 @@ const QRLogin = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
     useEffect(() => {
         const accessToken = localStorage.getItem("accessToken");
         axios
-            .get("http://192.168.2.7:5000/qr/create-qr", {
+            .get("http://192.168.2.13:5000/qr/create-qr", {
                 headers: {
                     Authorization: `Bearer ${accessToken}` // Authorization 헤더에 accessToken을 넣음
                 },
@@ -57,7 +57,7 @@ const QRLogin = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
     useEffect(() => {
         if (!token) return;
 
-        const eventSource = new EventSource(`http://192.168.2.7:5000/qr/sse?token=${token}`, {
+        const eventSource = new EventSource(`http://192.168.2.13:5000/qr/sse?token=${token}`, {
             withCredentials: true,
         });
 
