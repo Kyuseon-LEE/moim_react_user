@@ -20,7 +20,14 @@ const ProfileModal = ({ member, isOpen, onClose, filterPostsByMember }) => {
             className="profile_image"
           />
           <h3 className="profile_name">{member.m_nickname}</h3>
-          <p className="profile_role">{member.m_mail}</p>
+          <p className="profile_role">
+            {{
+              1: "일반 회원",
+              2: "간부 회원",
+              3: "관리자"
+            }[member.g_m_role] || "알 수 없음"}
+          </p>
+          <p className="profile_mail">{member.m_mail}</p>
         </div>
         <div className="profile_info">
           <p>카테고리: {member.m_category}</p>

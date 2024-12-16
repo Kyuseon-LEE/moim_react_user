@@ -20,8 +20,11 @@ const GroupAll = () => {
         const response = await axios.get("http://localhost:5000/group/all");
         const allGroups = response.data;
 
+        // g_status가 1인 그룹만 필터링
+        const validGroups = allGroups.filter((group) => group.g_status === 1);
+
         // 기본 정렬: 등록일 기준 오름차순
-        const sortedGroups = allGroups.sort(
+        const sortedGroups = validGroups.sort(
           (a, b) => new Date(a.g_reg_date) - new Date(b.g_reg_date)
         );
 
@@ -54,7 +57,7 @@ const GroupAll = () => {
       // 선택된 카테고리에 해당하는 그룹 필터링
       const filtered = groups.filter((group) => group.g_category === category);
       setFilteredGroups(filtered);
-      setDisplayedGroups(filtered.slice(0, 8)); 
+      setDisplayedGroups(filtered.slice(0, 8));
     }
   };
 
@@ -93,7 +96,7 @@ const GroupAll = () => {
 
   return (
     <article className="all_article">
-      <h1>모든 모임</h1>
+      <h1><img src="/img/leader.png" alt="all" className="premium_title_img"/>프리미엄 모임</h1>
       <div className="group_all">
         <div className="all_category_list">
           <h3>주제 별 모임을 찾아보세요</h3>

@@ -9,6 +9,7 @@ import SignUp from './view/member/SignUp.jsx';
 import GroupCreate from './view/group/GroupCreate';
 import GroupHome from './view/group/GroupHome';
 import GroupAll from './view/group/GroupAll';
+import GroupPremium from './view/group/GroupPremium';
 import LocalLogin from './view/member/LocalLogin.jsx'
 import Profile from './view/profile/Profile.jsx'
 import SignupSuccess from './view/member/SignupSuccess.jsx';
@@ -108,6 +109,14 @@ function App() {
           <>
             <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
             <GroupAll jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+            <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+          </>
+        } />
+
+        <Route path="/group/premium" element={
+          <>
+            <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+            <GroupPremium jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
             <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           </>
         } />

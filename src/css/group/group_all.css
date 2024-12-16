@@ -161,5 +161,10 @@
 }
 .hidden {
     display: none;
-  }
+}
+
+.premium_title_img{
+    width:30px;
+    margin-right:10px;
+}
   

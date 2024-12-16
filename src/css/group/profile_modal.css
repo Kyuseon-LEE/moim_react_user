@@ -53,6 +53,11 @@
   
   .profile_role {
     font-size: 1rem;
+    display: inline-block;
+    margin-bottom:5px;
+  }
+  .profile_mail {
+    font-size: 1rem;
     color: #666;
   }
   

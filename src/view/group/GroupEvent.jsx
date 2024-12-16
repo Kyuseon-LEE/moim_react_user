@@ -164,7 +164,7 @@ const GroupEvent = ({
       newEvent.e_start_date < tomorrowDate ||
       (newEvent.e_start_date === tomorrowDate && newEvent.e_time <= currentTime)
     ) {
-      alert("이전 날짜 및 당일 일정 등록은 불가합니다.");
+      alert("당일 일정 및 24시간 이내에 시작되는 일정은 등록이 불가합니다.");
       return;
     }
 
