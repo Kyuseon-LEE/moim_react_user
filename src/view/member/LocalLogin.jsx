@@ -39,16 +39,17 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
         axios.post('http://localhost:5000/member/localLogin', formData, {
             headers : {
                 'Content-Type' : 'application/json'
-            }
+            },
+            withCredentials: true,
         })
             .then(response => {
-                const { accessToken, memberInfo } = response.data;
+                const { accessToken, refreshToken,  memberInfo } = response.data;
                 localStorage.setItem("accessToken", accessToken);
-                localStorage.setItem("m_id", m_id);
-                localStorage.setItem("m_no", memberInfo.m_no);
-                localStorage.setItem("m_profile_img", memberInfo.m_profile_img);
-                localStorage.setItem("m_category", memberInfo.m_category);
-                localStorage.setItem("m_address", memberInfo.m_address);
+                // localStorage.setItem("m_id", m_id);
+                // localStorage.setItem("m_no", memberInfo.m_no);
+                // localStorage.setItem("m_profile_img", memberInfo.m_profile_img);
+                // localStorage.setItem("m_category", memberInfo.m_category);
+                // localStorage.setItem("m_address", memberInfo.m_address);
                 setMemberInfo(memberInfo);
                 setJwt(accessToken);
                 setIsLoggedIn(true);

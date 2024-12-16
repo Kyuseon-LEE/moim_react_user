@@ -94,6 +94,22 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
+.inquiry-list-button {
+    background-color: #2844ff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 4px;
+    margin-right: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.inquiry-list-button:hover{
+    background-color: #5f74ff;
+}
 
 .inquiry-cancel-button:hover {
     background-color: #d9363e;

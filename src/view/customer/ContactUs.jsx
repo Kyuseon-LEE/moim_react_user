@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import "../../css/customer/contact_us.css";
 import {useNavigate} from "react-router-dom";
 const ContactUs = () => {
-
+    
     useEffect(() => {
         fetchFaqCategory();
     }, []);
@@ -84,11 +84,11 @@ const ContactUs = () => {
         })
             .then(res =>{
                 alert('문의 접수가 완료되었습니다.');
-
+                navigate("/contact_us");
             })
             .catch(err => {
                 alert('문의 접수중 오류가 발생했습니다.')
-            
+                navigate("/contact_us");
             });
 
     }

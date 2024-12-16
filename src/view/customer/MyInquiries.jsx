@@ -81,6 +81,9 @@ const MyInquiries = () => {
                 </div>
             </div>
             <div className="inquiry-button-group">
+                <button className="inquiry-list-button" onClick={() => navigate("/contact_us")}>
+                    리스트로 이동
+                </button>
                 <button className="inquiry-cancel-button" onClick={inquiriesCancelButtonClickHandle}>
                     문의 취소
                 </button>

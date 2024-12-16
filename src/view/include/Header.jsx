@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import '../../css/include.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
+import axios from 'axios';
+import instance from '../../api/axios';
+import Cookies from 'js-cookie';
 
 const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -11,34 +14,52 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
 
   // 페이지 로드 시 localStorage에서 jwt 가져오기
   useEffect(() => {
-    const storedJwt = localStorage.getItem("accessToken");
-
-    if(isLoggedIn && window.location.href === "/login") {
+    const accessToken = localStorage.getItem("accessToken");
+  
+    // 로그인 상태에서 로그인 페이지로 접근 시 리다이렉트
+    if (isLoggedIn && window.location.href === "/login") {
       navigate("/");
     }
   
-    if (storedJwt) {
-      const decoded = jwtDecode(storedJwt);
+    if (accessToken) {
+      const decoded = jwtDecode(accessToken);
+
       const currentTime = Date.now() / 1000;
   
+      // 액세스 토큰 만료 확인
       if (decoded.exp < currentTime) {
-        // 토큰이 만료됨
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("m_id");
-        localStorage.removeItem("m_no");
-        localStorage.removeItem("m_profile_img");
-        localStorage.removeItem("m_category");
-        localStorage.removeItem("m_address");
-        setJwt('');
-        setIsLoggedIn(false);
-        alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-        window.location.href = "/";
+        // 만료되었으면 리프레시 토큰을 사용해 새로운 액세스 토큰 요청
+        instance.post("http://localhost:5000/member/refresh_token")
+          .then(response => {
+            console.log("새로운 액세스 토큰을 수신했습니다.");
+            const newAccessToken = response.data.accessToken;
+  
+            // 새 액세스 토큰을 로컬스토리지에 저장
+            localStorage.setItem("accessToken", newAccessToken);
+  
+            // 상태 업데이트
+            setJwt(newAccessToken);
+            setIsLoggedIn(true);
+          })
+          .catch(err => {
+            console.error("리프레시 토큰으로 액세스토큰 갱신 실패", err);
+  
+            // 토큰 갱신 실패 시 로그아웃 처리
+            localStorage.removeItem("accessToken");
+            setJwt('');
+            setIsLoggedIn(false);
+            alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+            navigate("/login");
+          });
       } else {
-        setJwt(storedJwt);
+        // 액세스 토큰이 유효하다면 상태 유지
+        setJwt(accessToken);
         setIsLoggedIn(true);
       }
     }
   }, [setJwt, setIsLoggedIn, isLoggedIn, navigate]);
+  
+  
 
   useEffect(() => {
     setMenuOpen(false); // 경로가 변경되면 메뉴 닫기
@@ -55,11 +76,13 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");  // localStorage에서 jwt 삭제
-    localStorage.removeItem("m_id");
-    localStorage.removeItem("m_no");
-    localStorage.removeItem("m_profile_img");
-    localStorage.removeItem("m_category");
-    localStorage.removeItem("m_address");
+    localStorage.removeItem("refreshToken");  // localStorage에서 jwt 삭제
+    Cookies.remove("refreshToken",  { path: '/' })
+    // localStorage.removeItem("m_id");
+    // localStorage.removeItem("m_no");
+    // localStorage.removeItem("m_profile_img");
+    // localStorage.removeItem("m_category");
+    // localStorage.removeItem("m_address");
     setJwt('');  // jwt 상태 초기화
     setIsLoggedIn(false);  // 로그인 상태 변경
     window.location.href = "/";
