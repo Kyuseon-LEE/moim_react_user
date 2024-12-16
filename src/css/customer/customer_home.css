@@ -1,5 +1,6 @@
 .customer-home-wrapper {
     width: 1000px;
+    height: 400px;
     margin: 0 auto;
 }
 
@@ -9,7 +10,7 @@
     text-align: center;
 }
 .customer-content {
-    margin: 0 auto;
+    margin: 50px auto;
     width: 50%;
 
 }
@@ -28,5 +29,5 @@
 }
 
 .customer-li:hover {
-    background-color: #b0c0ff;
+    background-color: #dadada;
 }

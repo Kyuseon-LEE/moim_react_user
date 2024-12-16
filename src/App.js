@@ -34,6 +34,9 @@ import AnnouncementDetail from "./view/announcement/AnnouncementDetail";
 import CustomerHome from "./view/customer/CustomerHome";
 import ContactUs from "./view/customer/ContactUs";
 import Faq from "./view/customer/Faq";
+import ContactUsList from "./view/customer/ContactUsList";
+import MyInquiries from "./view/customer/MyInquiries";
+import FaqDetail from "./view/customer/FaqDetail";
 
 function App() {
 
@@ -240,6 +243,13 @@ function App() {
           <Route path='/contact_us' element={
               <>
                   <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <ContactUsList jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+              </>
+          }/>
+          <Route path='/inquiries' element={
+              <>
+                  <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
                   <ContactUs jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
                   <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
               </>
@@ -248,6 +258,20 @@ function App() {
               <>
                   <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
                   <Faq jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+              </>
+          }/>
+          <Route path='/faq_detail/:faq_no' element={
+              <>
+                  <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <FaqDetail jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+              </>
+          }/>
+          <Route path='/myInquiries/:csi_no' element={
+              <>
+                  <Header jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                  <MyInquiries jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
                   <Footer jwt={jwt} setJwt={setJwt} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
               </>
           }/>

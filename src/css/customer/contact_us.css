@@ -1,0 +1,85 @@
+.contact-us-wrapper {
+    width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+    border: 1px solid #ddd;
+}
+
+.contact-us-header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.contact-us-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.contact-us-content {
+    width: 100%;
+}
+
+.contact-us-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.contact-us-table td {
+    padding: 10px;
+    vertical-align: middle;
+    color: #555;
+    font-size: 1rem;
+}
+
+.contact-us-table input[type="text"],
+.contact-us-table textarea,
+.contact-us-table select {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.contact-us-table textarea {
+    resize: none;
+    height: 100px;
+}
+
+.contact-us-table input[type="file"] {
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+.csi-submit-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.csi-submit-button:hover {
+    background-color: #0056b3;
+}
+
+.csi-reset-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #555;
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.csi-reset-button:hover {
+    background-color: #e1e1e1;
+}
+.button-group {
+    text-align: center;
+}

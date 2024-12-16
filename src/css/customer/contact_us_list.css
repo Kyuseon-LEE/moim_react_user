@@ -1,5 +1,5 @@
 /* Wrapper 전체 스타일 */
-.faq-wrapper {
+.contact-us-list-wrapper {
     width: 80%;
     min-height: 60vh;
     margin: 0 auto;
@@ -7,7 +7,9 @@
 }
 
 /* 헤더 스타일 */
-.faq-header {
+.contact-us-list-header {
+    width: 80%;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -16,13 +18,13 @@
     border-bottom: 2px solid #ddd;
 }
 
-.faq-title {
+.contact-us-list-title {
     font-size: 24px;
     font-weight: bold;
     color: #333;
 }
 
-.faq-search input {
+.contact-us-list-search input {
     width: 300px;
     padding: 8px 12px;
     border: 1px solid #ccc;
@@ -30,12 +32,12 @@
     outline: none;
 }
 
-.faq-search input:focus {
+.contact-us-list-search input:focus {
     border-color: #888;
 }
 
 /* 메뉴 스타일 */
-.faq-menu {
+.contact-us-list-menu {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -43,7 +45,7 @@
     margin-bottom: 20px;
 }
 
-.faq-menu-item {
+.contact-us-list-menu-item {
     padding: 20px 50px;
     background-color: #f7f7f7;
     border: 1px solid #ccc;
@@ -52,42 +54,69 @@
     cursor: pointer;
 }
 
-.faq-menu-item:hover {
+.contact-us-list-menu-item:hover {
     background-color: #e0e0e0;
     border-color: #bbb;
 }
 
 /* 테이블 스타일 */
-.faq-content {
+.contact-us-list-content {
     overflow-x: auto;
 }
 
-.faq-table {
+.contact-us-list-table {
     width: 80%;
     margin: 0 auto;
     border-collapse: collapse;
-
     font-size: 14px;
 }
 
-.faq-th {
+.contact-us-list-th {
     background-color: #f7f7f7;
     color: #333;
     padding: 10px;
     border: 1px solid #ccc;
 }
 
-.faq-tr:nth-child(even) {
+.contact-us-list-tr:nth-child(even) {
     background-color: #fafafa;
 }
 
-.faq-tr:hover {
+.contact-us-list-tr:hover {
     background-color: #f0f0f0;
 }
 
-.faq-td {
+.contact-us-list-td {
     padding: 10px;
     border: 1px solid #ccc;
     color: #555;
 }
 
+
+.inquiry-button:hover {
+    background-color: #0056b3;
+}
+.last-td {
+    text-align: end;
+    border: none;
+    background-color: #fff;
+}
+.last-td:hover {
+    background-color: #fff;
+}
+
+.inquiry-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.inquiry-button:hover {
+    background-color: #0056b3;
+}
