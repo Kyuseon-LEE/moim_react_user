@@ -49,7 +49,6 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
             setJwt('');
             setIsLoggedIn(false);
             alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-            navigate("/login");
           });
       } else {
         // 액세스 토큰이 유효하다면 상태 유지
@@ -57,7 +56,7 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
         setIsLoggedIn(true);
       }
     }
-  }, [setJwt, setIsLoggedIn, isLoggedIn, navigate]);
+  }, []);
   
   
 
@@ -75,19 +74,24 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");  // localStorage에서 jwt 삭제
-    localStorage.removeItem("refreshToken");  // localStorage에서 jwt 삭제
-    Cookies.remove("refreshToken",  { path: '/' })
-    // localStorage.removeItem("m_id");
-    // localStorage.removeItem("m_no");
-    // localStorage.removeItem("m_profile_img");
-    // localStorage.removeItem("m_category");
-    // localStorage.removeItem("m_address");
-    setJwt('');  // jwt 상태 초기화
-    setIsLoggedIn(false);  // 로그인 상태 변경
-    window.location.href = "/";
-    alert("로그아웃 되었습니다.");
+    // 서버에 로그아웃 요청
+    instance.post('/member/logout')
+      .then(() => {
+        Cookies.remove("refreshToken", { path: '/' });
+        localStorage.removeItem("accessToken");
+        setJwt('');
+        setIsLoggedIn(false);
+        navigate('/');
+        alert("로그아웃 되었습니다.");
+      })
+      .catch(err => {
+        console.error("로그아웃 요청 중 오류:", err);
+        alert("로그아웃 중 문제가 발생했습니다.");
+      });
   };
+
+  console.log("isLoggedIn", isLoggedIn);
+  
 
   const closeMenu = () => {
     setMenuOpen(false); // 메뉴 닫기
