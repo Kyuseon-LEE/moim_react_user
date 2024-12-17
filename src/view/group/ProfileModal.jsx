@@ -24,7 +24,7 @@ const ProfileModal = ({ member, isOpen, onClose, filterPostsByMember }) => {
             {{
               1: "일반 회원",
               2: "간부 회원",
-              3: "관리자"
+              3: "모임장"
             }[member.g_m_role] || "알 수 없음"}
           </p>
           <p className="profile_mail">{member.m_mail}</p>

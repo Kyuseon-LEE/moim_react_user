@@ -774,7 +774,7 @@ const handleEditImageUpload = (event) => {
               )}
             </div>
           )
-        ) : groupData.g_regist === 0 ? (
+        ) : groupData.g_regist === 0 || groupData.memberCount >= groupData.g_max_number ? (
           <div className="group_access">가입이 불가능한 모임입니다.</div>
         ) : (
           <div className="group_access" onClick={handleJoinClick}>
