@@ -47,7 +47,7 @@ instance.interceptors.response.use(response => {
             // 리프레시 토큰 갱신 실패 시, 로컬 스토리지에서 토큰 제거
             localStorage.removeItem('accessToken');
             // 로그인 페이지로 리다이렉션하거나 적절한 처리
-            window.location.href = "/login";  // 예시로 로그인 페이지로 리다이렉트
+            // window.location.href = "/login";  // 예시로 로그인 페이지로 리다이렉트
             return Promise.reject(refreshErr);
         }
     }
