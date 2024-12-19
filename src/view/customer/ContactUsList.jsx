@@ -23,7 +23,7 @@ const ContactUsList = () => {
     const fetchUserInquiries = () => {
         const accessToken = localStorage.getItem("accessToken");
 
-        axios.post(`http://localhost:5000/faq/fetchUserInquiriesList`, {
+        axios.post(`http://3.34.115.75:5000/faq/fetchUserInquiriesList`, {
             accessToken: accessToken,
             page: currentPage,
             size: itemsPerPage,
@@ -37,7 +37,7 @@ const ContactUsList = () => {
     }
 
     const fetchFaqCategory = () => {
-        axios.get("http://localhost:5000/faq/fetchFaqCategory")
+        axios.get("http://3.34.115.75:5000/faq/fetchFaqCategory")
             .then(res => {
                 setFaqCategory(res.data.data);
             })

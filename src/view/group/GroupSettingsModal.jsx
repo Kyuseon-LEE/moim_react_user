@@ -31,7 +31,7 @@ const GroupSettingsModal = ({ isOpen, onClose, groupData, onSettingsUpdated }) =
     formData.append("image", file);
 
     try {
-      const response = await fetch("http://localhost:5000/group/upload", {
+      const response = await fetch("http://3.34.115.75:5000/group/upload", {
         method: "POST",
         body: formData,
       });
@@ -59,7 +59,7 @@ const GroupSettingsModal = ({ isOpen, onClose, groupData, onSettingsUpdated }) =
   // 수정 내용 저장 핸들러
   const handleSaveChanges = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/group/${groupData.g_no}/update`, {
+      const response = await fetch(`http://3.34.115.75:5000/group/${groupData.g_no}/update`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedGroupData),

@@ -23,7 +23,7 @@ const AnnouncementList = () => {
         fetchAnnouncementCount();
     }
     const fetchAnnouncementList = () => {
-        axios.get(`http://localhost:5000/ac/fetchAnnouncementList?page=${currentPage}&size=${itemsPerPage}&sort=${sort}`)
+        axios.get(`http://3.34.115.75:5000/ac/fetchAnnouncementList?page=${currentPage}&size=${itemsPerPage}&sort=${sort}`)
             .then(res => {
                 setCurrentItems(res.data.data);
             })
@@ -33,7 +33,7 @@ const AnnouncementList = () => {
             });
     }
     const fetchAnnouncementCount = () => {
-        axios.get(`http://localhost:5000/ac/fetchAnnouncementCount?sort=${sort}`)
+        axios.get(`http://3.34.115.75:5000/ac/fetchAnnouncementCount?sort=${sort}`)
             .then(res => {
                 setTotalItems(res.data.data);
             })

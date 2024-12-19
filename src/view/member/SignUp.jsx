@@ -119,7 +119,7 @@ const SignUp = () => {
             formData.append("file", profileImage);
         }
     
-        axios.post('http://localhost:5000/member/signup_confirm', formData, {
+        axios.post('http://3.34.115.75:5000/member/signup_confirm', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
             withCredentials: true,  
         })

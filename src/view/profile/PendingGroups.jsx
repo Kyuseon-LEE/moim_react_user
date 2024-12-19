@@ -34,7 +34,7 @@ const JoinedGroups = () => {
     }
   
     try {
-      const response = await fetch(`http://localhost:5000/group/${g_no}/kick`, {
+      const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/kick`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ m_no }),
@@ -61,7 +61,7 @@ const JoinedGroups = () => {
     console.log("Fetching groups for user ID:", userId); // 사용자 ID 확인
   
     // Node.js 서버에 요청
-    fetch(`http://localhost:5000/group/user-groups/${userId}`, {
+    fetch(`http://3.34.115.75:5000/group/user-groups/${userId}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" }, // JSON 요청임을 명시
     })

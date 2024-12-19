@@ -13,13 +13,13 @@ const MyInquiries = () => {
     }, [])
 
     const fetchMyInquiries = () => {
-        axios.post("http://localhost:5000/faq/fetchUserInquiriesDetail", {csi_no})
+        axios.post("http://3.34.115.75:5000/faq/fetchUserInquiriesDetail", {csi_no})
             .then(res => {setMyInquiries(res.data.data)})
             .catch(err => console.log(err));
     }
 
     const cancelInquiries = () => {
-        axios.post("http://localhost:5000/faq/cancelUserInquiries", {csi_no})
+        axios.post("http://3.34.115.75:5000/faq/cancelUserInquiries", {csi_no})
             .then(res => {
                 alert('문의가 정상적으로 취소 되었습니다.');
                 navigate("/contact_us");

@@ -83,7 +83,7 @@ const SocialLogin = ({ userInfo }) => {
         if (m_profile_img) {
             formData.append("m_profile_img", m_profile_img);
         } 
-        axios.post('http://localhost:5000/member/social_signup', formData, {
+        axios.post('http://3.34.115.75:5000/member/social_signup', formData, {
             headers: { 'Content-Type': 'application/json' },
             withCredentials: true,  
         })

@@ -39,7 +39,7 @@ const MemberList = ({ loading, members, getMemberGrade, gMRole, g_no }) => {
   // 등급 변경 요청
   const handleRoleChange = async (m_no, newRole) => {
     try {
-      const response = await fetch(`http://localhost:5000/group/${g_no}/update-role`, {
+      const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/update-role`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ m_no, g_m_role: newRole }),
@@ -75,7 +75,7 @@ const MemberList = ({ loading, members, getMemberGrade, gMRole, g_no }) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/group/${g_no}/kick`, {
+      const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/kick`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ m_no }),
@@ -99,7 +99,7 @@ const MemberList = ({ loading, members, getMemberGrade, gMRole, g_no }) => {
 
   const handleApproveMember = async (m_no) => {
     try {
-      const response = await fetch(`http://localhost:5000/group/${g_no}/update-role`, {
+      const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/update-role`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ m_no, g_m_role: 1 }),
@@ -124,7 +124,7 @@ const MemberList = ({ loading, members, getMemberGrade, gMRole, g_no }) => {
     if (!confirmReject) return;
   
     try {
-      const response = await fetch(`http://localhost:5000/group/${g_no}/kick`, {
+      const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/kick`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ m_no }),

@@ -47,7 +47,7 @@ const GroupPost = ({
     const fetchPostsByMember = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/group/${g_no}/posts?m_no=${m_no}`
+          `http://3.34.115.75:5000/group/${g_no}/posts?m_no=${m_no}`
         );
         if (!response.ok) throw new Error("Failed to fetch posts");
         const data = await response.json();
@@ -63,7 +63,7 @@ const GroupPost = ({
     const fetchComments = async (p_no) => {
       try {
         const response = await fetch(
-          `http://localhost:5000/group/${p_no}/comments`
+          `http://3.34.115.75:5000/group/${p_no}/comments`
         );
         if (!response.ok) throw new Error("Failed to fetch comments");
         const data = await response.json();

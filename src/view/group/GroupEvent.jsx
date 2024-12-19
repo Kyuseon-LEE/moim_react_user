@@ -25,14 +25,14 @@ const GroupEvent = ({
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/group/${g_no}/events`);
+      const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/events`);
       const data = await response.json();
       setEvents(data);
 
       const votesData = {};
       const userVotes = {};
       for (const event of data) {
-        const votesResponse = await fetch(`http://localhost:5000/group/${event.e_no}/votes`);
+        const votesResponse = await fetch(`http://3.34.115.75:5000/group/${event.e_no}/votes`);
         const voteResult = await votesResponse.json();
 
         // 투표 결과 가공
@@ -69,7 +69,7 @@ const GroupEvent = ({
     if (userEventVote === voteStatus) {
       // 동일한 상태를 다시 선택한 경우 -> 삭제 요청
       try {
-        const response = await fetch(`http://localhost:5000/group/events/${e_no}/vote`, {
+        const response = await fetch(`http://3.34.115.75:5000/group/events/${e_no}/vote`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ m_no: memberInfo.m_no }),
@@ -95,7 +95,7 @@ const GroupEvent = ({
       };
   
       try {
-        const response = await fetch(`http://localhost:5000/group/events/${e_no}/vote`, {
+        const response = await fetch(`http://3.34.115.75:5000/group/events/${e_no}/vote`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -169,7 +169,7 @@ const GroupEvent = ({
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/group/${g_no}/events`, {
+      const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/events`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newEvent),

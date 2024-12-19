@@ -23,7 +23,7 @@ const ContactUs = () => {
     const navigate = useNavigate();
 
     const fetchFaqCategory = () => {
-        axios.get("http://localhost:5000/faq/fetchFaqCategory")
+        axios.get("http://3.34.115.75:5000/faq/fetchFaqCategory")
             .then(res => {
                 setFaqCategory(res.data.data);
             })
@@ -77,7 +77,7 @@ const ContactUs = () => {
         if (files.csi_attach_file3) formData.append("csi_attach_file3", files.csi_attach_file3);
         if (files.csi_attach_file4) formData.append("csi_attach_file4", files.csi_attach_file4);
 
-        axios.post("http://localhost:5000/faq/createInquiries", formData, {
+        axios.post("http://3.34.115.75:5000/faq/createInquiries", formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             }

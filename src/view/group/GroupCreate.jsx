@@ -93,7 +93,7 @@ const GroupCreate = () => {
     const formData = new FormData();
     formData.append("image", file);
   
-    fetch("http://localhost:5000/group/upload", {
+    fetch("http://3.34.115.75:5000/group/upload", {
       method: "POST",
       body: formData,
     })
@@ -196,7 +196,7 @@ const GroupCreate = () => {
   
     console.log("Data being sent to Node.js:", groupData);
   
-    fetch("http://localhost:5000/group/create_group", {
+    fetch("http://3.34.115.75:5000/group/create_group", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(groupData),

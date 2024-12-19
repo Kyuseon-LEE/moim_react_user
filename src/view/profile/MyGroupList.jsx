@@ -97,7 +97,7 @@ const MyGroupList = ({ memberInfo, setMemberInfo }) => {
     if (!selectedGroup) return;
   
     try {
-      const response = await fetch(`http://localhost:5000/group/${selectedGroup.g_no}/delete`, {
+      const response = await fetch(`http://3.34.115.75:5000/group/${selectedGroup.g_no}/delete`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });

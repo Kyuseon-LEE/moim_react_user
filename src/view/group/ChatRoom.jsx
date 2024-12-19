@@ -49,7 +49,7 @@ const ChatRoom = () => {
           console.log("현재 사용자 m_no:", m_no); // 디버깅용 로그
   
           try {
-              const response = await fetch(`http://localhost:5000/group/${g_no}/is-member/${m_no}`);
+              const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/is-member/${m_no}`);
               const data = await response.json();
               if (data.isMember) {
                   setIsMember(true);
@@ -81,7 +81,7 @@ const ChatRoom = () => {
         console.log("현재 사용자 m_no:", mNo); // 디버깅 로그
 
         try {
-            const response = await fetch(`http://localhost:5000/group/${g_no}/member/${mNo}/role`);
+            const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/member/${mNo}/role`);
             if (!response.ok) {
                 console.warn("Member role 정보를 가져오지 못했습니다.");
                 setGmRole(null); // 실패 시 null로 설정
@@ -129,7 +129,7 @@ const ChatRoom = () => {
     const fetchMessages = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/group/${g_no}/messages?m_no=${m_no}`);
+            const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/messages?m_no=${m_no}`);
             const data = await response.json();
 
             if (data.success) {
@@ -144,7 +144,7 @@ const ChatRoom = () => {
 
     fetchMessages();
 
-    const newSocket = io("http://localhost:5000");
+    const newSocket = io("http://3.34.115.75:5000");
     setSocket(newSocket);
     newSocket.emit("joinGroup", g_no);
 
@@ -180,7 +180,7 @@ useEffect(() => {
     try {
       socket.emit("sendMessage", newMessage);
   
-      const response = await fetch(`http://localhost:5000/group/${g_no}/message`, {
+      const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/message`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newMessage),
@@ -216,7 +216,7 @@ useEffect(() => {
     setIsUploading(true); // 업로드 시작
 
     try {
-      const response = await fetch("http://localhost:5000/group/upload", {
+      const response = await fetch("http://3.34.115.75:5000/group/upload", {
         method: "POST",
         body: formData,
       });

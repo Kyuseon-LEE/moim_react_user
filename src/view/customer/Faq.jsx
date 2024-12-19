@@ -27,7 +27,7 @@ const Faq = () => {
     }
 
     const fetchFaqList = () => {
-        axios.get(`http://localhost:5000/faq/fetchFaqList?page=${currentPage}&size=${itemsPerPage}&sort=${faqSort}`)
+        axios.get(`http://3.34.115.75:5000/faq/fetchFaqList?page=${currentPage}&size=${itemsPerPage}&sort=${faqSort}`)
             .then(res => {
                 setFaqList(res.data.data);
             })
@@ -37,7 +37,7 @@ const Faq = () => {
     }
 
     const fetchFaqCount = () => {
-        axios.get(`http://localhost:5000/faq/fetchFaqListCount?page=${currentPage}&size=${itemsPerPage}&sort=${faqSort}`)
+        axios.get(`http://3.34.115.75:5000/faq/fetchFaqListCount?page=${currentPage}&size=${itemsPerPage}&sort=${faqSort}`)
             .then(res => {
                 setTotalItems(res.data.data);
 
@@ -48,7 +48,7 @@ const Faq = () => {
     }
 
     const fetchFaqCategory = () => {
-        axios.get("http://localhost:5000/faq/fetchFaqCategory")
+        axios.get("http://3.34.115.75:5000/faq/fetchFaqCategory")
             .then(res => {
                 setFaqCategory(res.data.data);
             })

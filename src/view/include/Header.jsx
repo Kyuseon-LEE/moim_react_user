@@ -29,7 +29,7 @@ const Header = ({ jwt, setJwt, isLoggedIn, setIsLoggedIn }) => {
       // 액세스 토큰 만료 확인
       if (decoded.exp < currentTime) {
         // 만료되었으면 리프레시 토큰을 사용해 새로운 액세스 토큰 요청
-        instance.post("http://localhost:5000/member/refresh_token")
+        instance.post("http://3.34.115.75:5000/member/refresh_token")
           .then(response => {
             console.log("새로운 액세스 토큰을 수신했습니다.");
             const newAccessToken = response.data.accessToken;

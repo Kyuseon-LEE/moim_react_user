@@ -17,7 +17,7 @@ const GroupAll = () => {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/group/all");
+        const response = await axios.get("http://3.34.115.75:5000/group/all");
         const allGroups = response.data;
 
         // g_status가 1인 그룹만 필터링

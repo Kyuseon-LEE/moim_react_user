@@ -17,13 +17,13 @@ const FaqDetail = () => {
     }, []);
 
     const fetchFaqDetail = () => {
-        axios.post("http://localhost:5000/faq/fetchFaqDetail", {faq_no: faq_no})
+        axios.post("http://3.34.115.75:5000/faq/fetchFaqDetail", {faq_no: faq_no})
             .then(res => setFaqDetail(res.data.data))
             .catch(err => console.log(err));
     }
 
     const fetchFaqCategory = () => {
-        axios.get("http://localhost:5000/faq/fetchFaqCategory")
+        axios.get("http://3.34.115.75:5000/faq/fetchFaqCategory")
             .then(res => {
                 setFaqCategory(res.data.data);
             })

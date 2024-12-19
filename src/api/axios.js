@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-    baseURL: 'http://localhost:5000',
+    baseURL: 'http://3.34.115.75:5000',
     withCredentials: true,  // 쿠키를 포함하여 요청
     headers: {
         'Content-Type': 'application/json',
@@ -26,7 +26,7 @@ instance.interceptors.response.use(response => {
     if (err.response && err.response.status === 401) {
         try {
             // 리프레시 토큰을 사용하여 새로운 액세스 토큰 요청
-            const refreshResponse = await axios.post('http://localhost:5000/member/refresh_token', {}, {
+            const refreshResponse = await axios.post('http://3.34.115.75:5000/member/refresh_token', {}, {
                 withCredentials: true,
             });
 

@@ -29,7 +29,7 @@ const SearchResults = () => {
       const { location, category, query } = parseQueryParams();
 
       try {
-        const response = await axios.get("http://localhost:5000/group/all");
+        const response = await axios.get("http://3.34.115.75:5000/group/all");
         const allGroups = response.data;
 
         // 필터링 조건 적용

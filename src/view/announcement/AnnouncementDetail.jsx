@@ -11,7 +11,7 @@ const AnnouncementDetail = () => {
     }, []);
 
     const fetchAnnouncementDetail = () => {
-        axios.post("http://localhost:5000/ac/fetchAnnouncementDetail", {an_no: an_no}   )
+        axios.post("http://3.34.115.75:5000/ac/fetchAnnouncementDetail", {an_no: an_no}   )
             .then(res => {
                 setAnnouncementDetail(res.data.data)
             })

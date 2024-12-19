@@ -78,7 +78,7 @@ const GroupHome = () => {
   useEffect(() => {
     const fetchGroupData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/group/${g_no}`, {
+        const response = await fetch(`http://3.34.115.75:5000/group/${g_no}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -116,7 +116,7 @@ const GroupHome = () => {
 
         try {
             // 멤버 여부 확인 API 호출
-            const response = await fetch(`http://localhost:5000/group/${g_no}/is-member/${mNo}`);
+            const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/is-member/${mNo}`);
             if (!response.ok) {
                 throw new Error("멤버 여부 확인에 실패했습니다.");
             }
@@ -141,7 +141,7 @@ const GroupHome = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/group/${g_no}/posts`);
+        const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/posts`);
         if (!response.ok) throw new Error("게시글 데이터를 가져오지 못했습니다.");
         const data = await response.json();
         setPosts(data);
@@ -159,7 +159,7 @@ const GroupHome = () => {
 
   const fetchComments = async (p_no) => {
     try {
-      const response = await fetch(`http://localhost:5000/group/${p_no}/comments`);
+      const response = await fetch(`http://3.34.115.75:5000/group/${p_no}/comments`);
       if (!response.ok) throw new Error("댓글 데이터를 가져오지 못했습니다.");
       const data = await response.json();
       setCommentsByPost((prev) => ({ ...prev, [p_no]: data })); // 게시글별 댓글 업데이트
@@ -182,7 +182,7 @@ const GroupHome = () => {
         console.log("현재 사용자 m_no:", mNo); // 디버깅용 로그
 
         try {
-            const response = await fetch(`http://localhost:5000/group/${g_no}/member/${mNo}/role`);
+            const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/member/${mNo}/role`);
             if (!response.ok) {
                 console.warn("Member role 정보를 가져오지 못했습니다.");
                 setGmRole(null); // 실패 시 null로 설정
@@ -214,7 +214,7 @@ const GroupHome = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/group/${g_no}/members`);
+        const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/members`);
         if (!response.ok) {
           throw new Error("Failed to fetch members");
         }
@@ -267,7 +267,7 @@ const GroupHome = () => {
     setUploadedFileName(""); // 초기화
     setIsUploading(true); // 업로드 중 상태 설정
   
-    fetch("http://localhost:5000/group/upload", {
+    fetch("http://3.34.115.75:5000/group/upload", {
       method: "POST",
       body: formData,
     })
@@ -315,7 +315,7 @@ const GroupHome = () => {
     };
 
     try {
-        const response = await fetch("http://localhost:5000/group/post", {
+        const response = await fetch("http://3.34.115.75:5000/group/post", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(postData),
@@ -356,7 +356,7 @@ const GroupHome = () => {
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/group/${g_no}/join`, {
+        const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/join`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -412,7 +412,7 @@ const GroupHome = () => {
     };
   
     try {
-      const response = await fetch("http://localhost:5000/group/comment", {
+      const response = await fetch("http://3.34.115.75:5000/group/comment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(commentData),
@@ -452,7 +452,7 @@ const GroupHome = () => {
     const m_no = memberInfo.m_no; // memberInfo에서 m_no 가져오기
 
     try {
-        const response = await fetch(`http://localhost:5000/group/${g_no}/posts/${p_no}/delete`, {
+        const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/posts/${p_no}/delete`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ m_no }),
@@ -495,7 +495,7 @@ const handleSaveEdit = async () => {
   console.log("수정 요청 데이터:", body);
 
   try {
-    const response = await fetch(`http://localhost:5000/group/posts/${editingPostId}/edit`, {
+    const response = await fetch(`http://3.34.115.75:5000/group/posts/${editingPostId}/edit`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -528,7 +528,7 @@ const handleEditImageUpload = (event) => {
   setUploadedFileName(""); // 초기화
   setIsUploading(true); // 업로드 중 상태 설정
 
-  fetch("http://localhost:5000/group/upload", {
+  fetch("http://3.34.115.75:5000/group/upload", {
     method: "POST",
     body: formData,
   })
@@ -565,7 +565,7 @@ const handleEditImageUpload = (event) => {
     const m_no = memberInfo.m_no; // memberInfo에서 m_no 가져오기
 
     try {
-        const response = await fetch(`http://localhost:5000/group/comment/${co_no}`, {
+        const response = await fetch(`http://3.34.115.75:5000/group/comment/${co_no}`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ m_no }),
@@ -583,7 +583,7 @@ const handleEditImageUpload = (event) => {
 
   const handleKickMember = async (g_no, m_no) => {
     try {
-      const response = await fetch(`http://localhost:5000/group/${g_no}/kick`, {
+      const response = await fetch(`http://3.34.115.75:5000/group/${g_no}/kick`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ m_no }),

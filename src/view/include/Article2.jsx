@@ -15,7 +15,7 @@ const Article2 = () => {
         fetchCurrentAd();
     }, [])
     const fetchCurrentAd = () => {
-        axios.get('http://localhost:5000/ad/fetchCurrentAd')
+        axios.get('http://3.34.115.75:5000/ad/fetchCurrentAd')
             .then(res => {
                 setAd(res.data.data);
             })

@@ -36,7 +36,7 @@ const LocalLogin = ({ jwt, setJwt, setIsLoggedIn, setUserInfo }) => {
         formData.append("m_id", m_id);
         formData.append("m_pw", m_pw);
 
-        axios.post('http://localhost:5000/member/localLogin', formData, {
+        axios.post('http://3.34.115.75:5000/member/localLogin', formData, {
             headers : {
                 'Content-Type' : 'application/json'
             },

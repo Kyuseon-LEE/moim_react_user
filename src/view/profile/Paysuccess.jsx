@@ -11,7 +11,7 @@ const Paysuccess = () => {
         const params = new URLSearchParams(window.location.search);
         const orderId = params.get('orderId');
 
-        axios.get(`http://localhost:5000/credit/getPaymentData?orderId=${orderId}`, {
+        axios.get(`http://3.34.115.75:5000/credit/getPaymentData?orderId=${orderId}`, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json',
