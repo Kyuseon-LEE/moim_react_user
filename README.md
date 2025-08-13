@@ -1,66 +1,42 @@
-# Getting Started with Create React App
+# React 기반 사용자 인터페이스 - 모임 서비스 프론트엔드.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+##  프로젝트 개요
+- React를 사용해 모임 서비스 사용자 인터페이스(UI)를 구현
+- REST API는 Node.js + Spring 백엔드에서 제공
+- 사용자 친화적 UI와 SPA(Single Page Application) 구성에 중점
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+##  사용 기술 스택
+- React (함수형 컴포넌트 + Hooks)
+- React Router (페이지 라우팅)
+- Axios (API 통신)
+- Redux 또는 Context API (상태관리, 있으면 명시)
+- CSS Modules / Styled-Components (스타일링)
+- Webpack / Babel (빌드 환경)
+- ESLint, Prettier (코드 품질 관리)
+---
 
-### `npm start`
+##  주요 기능
+- **회원가입 및 로그인**
+- **모임 목록 조회 및 참여 기능**
+- **사용자 프로필 수정 및 모임 관리**
+- **폼 검증 및 사용자 피드백 UI**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+##  프로젝트 구조
+├── public/ # 정적 파일 (index.html, favicon 등)<br>
+├── src/ # 소스 코드 디렉토리<br>
+│ ├── api/ # Axios 등 API 호출 함수 모음<br>
+│ ├── assets/ # 이미지, 폰트 등 리소스 파일<br>
+│ ├── components/ # 재사용 가능한 UI 컴포넌트<br>
+│ ├── pages/ # 라우팅 대상 페이지 컴포넌트<br>
+│ ├── store/ # 상태 관리(Redux, Context API)<br>
+│ ├── styles/ # CSS, 스타일 관련 파일<br>
+│ ├── utils/ # 유틸리티 함수 모음<br>
+│ ├── App.js # 애플리케이션 진입점<br>
+│ └── index.js # ReactDOM 렌더링 및 앱 실행<br>
+├── .env # 환경 변수 설정 파일 (API 주소 등)<br>
+├── Dockerfile # 도커 빌드 설정 파일<br>
+├── package.json # 프로젝트 메타데이터 및 의존성 관리<br>
