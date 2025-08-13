@@ -26,17 +26,20 @@
 ---
 
 ##  프로젝트 구조
-├── public/ # 정적 파일 (index.html, favicon 등)<br>
-├── src/ # 소스 코드 디렉토리<br>
-│ ├── api/ # Axios 등 API 호출 함수 모음<br>
-│ ├── assets/ # 이미지, 폰트 등 리소스 파일<br>
-│ ├── components/ # 재사용 가능한 UI 컴포넌트<br>
-│ ├── pages/ # 라우팅 대상 페이지 컴포넌트<br>
-│ ├── store/ # 상태 관리(Redux, Context API)<br>
-│ ├── styles/ # CSS, 스타일 관련 파일<br>
-│ ├── utils/ # 유틸리티 함수 모음<br>
-│ ├── App.js # 애플리케이션 진입점<br>
-│ └── index.js # ReactDOM 렌더링 및 앱 실행<br>
-├── .env # 환경 변수 설정 파일 (API 주소 등)<br>
-├── Dockerfile # 도커 빌드 설정 파일<br>
-├── package.json # 프로젝트 메타데이터 및 의존성 관리<br>
+```
+React_moim_user/
+├── public/ # 정적 파일 (index.html, favicon 등)
+├── src/ # 소스 코드 디렉토리<
+│ ├── api/ # Axios 등 API 호출 함수 모음<
+│ ├── assets/ # 이미지, 폰트 등 리소스 파일
+│ ├── components/ # 재사용 가능한 UI 컴포넌트
+│ ├── pages/ # 라우팅 대상 페이지 컴포넌트
+│ ├── store/ # 상태 관리(Redux, Context API)
+│ ├── styles/ # CSS, 스타일 관련 파일
+│ ├── utils/ # 유틸리티 함수 모음
+│ ├── App.js # 애플리케이션 진입점
+│ └── index.js # ReactDOM 렌더링 및 앱 실행
+├── .env # 환경 변수 설정 파일 (API 주소 등)
+├── Dockerfile # 도커 빌드 설정 파일
+├── package.json # 프로젝트 메타데이터 및 의존성 관리
+```
